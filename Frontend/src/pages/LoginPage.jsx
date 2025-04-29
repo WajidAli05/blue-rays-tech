@@ -1,0 +1,17 @@
+import React from 'react'
+import LoginForm from '../components/LoginForm'
+import ShapeShiftBounce from '../components/animations/ShapeShiftBounce'
+
+const LoginPage = () => {
+  return (
+    <div className="login-page">
+        <img src="/logo.png" alt="Logo" className="logo" />
+      <LoginForm />
+        <div className="animation-container">
+            <ShapeShiftBounce />
+        </div>
+    </div>
+  )
+}
+
+export default LoginPage
