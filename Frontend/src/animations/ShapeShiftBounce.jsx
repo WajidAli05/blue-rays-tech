@@ -45,7 +45,7 @@ function shuffle([...array]) {
 
 const spring = {
     type: "spring",
-    damping: 20,
+    damping: 50,
     stiffness: 300,
 }
 

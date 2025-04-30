@@ -1,6 +1,6 @@
 import React from 'react'
 import LoginForm from '../components/LoginForm'
-import ShapeShiftBounce from '../components/animations/ShapeShiftBounce'
+import ShapeShiftBounce from '../animations/ShapeShiftBounce'
 
 const LoginPage = () => {
   return (

@@ -7,7 +7,6 @@
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
   text-align: center;
 }
 
@@ -100,31 +99,117 @@
     transform: translate(0, 0);
   }
   10% {
-    transform: translate(100px, 50px);
+    transform: translate(10px, 200px);
   }
   20% {
-    transform: translate(200px, 100px);
+    transform: translate(10px, 350px);
   }
   30% {
-    transform: translate(150px, 300px);
+    transform: translate(300px, 350px);
   }
   50% {
-    transform: translate(-300px, 200px);
+    transform: translate(600px, 350px);
   }
   60% {
-    transform: translate(-100px, 200px);
+    transform: translate(900px, 350px);
   }
   70% {
-    transform: translate(800px, 200px);
+    transform: translate(900px, 200px);
   }
   80% {
-    transform: translate(700px, 0px);
+    transform: translate(900px, 100px);
   }
   90% {
-    transform: translate(900px, 300px);
+    transform: translate(900px, 0px);
   }
   80% {
     transform: translate(0px, 0px);
   }
 }
 /* ===================login css ends here==================== */
+
+/* ===================sidebar css starts here==================== */
+.navbar{
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0px 20px;
+}
+
+.logo{
+  display: block;
+  width: 200px;
+  height: auto;
+}
+
+.navbar-list{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  list-style-type: none;
+  text-decoration: none;
+  padding: 0;
+  margin: 0;
+}
+
+.navbar-list li{
+  display: block;
+  padding: 20px;
+}
+
+.navbar-list li a{
+  text-decoration: none;
+  color: white;
+  font-size: 16px;
+}
+
+/* Dropdown Menu Styles */
+.navbar-list .dropdown {
+  position: relative;
+}
+
+/* Style the dropdown link */
+.navbar-list .dropdown-link {
+  cursor: pointer;
+  text-decoration: none;
+  color: white;
+  font-size: 16px;
+}
+
+/* Initially hide the dropdown menu */
+.navbar-list .dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: var(--secondary-color); /* Adjust as necessary */
+  border: 1px solid #333;
+  border-radius: 10px;
+  list-style-type: none;
+  padding: 10px 0;
+  width: 200px;
+  z-index: 1;
+}
+
+.navbar-list .dropdown-menu li {
+  padding: 10px;
+}
+
+.navbar-list .dropdown-menu li a {
+  text-decoration: none;
+  color: white;
+  font-size: 16px;
+}
+
+/* Show the dropdown on hover */
+.navbar-list .dropdown:hover .dropdown-menu {
+  display: block;
+}
+
+/* Optional: Styling on hover over the dropdown items */
+.navbar-list .dropdown-menu li a:hover {
+  background-color: #444;
+}
