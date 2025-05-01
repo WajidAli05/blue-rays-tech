@@ -241,3 +241,84 @@
   margin-bottom: 0px;
   color: var(--primary-color);
 }
+
+
+/* Existing Styles for Statistic Cards */
+.stat-card-container {
+  background-color: var(--secondary-color);  /* Background color as a CSS variable (you can define this in your global styles) */
+  border: 1px solid #d9d9d9;              /* Light grey border */
+  border-radius: 8px;                     /* Rounded corners */
+  padding: 16px;                          /* Space inside the card */
+  margin: 10px;                           /* Space between cards */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  width: 170px;                           /* Fixed width */
+  height: 100px;                          /* Fixed height */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Title styles for the statistic */
+.stat-card-container .ant-statistic-title {
+  font-weight: bold;  /* Make the title bold */
+  color: white;       /* White color for the title */
+}
+
+/* Value styles for the statistic */
+.stat-card-container .ant-statistic-content-value {
+  color: white !important;  /* White color for the value */
+}
+
+/* Prefix (icons) and suffix styles */
+.stat-card-container .ant-statistic-content-prefix,
+.stat-card-container .ant-statistic-content-suffix {
+  color: white !important;  /* White color for prefix and suffix */
+}
+
+
+.stat-card-container:hover{
+  border: 1px solid #333;
+  box-shadow: unset !important;
+  transform: scale(1.05);
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+  border-radius: 20px;
+  background-color: var(--primary-color);
+}
+
+.statistic-cards-container{
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
+  flex-wrap: wrap;
+  background-color: rgb(255, 255, 255); 
+  padding: 50px 50px;
+  row-gap: 10px;
+  border-radius: 10px;
+
+  /* Apply the frosty effect */
+  backdrop-filter: blur(10px); 
+  -webkit-backdrop-filter: blur(10px);
+
+  /* Add a subtle shadow for better frosty effect */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.numerical-data {
+  display: flex;
+  flex-wrap: wrap;      /* Allow wrapping of cards */
+  gap: 16px;            /* Add space between cards */
+  justify-content: flex-start; /* Align items to the start */
+  padding: 20px;
+}
+
+.mobile-vs-desktop {
+  display: flex;
+  gap: 16px; 
+  flex-wrap: wrap;
+  border: 1px solid #d9d9d9; 
+  border-radius: 10px; 
+}

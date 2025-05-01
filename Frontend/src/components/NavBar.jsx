@@ -20,6 +20,7 @@ const SideBar = () => {
             </li>
             <li><a href="/orders">Orders</a></li>
             <li><a href="/users">Users</a></li>
+            <li><a href="/reviews">Reviews</a></li>
             <li><a href="/ad-login"><FiLogOut size={22} /></a></li>
           </ul>
         </nav>
