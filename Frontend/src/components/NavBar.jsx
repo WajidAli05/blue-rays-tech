@@ -9,6 +9,7 @@ const SideBar = () => {
           {/* Create nav bar links */}
           <ul className="navbar-list">
             <li><a href="/">Dashboard</a></li>
+            <li><a href="/addProduct">Add Product</a></li>
             <li className="dropdown">
               <a href="#" className="dropdown-link">Products</a>
               <ul className="dropdown-menu">

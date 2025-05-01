@@ -3,30 +3,24 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 
 // Sample data for category-wise inventory
 const data = [
-  {
-    name: 'Physical Products',
-    stockLevel: 400,
-  },
-  {
-    name: 'Digital Products',
-    stockLevel: 300,
-  },
-  {
-    name: 'Affiliate Products',
-    stockLevel: 500,
-  },
-  {
-    name: 'Others',
-    stockLevel: 200,
-  },
+  { name: 'Elect', stockLevel: 400 },
+  { name: 'Clothes', stockLevel: 300 },
+  { name: 'Home', stockLevel: 500 },
+  { name: 'Books', stockLevel: 200 },
+  { name: 'Beauty', stockLevel: 300 },
+  { name: 'Sports', stockLevel: 500 },
+  { name: 'Software', stockLevel: 200 },
 ];
 
-// Colors for each bar (you can customize these)
+// Colors for each bar
 const colors = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 const CategoryWiseInventoryBarChart = () => {
   return (
-    <ResponsiveContainer width="100%" height={300}>
+    <ResponsiveContainer width="50%" height={300}>
+      <div style={{ textAlign: 'center' }}>
+        <h3 className="chart-heading">Total Inventory Per Category</h3>
+      </div>
       <BarChart
         data={data}
         margin={{
@@ -37,10 +31,16 @@ const CategoryWiseInventoryBarChart = () => {
         }}
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="name" />
+        <XAxis dataKey="name" angle={-35} textAnchor="end" />
         <YAxis />
         <Tooltip />
-        <Legend />
+        <Legend 
+          layout="vertical"  // Stack the legend vertically
+          verticalAlign="bottom"  // Align the legend at the bottom
+          wrapperStyle={{
+            bottom: -40,  // Push the legend down by 30px (adjust as needed)
+          }}
+        />
         <Bar dataKey="stockLevel" fill="#8884d8">
           {data.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />

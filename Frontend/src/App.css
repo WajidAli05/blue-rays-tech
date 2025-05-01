@@ -210,9 +210,34 @@
 }
 
 /* Optional: Styling on hover over the dropdown items */
-.navbar-list .dropdown-menu li a:hover {
+.navbar-list li a:hover {
   background-color: #444;
 }
 /* ===================sidebar css ends here==================== */
 
 /* ===================dashboard css starts here==================== */
+.charts-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  background-color: rgb(255, 255, 255); 
+  padding: 50px 10px;
+  row-gap: 100px;
+  border-radius: 10px;
+
+  /* Apply the frosty effect */
+  backdrop-filter: blur(10px); 
+  -webkit-backdrop-filter: blur(10px);
+
+  /* Add a subtle shadow for better frosty effect */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+.chart-heading{
+  text-align: center;
+  margin-bottom: 0px;
+  color: var(--primary-color);
+}

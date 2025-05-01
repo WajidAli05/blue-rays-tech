@@ -47,18 +47,19 @@ const data = [
   },
 ];
 
-const SalesChart = () => {
+const CategoryWiseSaleChart = () => {
   return (
     <div>
       {/* Responsive container ensures the chart is fully responsive */}
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="50%" height={300}>
+        {console.log('Category Wise Sale Chart')}
         <BarChart
           data={data}
           margin={{
-            top: 5,
-            right: 30,
-            left: 20,
-            bottom: 5,
+            top: 20,
+          right: 30,
+          left: 20,
+          bottom: 5,
           }}
           barSize={20}
         >
@@ -74,4 +75,4 @@ const SalesChart = () => {
   );
 };
 
-export default SalesChart;
+export default CategoryWiseSaleChart;

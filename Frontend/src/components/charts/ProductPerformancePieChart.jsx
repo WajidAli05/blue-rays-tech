@@ -47,9 +47,9 @@ const renderActiveShape = (props) => {
       />
       <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill="none" />
       <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
-      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} textAnchor={textAnchor} fill="#333">{`PV ${value}`}</text>
+      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} textAnchor={textAnchor} fill="#333">{`${value}`}</text>
       <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={18} textAnchor={textAnchor} fill="#999">
-        {`(Rate ${(percent * 100).toFixed(2)}%)`}
+        {`(Percentage ${(percent * 100).toFixed(2)}%)`}
       </text>
     </g>
   );
@@ -69,16 +69,17 @@ class ProductPerformancePieChart extends PureComponent {
 
   render() {
     return (
-      <ResponsiveContainer width="100%" height={400}>
-        <PieChart width={400} height={400}>
+      <ResponsiveContainer width="50%" height={400}>
+        <h3 className='chart-heading'>Product Performance</h3>
+        <PieChart width={700} height={700}>
           <Pie
             activeIndex={this.state.activeIndex}
             activeShape={renderActiveShape}
             data={data}
             cx="50%"
             cy="50%"
-            innerRadius={60}
-            outerRadius={80}
+            innerRadius={70}
+            outerRadius={100}
             fill="#8884d8"
             dataKey="value"
             onMouseEnter={this.onPieEnter}

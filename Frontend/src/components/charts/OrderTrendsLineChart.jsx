@@ -36,7 +36,8 @@ const data = [
 // OrderTrendsLineChart component that renders the line chart
 const OrderTrendsLineChart = () => {
   return (
-    <ResponsiveContainer width="100%" height={300}>
+    <ResponsiveContainer width="50%" height={300}>
+      <h3 className='chart-heading'>Order Trend Over Time</h3>
       <LineChart data={data}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="name" />
