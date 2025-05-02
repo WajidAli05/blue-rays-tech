@@ -1,5 +1,5 @@
 import React from 'react'
-import SideBar from '../components/NavBar'
+import NavBar from '../components/NavBar'
 import CategoryWiseInventoryBarChart from '../components/charts/CategoryWiseInventoryBarChart'
 import CateggoryWiseProductStrength from '../components/charts/CategoryWiseProductStrength'
 import CategoryWiseSaleChart from '../components/charts/CategoryWiseSaleChart'
@@ -11,7 +11,7 @@ import { FaDollarSign, FaShoppingCart, FaCashRegister, FaUsers, FaStar, FaList, 
 const Dashboard = () => {
   return (
     <div>
-      <SideBar />
+      <NavBar />
       <div className='statistic-cards-container'> 
          {/* Total Sales */}
          <StatisticCard

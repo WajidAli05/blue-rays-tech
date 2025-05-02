@@ -1,7 +1,7 @@
 :root{
   --primary-color: #3A59D1;  /* Primary color */
   --secondary-color: #3D90D7;  /* Secondary color */
-  --tertiary-color: #B5FCCD;  /* Tertiary color */
+  --tertiary-color: #041c31;  /* Tertiary color */
 }
 
 #root {
@@ -321,4 +321,102 @@
   flex-wrap: wrap;
   border: 1px solid #d9d9d9; 
   border-radius: 10px; 
+}
+
+
+
+/* ==========================users page css starts here=============== */
+.users-container{
+  display: flex;
+  flex-direction: column;
+}
+
+.action-btn{
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+}
+
+.edit-btn{
+  background-color: green;
+}
+
+.edit-btn:hover{
+  background-color: var(--primary-color);
+}
+.delete-btn{
+  background-color: red;
+}
+.delete-btn:hover{
+  background-color: darkred;
+}
+
+.actions-container{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  column-gap: 10px;
+}
+
+.user-list{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  list-style-type: none;
+  text-decoration: none;
+  padding: 0;
+  margin: 10px 0;
+  font-size: 12px;
+}
+
+.user-list li{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  width: 100%;
+  border: 1px solid #d9d9d9;
+  border-radius: 10px;
+  margin: 3px 0;
+  background-color: var(--tertiary-color);
+}
+
+.user-list li img{
+  width: 30px;
+  height: 30px;
+  border-radius: 10%;
+}
+
+.user-list small{
+  font-size: 10px;
+}
+
+.checkbox-image-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  column-gap: 10px;
+}
+
+.search-input{
+  width: 300px;
+}
+
+.search-comp-container{
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+  align-items: center;
+  column-gap: 10px;
 }

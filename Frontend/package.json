@@ -12,7 +12,9 @@
   },
   "dependencies": {
     "@lottiefiles/dotlottie-react": "^0.13.4",
+    "@tailwindcss/vite": "^4.1.5",
     "antd": "^5.24.9",
+    "daisyui": "^5.0.35",
     "framer-motion": "^12.9.2",
     "motion": "^12.9.2",
     "react": "^19.0.0",
@@ -32,7 +34,7 @@
     "globals": "^16.0.0",
     "nodemon": "^3.1.10",
     "postcss": "^8.5.3",
-    "tailwindcss": "^4.1.4",
+    "tailwindcss": "^4.1.5",
     "vite": "^6.3.1"
   }
 }
