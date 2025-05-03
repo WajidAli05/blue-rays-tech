@@ -4,19 +4,18 @@ import NavBar from '../components/NavBar';
 import { PlusOutlined } from '@ant-design/icons';
 import {
     Button,
-    Cascader,
-    DatePicker,
     Form,
     Input,
     InputNumber,
-    Mentions,
     Segmented,
     Select,
-    TreeSelect,
     Upload,
-    Radio
+    Radio,
+    Typography,
+    Divider
 } from 'antd';
-const { RangePicker } = DatePicker;
+
+const { Title } = Typography;
 
 const formItemLayout = {
     labelCol: {
@@ -75,6 +74,28 @@ const AddProductPage = () => {
         { label: 'EXE', key: 'exe' }
       ];      
 
+      const affiliatePrograms = [
+        { label: 'Amazon Associates', key: 'amazon' },
+        { label: 'ShareASale', key: 'shareasale' },
+        { label: 'Rakuten Marketing', key: 'rakuten' },
+        { label: 'CJ Affiliate', key: 'cj_affiliate' },
+        { label: 'ClickBank', key: 'clickbank' },
+        { label: 'eBay Partner Network', key: 'ebay' },
+        { label: 'PartnerStack', key: 'partnerstack' },
+        { label: 'Bluehost Affiliate Program', key: 'bluehost' },
+        { label: 'Shopify Affiliate Program', key: 'shopify' },
+        { label: 'Fiverr Affiliate Program', key: 'fiverr' },
+        { label: 'Wix Affiliate Program', key: 'wix' },
+        { label: 'Awin', key: 'awin' },
+        { label: 'FlexOffers', key: 'flexoffers' },
+        { label: 'Target Affiliate Program', key: 'target' },
+        { label: 'Udemy Affiliate Program', key: 'udemy' },
+        { label: 'Envato Affiliate Program', key: 'envato' },
+        { label: 'HostGator Affiliate Program', key: 'hostgator' },
+        { label: 'SiteGround Affiliate Program', key: 'siteground' },
+        { label: 'Adobe Affiliate Program', key: 'adobe' }
+    ];    
+
     const [form] = Form.useForm();
 
     // to modify the form based on product type selected
@@ -83,6 +104,7 @@ const AddProductPage = () => {
     return (
         <div>
             <NavBar />
+            <Divider plain style={{borderColor: 'white'}}><Title style={{color: 'white'}}>Add a New Product</Title></Divider>
             <Form
                 {...formItemLayout}
                 form={form}
@@ -90,6 +112,7 @@ const AddProductPage = () => {
                 className='add-product-form'
                 initialValues={{ variant: 'filled' }}
             >
+
                 {/* Drop down to select type of product like physical, digital or affiliate */}
                 <Form.Item
                     className='form-item'
@@ -150,6 +173,15 @@ const AddProductPage = () => {
                     <InputNumber style={{ width: '100%' }} />
                 </Form.Item>
 
+                <Form.Item
+                    className='form-item'
+                    label="Discount %"
+                    name="InputNumber"
+                    rules={[{ required: false, message: 'Discount % is empty!' }]}
+                >
+                    <InputNumber style={{ width: '100%' }} />
+                </Form.Item>
+
                 <Form.Item className='form-item' label="Availibility" rules={[{ required: true, message: 'Select an option!' }]}>
                     <Radio.Group>
                         <Radio value="In Stock"> In Stock </Radio>
@@ -189,8 +221,36 @@ const AddProductPage = () => {
                     </Form.Item>
                 )}
 
+                {productType === 'affiliate' && (
+                    <Form.Item
+                        className='form-item'
+                        label="Commission %"
+                        name="InputNumber"
+                        rules={[{ required: true, message: 'Commission % is empty!' }]}
+                    >
+                    <InputNumber style={{ width: '100%' }} />
+                    </Form.Item>
+                )}
+
+                {productType === 'affiliate' && (
+                    <Form.Item
+                        className='form-item'
+                            label="Affiliate Program"
+                            name="Select"
+                            rules={[{ required: true, message: 'No Affiliate Program selected!' }]}
+                            >
+                                <Select placeholder="Select an Affiliate Program" allowClear>
+                                    {affiliatePrograms.map((ap) => (
+                                        <Select.Option key={ap.key} value={ap.key}>
+                                            {ap.label}
+                                        </Select.Option>
+                                            ))}
+                                </Select>
+                    </Form.Item>
+                )}
+
                 {/* File Upload Section */}
-                <Form.Item className='form-item' label="Upload" valuePropName="fileList" getValueFromEvent={normFile}>
+                <Form.Item className='form-item' label="Upload" valuePropName="fileList" getValueFromEvent={normFile} rules={[{ required: true, message: 'Please upload a file!' }]}>
                     <Upload action="/upload.do" listType="picture-card">
                         <button
                             style={{ color: 'inherit', cursor: 'inherit', border: 0, background: 'none' }}
