@@ -2,6 +2,7 @@
   --primary-color: #3A59D1;  /* Primary color */
   --secondary-color: #3D90D7;  /* Secondary color */
   --tertiary-color: #041c31;  /* Tertiary color */
+  --quaternary-color: #FFEB00;  /* Quaternary color */
 }
 
 #root {
@@ -366,7 +367,7 @@
   column-gap: 10px;
 }
 
-.user-list{
+.user-list, .product-list{
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -378,7 +379,7 @@
   font-size: 12px;
 }
 
-.user-list li{
+.user-list li, .product-list li{
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -391,7 +392,7 @@
   background-color: var(--tertiary-color);
 }
 
-.user-list li img{
+.user-list li img, .product-list li img{
   width: 30px;
   height: 30px;
   border-radius: 10%;
@@ -423,7 +424,7 @@
 
 
 /* =====================Add Product css starts here================= */
-.add-product-form{
+.add-product-form, .product-card-container{
   background-color: white;
   padding: 50px 0px;
   margin: 10px 0px;
@@ -435,6 +436,48 @@
   border-radius: 10px;
 }
 
+.product-list-container{
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px 20px;
+  margin: 10px 0px;
+}
+
 .form-item{
   width: 500px;
+}
+
+.product-card{
+  color: black;
+  margin-bottom: 20px;
+  width: 400px;
+}
+
+.product-detailed-info{
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  gap: 10px;
+}
+
+.product-detailed-info small{
+  color: #888;
+}
+
+.product-detailed-info div{
+  margin: 5px 0px;
+}
+
+.products-operation-div{
+  background-color: var(--quaternary-color);
+  height: 50px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
 }
