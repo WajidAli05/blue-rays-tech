@@ -1,3 +1,6 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
 :root{
   --primary-color: #3A59D1;  /* Primary color */
   --secondary-color: #3D90D7;  /* Secondary color */
@@ -396,6 +399,12 @@
   width: 30px;
   height: 30px;
   border-radius: 10%;
+}
+
+.user-list input[type="checkbox"], .product-list input[type="checkbox"]{
+  width: 20px;
+  height: 20px;
+  background-color: white;
 }
 
 .user-list small{

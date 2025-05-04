@@ -3,7 +3,7 @@ import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Card, Rate, Divider } from 'antd';
 const { Meta } = Card;
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, onDelete }) => {
   return (
     <Card
       className="product-card"
@@ -11,19 +11,16 @@ const ProductCard = ({ product }) => {
       cover={<img alt={product.name} src={product.image_link} />}
       actions={[
         <EditOutlined key="edit" />,
-        <DeleteOutlined key="delete" />,
+        // Call onDelete when the delete icon is clicked
+        <DeleteOutlined key="delete" onClick={() => onDelete(product.product_id)} />
       ]}
     >
-        
       <Meta title={product.name} description={product.description} />
 
-      {/* divider */}
       <Divider plain><p>Details</p></Divider>
 
       <div className="product-detailed-info" style={{ marginTop: '16px' }}>
         {/* Display all props that haven't been shown yet */}
-        
-        {/* Category */}
         <div>
           <small>Category</small>
           <Divider type="horizontal" />
@@ -99,7 +96,10 @@ const ProductCard = ({ product }) => {
         <div>
           <small>Average Rating</small>
           <Divider type="horizontal" />
-          <p>{product.average_rating} <Rate allowHalf disabled value={product.average_rating} /></p>
+          <Rate allowHalf disabled value={product.average_rating}>
+            {product.average_rating} <span className="ant-rate-text">{product.average_rating}</span>
+          </Rate>
+          {/* <p>{product.average_rating} <Rate allowHalf disabled value={product.average_rating} /></p> */}
         </div>
 
         <Divider type="vertical" style={{ height: '100%' }} />

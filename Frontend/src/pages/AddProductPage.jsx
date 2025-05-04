@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ProductCard from '../components/ProductCard';
 import NavBar from '../components/NavBar';
 import { PlusOutlined } from '@ant-design/icons';
-import { useState } from 'react';
 import {
     Button,
     Form,
@@ -203,12 +202,15 @@ const AddProductPage = () => {
     console.log('Edit product with ID:', productId);
   };
 
-  // Handle delete action
   const handleDelete = (productId) => {
-    setProducts(products.filter(product => product.product_id !== productId));
-    console.log('Deleted product with ID:', productId);
-  };
-
+    const updatedProducts = products.filter(product => product.product_id !== productId);
+    if (updatedProducts.length !== products.length) {
+        setProducts(updatedProducts);
+        message.success('Product deleted successfully!');
+    } else {
+        message.error('Product not found!');
+    }
+};
     return (
         <div>
             <NavBar />
@@ -238,8 +240,6 @@ const AddProductPage = () => {
                         onChange={(value)=> setProductType(value)}
                     />
                 </Form.Item>
-                {console.log(productType)}
-
                 <Form.Item
                     className='form-item'
                     label="Category"
@@ -259,7 +259,7 @@ const AddProductPage = () => {
                     <Input />
                 </Form.Item>
 
-                <Form.Item className='form-item' label="SKU" name="Input" rules={[{ required: true, message: 'Please input!' }]}>
+                <Form.Item className='form-item' label="SKU" name="Input" rules={[{ required: true, message: 'SKU is empty!' }]}>
                     <Input />
                 </Form.Item>
 
@@ -301,7 +301,7 @@ const AddProductPage = () => {
                     className='form-item'
                     label="Description"
                     name="TextArea"
-                    rules={[{ required: true, message: 'Please input!' }]}
+                    rules={[{ required: true, message: 'Description is empty!' }]}
                 >
                     <Input.TextArea />
                 </Form.Item>
@@ -393,12 +393,9 @@ const AddProductPage = () => {
                 {viewType === 'card' && (
                     <div className='product-card-container'>
                         {/* // Products view for admin in both card and table format */}
-                        <ProductCard product={products[0]} />
-                        <ProductCard product={products[1]} />
-                        <ProductCard product={products[2]} />
-                        <ProductCard product={products[3]} />
-                        <ProductCard product={products[0]} />
-                        <ProductCard product={products[1]} />
+                        {products.map((product)=> (
+                            <ProductCard key={product.product_id} product={product} onEdit={handleEdit} onDelete={handleDelete} />
+                        ))}
                     </div>
                 )}
                 {viewType === 'list' && (
