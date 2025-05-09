@@ -111,6 +111,35 @@ const ProductCard = ({ product, onDelete }) => {
           <p>${product.total_sales_revenue}</p>
         </div>
 
+        {product.product_type === 'digital' && (
+                  <div>
+                    <small>Link</small>
+                    <Divider type="horizontal" />
+                    <p>{product.link}</p>
+                </div>
+        )}
+        {product.product_type === 'digital' && (
+                  <div>
+                    <small>File Type</small>
+                    <Divider type="horizontal" />
+                    <p>{product.file_type}</p>
+                </div>
+        )}
+        {product.product_type === 'affiliate' && (
+                  <div>
+                    <small>Commission</small>
+                    <Divider type="horizontal" />
+                    <p>{product.commission_percentage}%</p>
+                </div>
+        )}
+        {product.product_type === 'affiliate' && (
+                  <div>
+                    <small>Program</small>
+                    <Divider type="horizontal" />
+                    <p>${product.affiliate_program}</p>
+                </div>
+        )}
+
         <Divider type="vertical" style={{ height: '100%' }} />
       </div>
     </Card>

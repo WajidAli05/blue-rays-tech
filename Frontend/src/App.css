@@ -503,3 +503,10 @@
 .products-operation-div span{
   color: black;
 }
+
+.breadcrum-title{
+  color: white;
+}
+.breadcrum-title:hover {
+  background-color: #444;
+}
