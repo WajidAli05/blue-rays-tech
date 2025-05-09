@@ -193,6 +193,19 @@ const AddProductPage = () => {
         }
       ]);
 
+    //sort Products Highest Price First and Lowest Price First
+    const sortProducts = (products, order) => {
+        const sortedProducts = [...products].sort((a, b) => {
+            if (order === 'high') {
+                return b.price - a.price; // High to Low
+            } else {
+                return a.price - b.price; // Low to High
+            }
+        });
+        setProducts(sortedProducts);
+        message.success(`Products sorted by ${order === 'high' ? 'Highest Price First' : 'Lowest Price First'}`);
+    };    
+
     const changeViewType = (value) => {
    setViewType(value ? 'list' : 'card');    
     }
@@ -381,14 +394,26 @@ const AddProductPage = () => {
 
             <div>
                 <div className='products-operation-div'>
-                <Space direction="vertical">
-                    <Switch
-                    checkedChildren="List"
-                    unCheckedChildren="Card"
-                    defaultChecked={viewType === 'list'} // Default checked based on initial viewType
-                    onChange={changeViewType} // Apply changeViewType function on toggle
-                    />
-                </Space>
+                 {/* select all products checkbox */}
+                 <div>
+                    <input type="checkbox" defaultUnchecked className="checkbox checkbox-md" />
+                    <span>Select All</span>
+                </div>
+
+                <div>
+                    <Space direction="vertical">
+                        <Switch
+                        checkedChildren="List"
+                        unCheckedChildren="Card"
+                        defaultChecked={viewType === 'list'}
+                        onChange={changeViewType} 
+                        />
+                    </Space>
+                    <Button color="primary" variant="filled" onClick={()=> sortProducts(products , 'high')} > High Price First </Button>
+                    <Button color="primary" variant="filled" onClick={()=> sortProducts(products , 'low')}> Low Price First </Button>
+                    <Button color="danger" variant="solid" > Delete Selected </Button>
+                </div>
+               
                 </div>
                 {viewType === 'card' && (
                     <div className='product-card-container'>

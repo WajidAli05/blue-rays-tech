@@ -487,6 +487,19 @@
   border-radius: 10px;
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
+  padding: 0px 30px;
+}
+
+.products-operation-div > div{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  column-gap: 20px;
+}
+
+.products-operation-div span{
+  color: black;
 }
