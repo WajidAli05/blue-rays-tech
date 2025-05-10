@@ -13,7 +13,15 @@ import {
 } from 'antd';
 import ProductListItem from '../components/ProductListItem';
 import {Link} from 'react-router-dom';
-import { UnorderedListOutlined, ArrowUpOutlined , ArrowDownOutlined , DeleteOutlined } from '@ant-design/icons';
+import { 
+  UnorderedListOutlined, 
+  ArrowUpOutlined, 
+  ArrowDownOutlined, 
+  DeleteOutlined, 
+  ClearOutlined, 
+  ProductOutlined, 
+  FileOutlined, 
+  LinkOutlined } from '@ant-design/icons';
 
 const { Title } = Typography;
 
@@ -24,10 +32,10 @@ const items = [
     label: 'Product Type',
     icon: <UnorderedListOutlined />,
     children: [
-      { key: 'clear', label: 'Clear' },
-      { key: 'physical', label: 'Physical' },
-      { key: 'digital', label: 'Digital' },
-      { key: 'affiliate', label: 'Affiliate' },
+      { key: 'clear', label: 'Clear', icon: <ClearOutlined /> },
+      { key: 'physical', label: 'Physical', icon: <ProductOutlined /> },
+      { key: 'digital', label: 'Digital', icon: <FileOutlined /> },
+      { key: 'affiliate', label: 'Affiliate', icon: <LinkOutlined /> },
     ],
   },
 ];
