@@ -11,16 +11,16 @@ const SideBar = () => {
             <li><a href="/">Dashboard</a></li>
             <li><a href="/add-product">Add Product</a></li>
             <li className="dropdown">
-              <a href="#" className="dropdown-link">Products</a>
-              <ul className="dropdown-menu">
+              <a href="/products-listing" className="dropdown-link">Products</a>
+              {/* <ul className="dropdown-menu">
                 <li><a href="/physicalProducts">Physical Products</a></li>
                 <li><a href="/digitalProducts">Digital Products</a></li>
                 <li><a href="/affiliateProducts">Affiliate Products</a></li>
-              </ul>
+              </ul> */}
             </li>
-            <li><a href="/orders">Orders</a></li>
             <li><a href="/users">Users</a></li>
-            <li><a href="/reviews">Reviews</a></li>
+            <li><a href="/orders">Orders</a></li>
+            <li><a href="/sales">Sales</a></li>
             <li><a href="/ad-login"><FiLogOut size={22} /></a></li>
           </ul>
         </nav>

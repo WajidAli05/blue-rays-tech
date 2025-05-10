@@ -510,3 +510,15 @@
 .breadcrum-title:hover {
   background-color: #444;
 }
+
+/* ======================Products Listing page css starts here========================= */
+.product-type-menu{
+  width: 160px;
+  padding: 0px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
