@@ -1,36 +1,6 @@
-// import React from 'react';
-// import { useParams, Link } from 'react-router-dom';
-// import NavBar from '../components/NavBar';
-// import { Breadcrumb } from 'antd';
-
-// const ProductDetailsPage = () => {
-//   const { sku } = useParams();
-
-//   return (
-//     <div>
-//       <NavBar />
-//       <Breadcrumb
-//         items={[
-//           {
-//             title: <Link to='/'><span className='breadcrum-title'>Home</span></Link>,
-//           },
-//           {
-//             title: <a href='/add-product'><span className='breadcrum-title'>Add Product & Product Listing</span></a>,
-//           },
-//           {
-//             title: <span className='breadcrum-title'>Product Details</span>,
-//           },
-//         ]}
-//       />
-//     </div>
-//   );
-// };
-
-// export default ProductDetailsPage;`
-
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Breadcrumb, Row, Col, Button, Rate, Card, Typography, Divider, InputNumber, Image, Descriptions } from 'antd';
+import { Breadcrumb, Row, Col, Button, Rate, Card, Typography, Divider, Image, Descriptions } from 'antd';
 import NavBar from '../components/NavBar';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
@@ -152,6 +122,20 @@ const ProductDetailsPage = () => {
             <Rate disabled defaultValue={product.rating} />
             <Paragraph>{product.reviewsCount} reviews</Paragraph>
 
+            {/* Product Specifications within the same section */}
+            <Divider />
+            <Title level={4}>Product Specifications</Title>
+            <Descriptions bordered column={1}>
+              <Descriptions.Item label="Brand">{product.specifications.brand}</Descriptions.Item>
+              <Descriptions.Item label="Product Type">{product.specifications.productType}</Descriptions.Item>
+              <Descriptions.Item label="SKU">{product.specifications.sku}</Descriptions.Item>
+              <Descriptions.Item label="Units Sold">{product.specifications.unitsSold}</Descriptions.Item>
+              <Descriptions.Item label="Total Sales Revenue">${product.specifications.totalSalesRevenue.toFixed(2)}</Descriptions.Item>
+              <Descriptions.Item label="Profit Margin">{product.specifications.profitMargin}%</Descriptions.Item>
+              <Descriptions.Item label="Gross Profit">${product.specifications.grossProfit.toFixed(2)}</Descriptions.Item>
+              <Descriptions.Item label="Click-through Rate">{(product.specifications.clickThroughRate * 100).toFixed(2)}%</Descriptions.Item>
+            </Descriptions>
+
             {/* Product Management Controls */}
             <Row gutter={16} style={{ marginTop: '20px' }}>
               <Col>
@@ -173,26 +157,6 @@ const ProductDetailsPage = () => {
                 </Button>
               </Col>
             </Row>
-          </Card>
-        </Col>
-      </Row>
-
-      <Divider />
-
-      {/* Product Specifications */}
-      <Row gutter={24}>
-        <Col span={24}>
-          <Card title="Product Specifications" bordered={false}>
-            <Descriptions bordered>
-              <Descriptions.Item label="Brand">{product.specifications.brand}</Descriptions.Item>
-              <Descriptions.Item label="Product Type">{product.specifications.productType}</Descriptions.Item>
-              <Descriptions.Item label="SKU">{product.specifications.sku}</Descriptions.Item>
-              <Descriptions.Item label="Units Sold">{product.specifications.unitsSold}</Descriptions.Item>
-              <Descriptions.Item label="Total Sales Revenue">${product.specifications.totalSalesRevenue.toFixed(2)}</Descriptions.Item>
-              <Descriptions.Item label="Profit Margin">{product.specifications.profitMargin}%</Descriptions.Item>
-              <Descriptions.Item label="Gross Profit">${product.specifications.grossProfit.toFixed(2)}</Descriptions.Item>
-              <Descriptions.Item label="Click-through Rate">{(product.specifications.clickThroughRate * 100).toFixed(2)}%</Descriptions.Item>
-            </Descriptions>
           </Card>
         </Col>
       </Row>
