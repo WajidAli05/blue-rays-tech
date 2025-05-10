@@ -3,7 +3,7 @@ import { Input } from 'antd';
 
 const { Search } = Input;
 
-const SearchBox = ({ users, onSearch }) => {
+const SearchBox = ({ users, onSearch, placeholder }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
   // Handle search input change
@@ -20,7 +20,7 @@ const SearchBox = ({ users, onSearch }) => {
 
   return (
     <div className="search-container">
-      <Search placeholder="input search text" className='search-input' onSearch={onSearch} enterButton />
+      <Search placeholder={placeholder} className='search-input' onSearch={onSearch} enterButton />
     </div>
   );
 };
