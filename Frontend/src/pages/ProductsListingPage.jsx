@@ -275,7 +275,7 @@ const onClickProductTypeSelect = e => {
                     <div className='product-card-container'>
                         {/* // Products view for admin in both card and table format */}
                         {products.map((product)=> (
-                            <Link to={`/${product.sku}`} key={product.product_id}>
+                            <Link to={`/products-listing/${product.sku}`} key={product.product_id}>
                                 <ProductCard key={product.product_id} product={product} onEdit={handleEdit} onDelete={handleDelete}  />
                             </Link>
                         ))}

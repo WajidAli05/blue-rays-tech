@@ -6,8 +6,8 @@ import UsersPage from './pages/UsersPage'
 import AddProductPage from './pages/AddProductPage';
 import ProductDetailsPage from './pages/ProductDetailsPage';
 import OrdersPage from './pages/OrdersPage';
-import SalesPage from './pages/SalesPage';
 import ProductsListingPage from './pages/ProductsListingPage';
+import UserDetailsPage from './pages/UserDetailsPage';
 
 function App() {
   return (
@@ -17,10 +17,10 @@ function App() {
         <Route path='/' element={<Dashboard />} />
         <Route path='/users' element={<UsersPage />} />
         <Route path='/add-product' element={<AddProductPage />} />  
-        <Route path='/sales' element={<SalesPage />} />
         <Route path='/orders' element={<OrdersPage />} />
         <Route path='/products-listing' element={<ProductsListingPage />} />
-        <Route path='/:sku' element={<ProductDetailsPage />} />
+        <Route path='/products-listing/:sku' element={<ProductDetailsPage />} />
+        <Route path='/users/:id' element={<UserDetailsPage />} />
       </Routes>
     </>
   )

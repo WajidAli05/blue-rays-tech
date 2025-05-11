@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import NavBar from '../components/NavBar';
 import UserList from '../components/UserList';
 import SearchBox from '../components/SearchBox';
-import { Button } from 'antd';
+import { Button, Breadcrumb } from 'antd';
 
 const UsersPage = () => {
   const originalUsersArray = [
@@ -146,6 +147,17 @@ const UsersPage = () => {
   return (
     <div>
       <NavBar />
+       <Breadcrumb
+       separator='>'
+              items={[
+                {
+                  title: <Link to='/'><span className='breadcrum-title'>Home</span></Link>,
+                },
+                {
+                  title: <span className='breadcrum-title'>User Management</span>,
+                },
+              ]}
+            />
       <div className='search-comp-container'>
         <Button type="primary" danger>
           Delete Selected
@@ -153,7 +165,9 @@ const UsersPage = () => {
         <SearchBox onSearch={handleSearch} placeholder={'Search by name or email'}/>
       </div>
       <div className='users-container'>
-        <UserList users={users} onEdit={handleEdit} onDelete={handleDelete} />
+        <Link to= {`/users/${users[0]?.id}`} key={users[0]?.id}>
+          <UserList users={users} onEdit={handleEdit} onDelete={handleDelete} />
+        </Link>
       </div>
     </div>
   );

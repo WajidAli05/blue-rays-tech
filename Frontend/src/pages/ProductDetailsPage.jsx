@@ -46,10 +46,6 @@ const ProductDetailsPage = () => {
     setSelectedImage(image);
   };
 
-  const handlePreviewClose = () => {
-    setPreviewVisible(false);
-  };
-
   const handleDelete = () => {
     // Handle delete product
     alert('Product deleted');
@@ -70,7 +66,7 @@ const ProductDetailsPage = () => {
             title: <Link to='/'><span className='breadcrum-title'>Home</span></Link>,
           },
           {
-            title: <Link to='/admin/products'><span className='breadcrum-title'>Product Management</span></Link>,
+            title: <Link to='/add-product'><span className='breadcrum-title'>Product Management</span></Link>,
           },
           {
             title: <span className='breadcrum-title'>{product.name}</span>,

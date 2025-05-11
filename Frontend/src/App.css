@@ -522,3 +522,68 @@
   justify-content: space-between;
   align-items: center;
 }
+
+
+/* ====================== user details page ===================== */
+/* .user-details-div{
+  padding: 20px;
+} */
+
+.user-details-page, .user-details-row {
+  padding: 20px 0px;
+}
+
+.user-profile-card {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.user-name {
+  font-weight: bold;
+}
+
+.user-job {
+  font-style: italic;
+}
+
+.user-description {
+  margin-top: 20px;
+}
+
+.user-icon {
+  margin-right: 8px;
+}
+
+.edit-user-button {
+  margin-top: 10px;
+}
+
+.user-about-card {
+  margin-top: 0px;
+}
+
+.edit-description-button,
+.send-message-button {
+  margin-top: 10px;
+  margin-right: 10px;
+}
+
+.purchase-history-card {
+  margin-top: 20px;
+}
+
+.purchase-history-icon {
+  margin-right: 8px;
+}
+
+.delete-order-button {
+  margin-top: 10px;
+  background-color: rgb(253, 89, 89);
+}
+
+.user-avatar {
+  border-radius: 50% !important;
+}
