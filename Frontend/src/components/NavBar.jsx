@@ -27,7 +27,7 @@ const SideBar = () => {
             </li>
             <li><a href="/users"><UsergroupAddOutlined /> Users</a></li>
             <li><a href="/orders"><ShoppingCartOutlined /> Orders</a></li>
-            <li><a href="/ad-login"><LogoutOutlined /> Logout</a></li>
+            <li><a href="/ad-lg"><LogoutOutlined /> Logout</a></li>
           </ul>
         </nav>
     </div>

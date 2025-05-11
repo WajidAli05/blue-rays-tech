@@ -587,3 +587,28 @@
 .user-avatar {
   border-radius: 50% !important;
 }
+
+/* ===================Orders page css starts here====================== */
+.orders-container {
+  padding: 24px;
+}
+
+.orders-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.orders-filters {
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.orders-search-input {
+  width: 300px;
+}
+
+.orders-select {
+  width: 150px;
+}
