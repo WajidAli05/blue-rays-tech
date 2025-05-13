@@ -36,14 +36,14 @@ yarn-error.log*
 Thumbs.db
 
 # Frontend specific files
-/frontend/node_modules/
-frontend/dist/
-frontend/build/
+/Frontend/node_modules/
+Frontend/dist/
+Frontend/build/
 
 # Backend specific files
-/backend/node_modules/
-backend/dist/
-backend/build/
+/Backend/node_modules/
+Backend/dist/
+Backend/build/
 
 # Docker and other container-related files
 .docker/
