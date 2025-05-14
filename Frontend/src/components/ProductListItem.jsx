@@ -9,7 +9,7 @@ const ProductListItem = ({ product, onEdit, onDelete }) => {
       <li key={product.product_id}>
         <div className='checkbox-image-container'>
           <input type="checkbox" defaultUnchecked className="checkbox checkbox-md" />
-          <img src={product.image_link} alt={`${product.name} image`} />
+          <img src={`http://localhost:3001/${product.image_link[0]}`} alt={`${product.name} image`} />
         </div>
         <div>
           <div>{product.name}</div>

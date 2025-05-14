@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect } from 'react';
 import ProductCard from '../components/ProductCard';
 import NavBar from '../components/NavBar';
 import { PlusOutlined } from '@ant-design/icons';
@@ -43,28 +43,180 @@ const normFile = (e) => {
 };
 
 const AddProductPage = () => {
-    const categories = [
-        { label: 'Electronics', key: '1' },
-        { label: 'Clothing', key: '2' },
-        { label: 'Books', key: '3' },
-        { label: 'Home & Kitchen', key: '4' },
-        { label: 'Sports & Outdoors', key: '5' },
-        { label: 'Toys & Games', key: '6' },
-        { label: 'Health & Beauty', key: '7' },
-        { label: 'Automotive', key: '8' },
-        { label: 'Grocery', key: '9' },
-        { label: 'Pet Supplies', key: '10' },
-        { label: 'Office Supplies', key: '11' },
-        { label: 'Music', key: '12' },
-        { label: 'Video Games', key: '13' },
-        { label: 'Movies & TV', key: '14' },
-        { label: 'Collectibles', key: '15' },
-        { label: 'Handmade', key: '16' },
-        { label: 'Arts & Crafts', key: '17' },
-        { label: 'Baby Products', key: '18' },
-        { label: 'Jewelry', key: '19' },
-        { label: 'Shoes', key: '20' }
-    ];
+        // to modify the form based on product type selected
+    const [productType, setProductType] = useState('physical');
+    const [viewType, setViewType] = useState('card');
+    // const [products, setProducts] = useState([
+    //     // Physical Products
+    //     {
+    //         product_id: 1,
+    //         name: "Smartphone",
+    //         category: "Electronics",
+    //         product_type: "physical",
+    //         sku: "SKU12345",
+    //         brand: "TechCo",
+    //         price: 699.99,
+    //         stock_level: 150,
+    //         units_sold: 350,
+    //         total_sales_revenue: 244996.50,
+    //         description: "Latest model with advanced features",
+    //         availability: "In Stock",
+    //         discount: 0.1,
+    //         profit_margin: 0.25,
+    //         gross_profit: 174.99,
+    //         click_through_rate: 0.15,
+    //         reviews_count: 1200,
+    //         average_rating: 4.5,
+    //         image_link: "https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.webp"
+    //     },
+    //     {
+    //         product_id: 2,
+    //         name: "Wireless Headphones",
+    //         category: "Electronics",
+    //         product_type: "physical",
+    //         sku: "SKU67890",
+    //         brand: "AudioWave",
+    //         price: 199.99,
+    //         stock_level: 200,
+    //         units_sold: 1200,
+    //         total_sales_revenue: 239988.00,
+    //         description: "High-quality wireless sound",
+    //         availability: "In Stock",
+    //         discount: 0.15,
+    //         profit_margin: 0.35,
+    //         gross_profit: 69.99,
+    //         click_through_rate: 0.12,
+    //         reviews_count: 500,
+    //         average_rating: 4.7,
+    //         image_link: "https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.webp"
+    //     },
+    
+    //     // Digital Products
+    //     {
+    //         product_id: 3,
+    //         name: "Ebook: Python Programming",
+    //         category: "Books & Education",
+    //         product_type: "digital",
+    //         sku: "SKU11223",
+    //         brand: "LearnTech",
+    //         price: 29.99,
+    //         stock_level: 0, // No stock, because it's a digital product
+    //         units_sold: 3000,
+    //         total_sales_revenue: 89970.00,
+    //         description: "Master Python programming from scratch",
+    //         availability: "In Stock",
+    //         discount: 0.25,
+    //         profit_margin: 0.85,
+    //         gross_profit: 25.50,
+    //         click_through_rate: 0.2,
+    //         reviews_count: 250,
+    //         average_rating: 4.8,
+    //         image_link: "https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.webp",
+    //         link: "https://learntech.com/python-ebook",  // Digital product link
+    //         file_type: "PDF"
+    //     },
+    //     {
+    //         product_id: 4,
+    //         name: "Online Course: Web Development Bootcamp",
+    //         category: "Education",
+    //         product_type: "digital",
+    //         sku: "SKU33445",
+    //         brand: "CodeAcademy",
+    //         price: 99.99,
+    //         stock_level: 0,
+    //         units_sold: 2000,
+    //         total_sales_revenue: 199980.00,
+    //         description: "Complete bootcamp to become a web developer",
+    //         availability: "In Stock",
+    //         discount: 0.2,
+    //         profit_margin: 0.80,
+    //         gross_profit: 80.00,
+    //         click_through_rate: 0.18,
+    //         reviews_count: 750,
+    //         average_rating: 4.9,
+    //         image_link: "https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.webp",
+    //         link: "https://codeacademy.com/web-development-course",  // Digital product link
+    //         file_type: "Video"
+    //     },
+    
+    //     // Affiliate Products
+    //     {
+    //         product_id: 5,
+    //         name: "Fitness Tracker Watch",
+    //         category: "Sports & Outdoors",
+    //         product_type: "affiliate",
+    //         sku: "SKU55678",
+    //         brand: "FitTech",
+    //         price: 149.99,
+    //         stock_level: 0, // Affiliate products don't have stock
+    //         units_sold: 300,
+    //         total_sales_revenue: 44997.00,
+    //         description: "Track your daily fitness goals with advanced features",
+    //         availability: "In Stock",
+    //         discount: 0.1,
+    //         profit_margin: 0.2,
+    //         gross_profit: 30.00,
+    //         click_through_rate: 0.25,
+    //         reviews_count: 450,
+    //         average_rating: 4.4,
+    //         image_link: "https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.webp",
+    //         affiliate_program: "FitTech Affiliate Program",
+    //         commission_percentage: 20
+    //     },
+    //     {
+    //         product_id: 6,
+    //         name: "Portable Solar Charger",
+    //         category: "Outdoors",
+    //         product_type: "affiliate",
+    //         sku: "SKU66789",
+    //         brand: "SolarTech",
+    //         price: 89.99,
+    //         stock_level: 0, // Affiliate products don't have stock
+    //         units_sold: 500,
+    //         total_sales_revenue: 44995.00,
+    //         description: "Eco-friendly solar charger for outdoor adventures",
+    //         availability: "In Stock",
+    //         discount: 0.15,
+    //         profit_margin: 0.25,
+    //         gross_profit: 22.50,
+    //         click_through_rate: 0.18,
+    //         reviews_count: 350,
+    //         average_rating: 4.6,
+    //         image_link: "https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.webp",
+    //         affiliate_program: "SolarTech Affiliate Program",
+    //         commission_percentage: 15
+    //     }
+    // ]);
+    const [products, setProducts] = useState([]);
+    const [categories, setCategories] = useState([]);
+
+    //fetch categories from the API
+    useEffect(() => {
+        fetch('http://localhost:3001/api/v1/category')
+            .then((response) => response.json())
+            .then((data) => {
+                setCategories(data.data);
+            })
+            .catch((error) => {
+                console.error('Error fetching categories:', error);
+                message.error('Failed to fetch categories');
+            });
+    }, []);
+
+    //fetch products from the API
+    useEffect(() => {
+        fetch('http://localhost:3001/api/v1/products')
+            .then((data)=> data.json())
+            .then((data) => {
+                console.log('Products:', data);
+                setProducts(data.data);
+            })
+            .catch((error) => {
+                console.error('Error fetching products:', error);
+                message.error('Failed to fetch products');
+            }
+        )
+    }, []);
 
     const fileTypes = [
         { label: 'PDF', key: 'pdf' },
@@ -103,152 +255,6 @@ const AddProductPage = () => {
     ];    
 
     const [form] = Form.useForm();
-
-    // to modify the form based on product type selected
-    const [productType, setProductType] = useState('physical');
-    const [viewType, setViewType] = useState('card');
-    const [products, setProducts] = useState([
-        // Physical Products
-        {
-            product_id: 1,
-            name: "Smartphone",
-            category: "Electronics",
-            product_type: "physical",
-            sku: "SKU12345",
-            brand: "TechCo",
-            price: 699.99,
-            stock_level: 150,
-            units_sold: 350,
-            total_sales_revenue: 244996.50,
-            description: "Latest model with advanced features",
-            availability: "In Stock",
-            discount: 0.1,
-            profit_margin: 0.25,
-            gross_profit: 174.99,
-            click_through_rate: 0.15,
-            reviews_count: 1200,
-            average_rating: 4.5,
-            image_link: "https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.webp"
-        },
-        {
-            product_id: 2,
-            name: "Wireless Headphones",
-            category: "Electronics",
-            product_type: "physical",
-            sku: "SKU67890",
-            brand: "AudioWave",
-            price: 199.99,
-            stock_level: 200,
-            units_sold: 1200,
-            total_sales_revenue: 239988.00,
-            description: "High-quality wireless sound",
-            availability: "In Stock",
-            discount: 0.15,
-            profit_margin: 0.35,
-            gross_profit: 69.99,
-            click_through_rate: 0.12,
-            reviews_count: 500,
-            average_rating: 4.7,
-            image_link: "https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.webp"
-        },
-    
-        // Digital Products
-        {
-            product_id: 3,
-            name: "Ebook: Python Programming",
-            category: "Books & Education",
-            product_type: "digital",
-            sku: "SKU11223",
-            brand: "LearnTech",
-            price: 29.99,
-            stock_level: 0, // No stock, because it's a digital product
-            units_sold: 3000,
-            total_sales_revenue: 89970.00,
-            description: "Master Python programming from scratch",
-            availability: "In Stock",
-            discount: 0.25,
-            profit_margin: 0.85,
-            gross_profit: 25.50,
-            click_through_rate: 0.2,
-            reviews_count: 250,
-            average_rating: 4.8,
-            image_link: "https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.webp",
-            link: "https://learntech.com/python-ebook",  // Digital product link
-            file_type: "PDF"
-        },
-        {
-            product_id: 4,
-            name: "Online Course: Web Development Bootcamp",
-            category: "Education",
-            product_type: "digital",
-            sku: "SKU33445",
-            brand: "CodeAcademy",
-            price: 99.99,
-            stock_level: 0,
-            units_sold: 2000,
-            total_sales_revenue: 199980.00,
-            description: "Complete bootcamp to become a web developer",
-            availability: "In Stock",
-            discount: 0.2,
-            profit_margin: 0.80,
-            gross_profit: 80.00,
-            click_through_rate: 0.18,
-            reviews_count: 750,
-            average_rating: 4.9,
-            image_link: "https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.webp",
-            link: "https://codeacademy.com/web-development-course",  // Digital product link
-            file_type: "Video"
-        },
-    
-        // Affiliate Products
-        {
-            product_id: 5,
-            name: "Fitness Tracker Watch",
-            category: "Sports & Outdoors",
-            product_type: "affiliate",
-            sku: "SKU55678",
-            brand: "FitTech",
-            price: 149.99,
-            stock_level: 0, // Affiliate products don't have stock
-            units_sold: 300,
-            total_sales_revenue: 44997.00,
-            description: "Track your daily fitness goals with advanced features",
-            availability: "In Stock",
-            discount: 0.1,
-            profit_margin: 0.2,
-            gross_profit: 30.00,
-            click_through_rate: 0.25,
-            reviews_count: 450,
-            average_rating: 4.4,
-            image_link: "https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.webp",
-            affiliate_program: "FitTech Affiliate Program",
-            commission_percentage: 20
-        },
-        {
-            product_id: 6,
-            name: "Portable Solar Charger",
-            category: "Outdoors",
-            product_type: "affiliate",
-            sku: "SKU66789",
-            brand: "SolarTech",
-            price: 89.99,
-            stock_level: 0, // Affiliate products don't have stock
-            units_sold: 500,
-            total_sales_revenue: 44995.00,
-            description: "Eco-friendly solar charger for outdoor adventures",
-            availability: "In Stock",
-            discount: 0.15,
-            profit_margin: 0.25,
-            gross_profit: 22.50,
-            click_through_rate: 0.18,
-            reviews_count: 350,
-            average_rating: 4.6,
-            image_link: "https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.webp",
-            affiliate_program: "SolarTech Affiliate Program",
-            commission_percentage: 15
-        }
-    ]);
-    
 
     //sort Products Highest Price First and Lowest Price First
     const sortProducts = (products, order) => {
@@ -487,8 +493,8 @@ const AddProductPage = () => {
                     <div className='product-card-container'>
                         {/* // Products view for admin in both card and table format */}
                         {products.map((product)=> (
-                            <Link to={`/${product.sku}`} key={product.product_id}>
-                                <ProductCard key={product.product_id} product={product} onEdit={handleEdit} onDelete={handleDelete}  />
+                            <Link to={`/${product.sku}`} key={product._id}>
+                                <ProductCard key={product._id} product={product} onEdit={handleEdit} onDelete={handleDelete} />
                             </Link>
                         ))}
                     </div>
