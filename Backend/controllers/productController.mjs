@@ -1,4 +1,12 @@
 import Products from "../models/productModel.js";
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+// Needed for __dirname in ES module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const addProduct = async (req, res) => {
     const {
@@ -22,7 +30,9 @@ const addProduct = async (req, res) => {
     } = req.body;
 
     // Handle image link
-    const image_link = req.file ? req.file.path : req.body.image_link || ''; // Image from form-data or provided URL
+    const image_link = req.files && req.files.length > 0
+    ? req.files.map(file => file.path)
+    : [];
 
     // Check for empty required fields
     if (!name || !category || !product_type || !description || !sku || !price || !stock_level || !image_link) {
@@ -54,7 +64,7 @@ const addProduct = async (req, res) => {
         click_through_rate,
         reviews_count,
         average_rating,
-        image_link // Store the image path from file upload or image link
+        image_link
     });
 
     // Save the product and respond
@@ -77,4 +87,171 @@ const getProducts = async (req, res) => {
     });
 }
 
-export { addProduct , getProducts };
+// const updateProduct = async (req, res) => {
+//     const { sku, ...updateData } = req.body;
+
+//     //get new images
+//     const image_link = req.files && req.files.length > 0
+//     ? req.files.map(file => file.path)
+//     : [];
+
+//     if (!sku) {
+//         return res.status(400).json({ status: false, message: "SKU is required to update product" });
+//     }
+//     if (!image_link) {
+//         return res.status(400).json({ status: false, message: "Image/s is required to update product" });
+//     }
+
+//     await Products.findOneAndUpdate(
+//         { sku },
+//         { 
+//             $set: { 
+//                 ...updateData, 
+//                 image_link: req.files ? req.files.map(file => file.path) : product.image_link 
+//                 }
+//         },
+//         { new: true, runValidators: true }
+//     )
+//     .then((product) => {
+//         if (!product) {
+//             return res.status(404).json({ status: false, message: "Product not found with the given SKU" });
+//         }
+
+//         res.status(200).json({
+//             status: true,
+//             message: "Product updated successfully",
+//             data: product
+//         });
+//     })
+//     .catch((error) => {
+//         res.status(500).json({
+//             status: false,
+//             message: "Error updating product",
+//             error
+//         });
+//     });
+// };
+
+const updateProduct = async (req, res) => {
+    const { sku, ...updateData } = req.body;
+
+    if (!sku) {
+        return res.status(400).json({ status: false, message: "SKU is required to update product" });
+    }
+
+    // Prepare new images if uploaded
+    const newImages = req.files && req.files.length > 0
+        ? req.files.map(file => file.path)
+        : [];
+
+    Products.findOne({ sku })
+        .then(product => {
+            if (!product) {
+                return res.status(404).json({ status: false, message: "Product not found with the given SKU" });
+            }
+
+            // Delete old images
+            if (product.image_link && product.image_link.length > 0) {
+                product.image_link.forEach(imagePath => {
+                    const filePath = path.join(__dirname, '..', imagePath); // uploads/image.jpg
+                    if (fs.existsSync(filePath)) {
+                        fs.unlinkSync(filePath);
+                    }
+                });
+            }
+
+            // Set the new image links or keep old if none uploaded
+            const image_link = newImages.length > 0 ? newImages : product.image_link;
+
+            // Update the product
+            return Products.findOneAndUpdate(
+                { sku },
+                { $set: { ...updateData, image_link } },
+                { new: true, runValidators: true }
+            );
+        })
+        .then(updatedProduct => {
+            if (!updatedProduct) {
+                return; // already handled above
+            }
+
+            res.status(200).json({
+                status: true,
+                message: "Product updated successfully",
+                data: updatedProduct
+            });
+        })
+        .catch(error => {
+            res.status(500).json({
+                status: false,
+                message: "Error updating product",
+                error
+            });
+        });
+};
+
+// const deleteProduct = async (req, res) => {
+//     const { sku} = req.body;
+//     if (!sku) {
+//         return res.status(400).json({ status: false, message: "SKU is required to delete product" });
+//     }
+
+//     await Products.findOneAndDelete({ sku })
+//     .then((product) => {
+//         if (!product) {
+//             return res.status(404).json({ status: false, message: "Product not found with the given SKU" });
+//         }
+//         res.status(200).json({
+//             status: true,
+//             message: "Product deleted successfully",
+//             data: product
+//         });
+//     })
+//     .catch((error) => {
+//         res.status(500).json({
+//             status: false,
+//             message: "Error deleting product",
+//             error
+//         });
+//     }); 
+// }
+
+const deleteProduct = async (req, res) => {
+    const { sku } = req.body;
+
+    if (!sku) {
+        return res.status(400).json({ status: false, message: "SKU is required to delete product" });
+    }
+
+    Products.findOneAndDelete({ sku })
+        .then((product) => {
+            if (!product) {
+                return res.status(404).json({ status: false, message: "Product not found with the given SKU" });
+            }
+
+            // Delete associated images from uploads folder
+            if (product.image_link && product.image_link.length > 0) {
+                product.image_link.forEach(imagePath => {
+                    const filePath = path.join(__dirname, '..', imagePath);
+                    if (fs.existsSync(filePath)) {
+                        fs.unlinkSync(filePath);
+                    }
+                });
+            }
+
+            res.status(200).json({
+                status: true,
+                message: "Product deleted successfully",
+                data: product
+            });
+        })
+        .catch((error) => {
+            res.status(500).json({
+                status: false,
+                message: "Error deleting product",
+                error
+            });
+        });
+};
+
+export { addProduct , getProducts , updateProduct , deleteProduct };
