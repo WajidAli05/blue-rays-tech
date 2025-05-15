@@ -16,7 +16,7 @@ import {
     Space, 
     Switch,
     Breadcrumb,
-    message
+    message,
 } from 'antd';
 import ProductListItem from '../components/ProductListItem';
 import {Link} from 'react-router-dom';
@@ -48,6 +48,7 @@ const AddProductPage = () => {
     const [viewType, setViewType] = useState('card');
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
+    const [affiliatePrograms, setAffiliatePrograms] = useState([]);
 
     //fetch categories from the API
     useEffect(() => {
@@ -76,6 +77,19 @@ const AddProductPage = () => {
         )
     }, []);
 
+    //fetch affiliate programs from the API
+    useEffect(() => {
+        fetch('http://localhost:3001/api/v1/affiliate-program')
+            .then((response) => response.json())
+            .then((data) => {
+                setAffiliatePrograms(data.data);
+            })
+            .catch((error) => {
+                console.error('Error fetching affiliate programs:', error);
+                message.error('Failed to fetch affiliate programs');
+            });
+    }, [])
+
     //for components from daisyUI
     const fileTypes = [
         { label: 'PDF', key: 'pdf' },
@@ -90,28 +104,6 @@ const AddProductPage = () => {
         { label: 'EPUB', key: 'epub' },
         { label: 'EXE', key: 'exe' }
       ];      
-
-      const affiliatePrograms = [
-        { label: 'Amazon Associates', key: 'amazon' },
-        { label: 'ShareASale', key: 'shareasale' },
-        { label: 'Rakuten Marketing', key: 'rakuten' },
-        { label: 'CJ Affiliate', key: 'cj_affiliate' },
-        { label: 'ClickBank', key: 'clickbank' },
-        { label: 'eBay Partner Network', key: 'ebay' },
-        { label: 'PartnerStack', key: 'partnerstack' },
-        { label: 'Bluehost Affiliate Program', key: 'bluehost' },
-        { label: 'Shopify Affiliate Program', key: 'shopify' },
-        { label: 'Fiverr Affiliate Program', key: 'fiverr' },
-        { label: 'Wix Affiliate Program', key: 'wix' },
-        { label: 'Awin', key: 'awin' },
-        { label: 'FlexOffers', key: 'flexoffers' },
-        { label: 'Target Affiliate Program', key: 'target' },
-        { label: 'Udemy Affiliate Program', key: 'udemy' },
-        { label: 'Envato Affiliate Program', key: 'envato' },
-        { label: 'HostGator Affiliate Program', key: 'hostgator' },
-        { label: 'SiteGround Affiliate Program', key: 'siteground' },
-        { label: 'Adobe Affiliate Program', key: 'adobe' }
-    ];    
 
     const [form] = Form.useForm();
 

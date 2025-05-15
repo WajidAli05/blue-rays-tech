@@ -18,7 +18,8 @@ const productSchema = new mongoose.Schema({
     click_through_rate: { type: Number, default: 0 }, // Represented as a decimal
     reviews_count: { type: Number, default: 0 },
     average_rating: { type: Number, min: 0, max: 5 },
-    image_link: [{ type: String }]
+    image_link: [{ type: String }], 
+    affiliate_program: { type: mongoose.Schema.Types.ObjectId, ref: 'AffiliateProgram'}
 }, {
     timestamps: true
 });

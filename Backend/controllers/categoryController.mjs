@@ -1,4 +1,4 @@
-import Categories from "../models/categorySchema.js";
+import Categories from "../models/categoryModel.js";
 
 const getCategories = async (req, res) => { 
     Categories.find()

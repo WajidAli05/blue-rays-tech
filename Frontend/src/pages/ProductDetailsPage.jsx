@@ -83,11 +83,11 @@ const ProductDetailsPage = () => {
         <Col xs={24} sm={12} lg={14}>
           <Card bordered={false}>
             <Title level={2}>{p.name}</Title>
-            <Paragraph strong style={{ fontSize: 24, color: '#ff4d4f' }}>
-              ${p.price.toFixed(2)}
+            <Paragraph strong style={{ fontSize: 24 }}>
+              ${(p.price * (1 - p.discount / 100)).toFixed(2)}
               {p.discount > 0 && (
-                <span style={{ textDecoration: 'line-through', marginLeft: '10px', fontSize: 18 }}>
-                  ${(p.price / (1 - p.discount / 100)).toFixed(2)}
+                <span style={{ textDecoration: 'line-through', marginLeft: '10px', fontSize: 18, color: '#ff4d4f' }}>
+                  ${p.price.toFixed(2)}
                 </span>
               )}
             </Paragraph>
