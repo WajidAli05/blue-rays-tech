@@ -49,6 +49,7 @@ const AddProductPage = () => {
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
     const [affiliatePrograms, setAffiliatePrograms] = useState([]);
+    const [fileTypes, setFileTypes] = useState([]);
 
     //fetch categories from the API
     useEffect(() => {
@@ -90,20 +91,33 @@ const AddProductPage = () => {
             });
     }, [])
 
+    //fetch file types from the API
+        useEffect(() => {
+        fetch('http://localhost:3001/api/v1/file-types')
+            .then((response) => response.json())
+            .then((data) => {
+                setFileTypes(data.data);
+            })
+            .catch((error) => {
+                console.error('Error fetching affiliate programs:', error);
+                message.error('Failed to fetch affiliate programs');
+            });
+    }, [])
+
     //for components from daisyUI
-    const fileTypes = [
-        { label: 'PDF', key: 'pdf' },
-        { label: 'ZIP', key: 'zip' },
-        { label: 'MP4', key: 'mp4' },
-        { label: 'MP3', key: 'mp3' },
-        { label: 'JPG', key: 'jpg' },
-        { label: 'PNG', key: 'png' },
-        { label: 'GIF', key: 'gif' },
-        { label: 'DOCX', key: 'docx' },
-        { label: 'TXT', key: 'txt' },
-        { label: 'EPUB', key: 'epub' },
-        { label: 'EXE', key: 'exe' }
-      ];      
+    // const fileTypes = [
+    //     { label: 'PDF', key: 'pdf' },
+    //     { label: 'ZIP', key: 'zip' },
+    //     { label: 'MP4', key: 'mp4' },
+    //     { label: 'MP3', key: 'mp3' },
+    //     { label: 'JPG', key: 'jpg' },
+    //     { label: 'PNG', key: 'png' },
+    //     { label: 'GIF', key: 'gif' },
+    //     { label: 'DOCX', key: 'docx' },
+    //     { label: 'TXT', key: 'txt' },
+    //     { label: 'EPUB', key: 'epub' },
+    //     { label: 'EXE', key: 'exe' }
+    //   ];      
 
     const [form] = Form.useForm();
 
@@ -200,6 +214,10 @@ const AddProductPage = () => {
                 </Form.Item>
 
                 <Form.Item className='form-item' label="SKU" name="Input" rules={[{ required: true, message: 'SKU is empty!' }]}>
+                    <Input />
+                </Form.Item>
+
+                <Form.Item className='form-item' label="Brand" name="Input" rules={[{ required: true, message: 'Brand is empty!' }]}>
                     <Input />
                 </Form.Item>
 

@@ -6,6 +6,7 @@ import dbConnection from './config/dbConnection.js';
 import productRoutes from './routes/v1/productRoutes.js';
 import categoryRoutes from './routes/v1/categoryRoutes.js';
 import AffiliateProgramRoutes from './routes/v1/affiliateProgramRoutes.js';
+import fileTypeRoutes from './routes/v1/fileTypeRoutes.js';
 
 const app = express();
 config();
@@ -21,6 +22,7 @@ app.use('/uploads', express.static('uploads'));
 app.use('/api/v1', productRoutes);
 app.use('/api/v1', categoryRoutes);
 app.use('/api/v1', AffiliateProgramRoutes);
+app.use('/api/v1', fileTypeRoutes);
 
 // default port is 3000
 const port = process.env.PORT || 3000;

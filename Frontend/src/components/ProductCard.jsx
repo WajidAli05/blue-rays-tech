@@ -51,7 +51,7 @@ const ProductCard = ({ product, onDelete }) => {
         <div>
           <small>Discount</small>
           <Divider type="horizontal" />
-          <p>{(product.discount * 100).toFixed(0)}%</p>
+          <p>{(product.discount ).toFixed(0)}%</p>
         </div>
 
         <Divider type="vertical" style={{ height: '100%' }} />

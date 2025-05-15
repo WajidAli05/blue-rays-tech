@@ -6,7 +6,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon server.js",
     "seed:categories": "node seed/seedCategories.js",
-    "seed:affiliates": "node seed/seedAffiliatePrograms.js"
+    "seed:affiliates": "node seed/seedAffiliatePrograms.js",
+    "seed:filetypes": "node seed/seedFileTypes.js"
   },
   "type": "module",
   "keywords": [],

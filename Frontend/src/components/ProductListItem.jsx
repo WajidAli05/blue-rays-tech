@@ -21,7 +21,7 @@ const ProductListItem = ({ product, onEdit, onDelete }) => {
         </div>
         <div>
           <div>{`Sales: $${product.total_sales_revenue}`}</div>
-          <small>{`Discount: ${(product.discount * 100).toFixed(0)}%`}</small>
+          <small>{`Discount: ${(product.discount ).toFixed(0)}%`}</small>
         </div>
         <div className="actions-container">
           {/* Edit Button */}
