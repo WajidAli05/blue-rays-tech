@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Breadcrumb, Row, Col, Button, Rate, Card, Typography, Divider, Image, Descriptions } from 'antd';
+import { Breadcrumb, Row, Col, Button, Rate, Card, Typography, Divider, Image, Descriptions, Spin } from 'antd';
 import NavBar from '../components/NavBar';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
@@ -8,149 +8,113 @@ const { Title, Paragraph } = Typography;
 
 const ProductDetailsPage = () => {
   const { sku } = useParams();
-
-  // Placeholder product data (you can fetch this data based on `sku`)
-  const product = {
-    name: "Smartphone",
-    category: "Electronics",
-    sku: 'SKU00112',
-    price: 699.99,
-    discount: 0.1,
-    availability: "In Stock",
-    stockLevel: 150,
-    description: "Latest model with advanced features, offering a high-resolution camera, long-lasting battery, and seamless user experience.",
-    rating: 4.5,
-    reviewsCount: 1200,
-    imageLink: "https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.webp",
-    images: [
-      "https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.webp",
-      "https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.webp",
-      "https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.webp"
-    ],
-    specifications: {
-      brand: "TechCo",
-      productType: "Physical",
-      sku: "SKU12345",
-      unitsSold: 350,
-      totalSalesRevenue: 244996.50,
-      profitMargin: 25,
-      grossProfit: 174.99,
-      clickThroughRate: 0.15,
-    },
-  };
-
-  const [selectedImage, setSelectedImage] = useState(product.imageLink);
+  const [p, setP] = useState(null);
+  const [selectedImage, setSelectedImage] = useState('');
   const [previewVisible, setPreviewVisible] = useState(false);
+
+  useEffect(() => {
+    fetch(`http://localhost:3001/api/v1/product/${sku}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.data) {
+          const product = data.data;
+          setP(product);
+          if (product.image_link?.length > 0) {
+            setSelectedImage(`http://localhost:3001/${product.image_link[0].replace(/\\/g, '/')}`);
+          }
+        }
+      })
+      .catch((error) => console.error('Error fetching product data:', error));
+  }, [sku]);
 
   const handleImageClick = (image) => {
     setSelectedImage(image);
   };
 
   const handleDelete = () => {
-    // Handle delete product
     alert('Product deleted');
   };
 
   const handleEdit = () => {
-    // Handle edit product
     alert('Product edit mode');
   };
 
+  if (!p) return <Spin tip="Loading product..." fullscreen />;
+
   return (
     <div>
-      {/* Header and Navigation */}
       <NavBar />
       <Breadcrumb
+        separator=">"
         items={[
-          {
-            title: <Link to='/'><span className='breadcrum-title'>Home</span></Link>,
-          },
-          {
-            title: <Link to='/add-product'><span className='breadcrum-title'>Product Management</span></Link>,
-          },
-          {
-            title: <span className='breadcrum-title'>{product.name}</span>,
-          },
+          { title: <Link to="/"><span className="breadcrum-title">Home</span></Link> },
+          { title: <Link to="/add-product"><span className="breadcrum-title">Product Management</span></Link> },
+          { title: <span className="breadcrum-title">{p.name}</span> },
         ]}
       />
 
-      {/* Main Product Details Section */}
       <Row gutter={24} style={{ padding: '20px 50px' }}>
         {/* Product Image */}
         <Col xs={24} sm={12} lg={10}>
           <Image
             width="100%"
             src={selectedImage}
-            alt={product.name}
+            alt={p.name}
             preview={{ visible: previewVisible, onVisibleChange: setPreviewVisible }}
             onClick={() => setPreviewVisible(true)}
           />
           <Row gutter={16} style={{ marginTop: '15px' }}>
-            {product.images.map((image, index) => (
+            {p.image_link?.map((imagePath, index) => (
               <Col key={index}>
                 <Image
                   width={60}
                   height={60}
-                  src={image}
+                  src={`http://localhost:3001/${imagePath.replace(/\\/g, '/')}`}
                   alt={`product-thumbnail-${index}`}
                   style={{ cursor: 'pointer' }}
-                  onClick={() => handleImageClick(image)}
+                  onClick={() => handleImageClick(`http://localhost:3001/${imagePath.replace(/\\/g, '/')}`)}
                 />
               </Col>
             ))}
           </Row>
         </Col>
 
-        {/* Product Information */}
+        {/* Product Info */}
         <Col xs={24} sm={12} lg={14}>
           <Card bordered={false}>
-            <Title level={2}>{product.name}</Title>
+            <Title level={2}>{p.name}</Title>
             <Paragraph strong style={{ fontSize: 24, color: '#ff4d4f' }}>
-              ${product.price.toFixed(2)}
-              {product.discount > 0 && (
+              ${p.price.toFixed(2)}
+              {p.discount > 0 && (
                 <span style={{ textDecoration: 'line-through', marginLeft: '10px', fontSize: 18 }}>
-                  ${ (product.price / (1 - product.discount)).toFixed(2) }
+                  ${(p.price / (1 - p.discount / 100)).toFixed(2)}
                 </span>
               )}
             </Paragraph>
-            <Paragraph type="secondary">Category: {product.category}</Paragraph>
-            <Paragraph type="secondary">Availability: {product.availability} ({product.stockLevel} units available)</Paragraph>
-            <Rate disabled defaultValue={product.rating} />
-            <Paragraph>{product.reviewsCount} reviews</Paragraph>
+            <Paragraph type="secondary">Category: {p.category}</Paragraph>
+            <Paragraph type="secondary">Availability: {p.availability} ({p.stock_level} units available)</Paragraph>
+            <Rate disabled allowHalf defaultValue={p.average_rating || 0} />
+            <Paragraph>{p.reviews_count} reviews</Paragraph>
 
-            {/* Product Specifications within the same section */}
             <Divider />
             <Title level={4}>Product Specifications</Title>
             <Descriptions bordered column={1}>
-              <Descriptions.Item label="Brand">{product.specifications.brand}</Descriptions.Item>
-              <Descriptions.Item label="Product Type">{product.specifications.productType}</Descriptions.Item>
-              <Descriptions.Item label="SKU">{product.specifications.sku}</Descriptions.Item>
-              <Descriptions.Item label="Units Sold">{product.specifications.unitsSold}</Descriptions.Item>
-              <Descriptions.Item label="Total Sales Revenue">${product.specifications.totalSalesRevenue.toFixed(2)}</Descriptions.Item>
-              <Descriptions.Item label="Profit Margin">{product.specifications.profitMargin}%</Descriptions.Item>
-              <Descriptions.Item label="Gross Profit">${product.specifications.grossProfit.toFixed(2)}</Descriptions.Item>
-              <Descriptions.Item label="Click-through Rate">{(product.specifications.clickThroughRate * 100).toFixed(2)}%</Descriptions.Item>
+              <Descriptions.Item label="Brand">{p.brand}</Descriptions.Item>
+              <Descriptions.Item label="Product Type">{p.product_type}</Descriptions.Item>
+              <Descriptions.Item label="SKU">{p.sku}</Descriptions.Item>
+              <Descriptions.Item label="Units Sold">{p.units_sold}</Descriptions.Item>
+              <Descriptions.Item label="Total Sales Revenue">${p.total_sales_revenue.toFixed(2)}</Descriptions.Item>
+              <Descriptions.Item label="Profit Margin">{(p.profit_margin * 100).toFixed(2)}%</Descriptions.Item>
+              <Descriptions.Item label="Gross Profit">${p.gross_profit.toFixed(2)}</Descriptions.Item>
+              <Descriptions.Item label="Click-through Rate">{(p.click_through_rate * 100).toFixed(2)}%</Descriptions.Item>
             </Descriptions>
 
-            {/* Product Management Controls */}
             <Row gutter={16} style={{ marginTop: '20px' }}>
               <Col>
-                <Button
-                  type="primary"
-                  icon={<EditOutlined />}
-                  onClick={handleEdit}
-                >
-                  Edit Product
-                </Button>
+                <Button type="primary" icon={<EditOutlined />} onClick={handleEdit}>Edit Product</Button>
               </Col>
               <Col>
-                <Button
-                  type="danger"
-                  icon={<DeleteOutlined />}
-                  onClick={handleDelete}
-                >
-                  Delete Product
-                </Button>
+                <Button type="primary" danger icon={<DeleteOutlined />} onClick={handleDelete}>Delete Product</Button>
               </Col>
             </Row>
           </Card>
@@ -159,11 +123,10 @@ const ProductDetailsPage = () => {
 
       <Divider />
 
-      {/* Product Description */}
       <Row gutter={24}>
         <Col span={24}>
           <Card title="Product Description" bordered={false}>
-            <Paragraph>{product.description}</Paragraph>
+            <Paragraph>{p.description}</Paragraph>
           </Card>
         </Col>
       </Row>

@@ -87,6 +87,25 @@ const getProducts = async (req, res) => {
     });
 }
 
+//get product using SKU
+const getProductBySKU = async (req, res) => {
+    const { sku } = req.params;
+    if (!sku) {
+        return res.status(400).json({ status: false, message: "SKU is required to get product" });
+    }
+
+    await Products.findOne({ sku })
+    .then((product) => {
+        if (!product) {
+            return res.status(404).json({ status: false, message: "Product not found with the given SKU" });
+        }
+        return res.status(200).json({ status: true, message: "Product fetched successfully", data: product });
+    })
+    .catch((error) => {
+        return res.status(500).json({ status: false, message: "Error fetching product", error });
+    })
+}
+
 // const updateProduct = async (req, res) => {
 //     const { sku, ...updateData } = req.body;
 
@@ -254,4 +273,9 @@ const deleteProduct = async (req, res) => {
         });
 };
 
-export { addProduct , getProducts , updateProduct , deleteProduct };
+export { addProduct, 
+    getProducts, 
+    updateProduct, 
+    deleteProduct, 
+    getProductBySKU
+};

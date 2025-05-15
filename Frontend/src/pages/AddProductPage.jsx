@@ -67,7 +67,6 @@ const AddProductPage = () => {
         fetch('http://localhost:3001/api/v1/products')
             .then((data)=> data.json())
             .then((data) => {
-                console.log('Products:', data);
                 setProducts(data.data);
             })
             .catch((error) => {
