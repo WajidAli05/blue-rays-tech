@@ -44,7 +44,7 @@ const ProductsListingPage = () => {
 
     // to modify the form based on product type selected
     const [viewType, setViewType] = useState('card');
-    const [origianlProducts] = useState([
+    const [origianlProducts , setOrigianlProducts] = useState([
         // Physical Products
         {
             product_id: 1,

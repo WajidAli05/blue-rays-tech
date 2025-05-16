@@ -51,7 +51,7 @@ const ProductCard = ({ product, onDelete }) => {
         <div>
           <small>Discount</small>
           <Divider type="horizontal" />
-          <p>{(product.discount ).toFixed(0)}%</p>
+          <p>{product.discount != null ? product.discount.toFixed(0) : 0}%</p>
         </div>
 
         <Divider type="vertical" style={{ height: '100%' }} />
@@ -88,18 +88,6 @@ const ProductCard = ({ product, onDelete }) => {
           <small>Reviews Count</small>
           <Divider type="horizontal" />
           <p>{product.reviews_count}</p>
-        </div>
-
-        <Divider type="vertical" style={{ height: '100%' }} />
-
-        {/* Average Rating */}
-        <div>
-          <small>Average Rating</small>
-          <Divider type="horizontal" />
-          <Rate allowHalf disabled value={product.average_rating}>
-            {product.average_rating} <span className="ant-rate-text">{product.average_rating}</span>
-          </Rate>
-          {/* <p>{product.average_rating} <Rate allowHalf disabled value={product.average_rating} /></p> */}
         </div>
 
         <Divider type="vertical" style={{ height: '100%' }} />
