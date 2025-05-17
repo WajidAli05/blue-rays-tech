@@ -8,7 +8,12 @@ const ProductCard = ({ product, onDelete }) => {
     <Card
       className="product-card"
       hoverable
-      cover={<img alt={product.name} src={`http://localhost:3001/${product.image_link[0]}`} />}
+      // src={`http://localhost:3001/${product.image_link?.[0] ?? 'placeholder.jpg'}`}
+      cover={<img alt={product.name} src={`http://localhost:3001/${
+                                           !product.image_link ? 
+                                           'placeholder.jpg' : 
+                                           product.image_link[0]
+      }`} />}
       actions={[
         <EditOutlined key="edit" />,
         // Call onDelete when the delete icon is clicked
