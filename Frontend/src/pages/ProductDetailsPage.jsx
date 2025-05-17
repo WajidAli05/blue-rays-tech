@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { Breadcrumb, Row, Col, Button, Rate, Card, Typography, Divider, Image, Descriptions, Spin } from 'antd';
-import NavBar from '../components/NavBar';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import {
+  Breadcrumb, Row, Col, Button, Rate, Card, Typography, Divider, Image,
+  Descriptions, Spin, message
+} from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import NavBar from '../components/NavBar';
+import EditProductModal from '../components/EditProductModal';
+import DeleteProductConfirmModal from '../components/DeleteProductConfirmModal';
 
 const { Title, Paragraph } = Typography;
 
@@ -11,6 +16,12 @@ const ProductDetailsPage = () => {
   const [p, setP] = useState(null);
   const [selectedImage, setSelectedImage] = useState('');
   const [previewVisible, setPreviewVisible] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch(`http://localhost:3001/api/v1/product/${sku}`)
@@ -31,12 +42,54 @@ const ProductDetailsPage = () => {
     setSelectedImage(image);
   };
 
-  const handleDelete = () => {
-    alert('Product deleted');
+  // ================= Edit Modal ==================
+  const handleEdit = () => {
+    setOpen(true);
   };
 
-  const handleEdit = () => {
-    alert('Product edit mode');
+  const handleOk = () => {
+    setConfirmLoading(true);
+    setTimeout(() => {
+      setOpen(false);
+      setConfirmLoading(false);
+    }, 2000);
+  };
+
+  const handleCancel = () => {
+    setOpen(false);
+  };
+
+  // ================= Delete Modal ==================
+  const handleDeleteClick = () => {
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    setDeleteLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append('sku', sku);
+
+      const res = await fetch('http://localhost:3001/api/v1/product', {
+        method: 'DELETE',
+        body: formData,
+      });
+
+      const result = await res.json();
+
+      if (result.status) {
+        message.success('Product deleted successfully');
+        navigate('/products-listing');
+      } else {
+        message.error(result.message || 'Failed to delete product');
+      }
+    } catch (error) {
+      message.error('Something went wrong while deleting the product');
+      console.error('Delete error:', error);
+    } finally {
+      setDeleteLoading(false);
+      setDeleteModalOpen(false);
+    }
   };
 
   if (!p) return <Spin tip="Loading product..." fullscreen />;
@@ -114,7 +167,7 @@ const ProductDetailsPage = () => {
                 <Button type="primary" icon={<EditOutlined />} onClick={handleEdit}>Edit Product</Button>
               </Col>
               <Col>
-                <Button type="primary" danger icon={<DeleteOutlined />} onClick={handleDelete}>Delete Product</Button>
+                <Button type="primary" danger icon={<DeleteOutlined />} onClick={handleDeleteClick}>Delete Product</Button>
               </Col>
             </Row>
           </Card>
@@ -130,6 +183,25 @@ const ProductDetailsPage = () => {
           </Card>
         </Col>
       </Row>
+
+      <EditProductModal
+        open={open}
+        setOpen={setOpen}
+        confirmLoading={confirmLoading}
+        setConfirmLoading={setConfirmLoading}
+        p={p}
+        setP={setP}
+        handleOk={handleOk}
+        handleCancel={handleCancel}
+      />
+
+      {/* Custom Delete Modal */}
+      <DeleteProductConfirmModal
+        open={deleteModalOpen}
+        onCancel={() => setDeleteModalOpen(false)}
+        onConfirm={handleDeleteConfirm}
+        confirmLoading={deleteLoading}
+      />
     </div>
   );
 };
