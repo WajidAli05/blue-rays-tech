@@ -17,6 +17,7 @@
     "antd": "^5.24.9",
     "daisyui": "^5.0.35",
     "framer-motion": "^12.9.2",
+    "lottie-react": "^2.4.1",
     "motion": "^12.9.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

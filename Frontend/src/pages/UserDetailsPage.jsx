@@ -1,23 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import NavBar from '../components/NavBar';
-import { Breadcrumb, Card, Col, Row, Avatar, Button, Descriptions, Divider, Typography, List, Popconfirm, Modal, Input } from 'antd';
-import { Link } from 'react-router-dom';
-import { EditOutlined, MessageOutlined, FieldTimeOutlined, PhoneOutlined, MailOutlined, EnvironmentOutlined, DeleteOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import {
+  Breadcrumb,
+  Card,
+  Col,
+  Row,
+  Avatar,
+  Button,
+  Descriptions,
+  Divider,
+  Typography,
+  List,
+  Popconfirm,
+  Modal,
+  Input,
+} from 'antd';
+import {
+  EditOutlined,
+  FieldTimeOutlined,
+  PhoneOutlined,
+  MailOutlined,
+  EnvironmentOutlined,
+  DeleteOutlined,
+  ShoppingCartOutlined,
+} from '@ant-design/icons';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const { Title, Text } = Typography;
 
 const UserDetailsPage = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const user = location.state?.user;
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/user-not-found');
+    }
+  }, [user, navigate]);
+
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isEditingUser, setIsEditingUser] = useState(false);
-  const [isEditingDescription, setIsEditingDescription] = useState(false);
-  const [userDetails, setUserDetails] = useState({
-    name: 'Dio Lupa',
-    email: 'dio_lupa@gmail.com',
-    phone: '1234567890',
-    description: 'Singer and songwriter with a passion for creating soulful music.',
-  });
-  const [userDescription, setUserDescription] = useState('Singer and songwriter with a passion for creating soulful music.');
+  const [userDetails, setUserDetails] = useState(user);
 
   const [purchaseHistory, setPurchaseHistory] = useState([
     {
@@ -47,7 +72,6 @@ const UserDetailsPage = () => {
   const handleDelete = (orderId) => {
     const updatedPurchaseHistory = purchaseHistory.filter(order => order.orderId !== orderId);
     setPurchaseHistory(updatedPurchaseHistory);
-    console.log(`Order with ID: ${orderId} has been deleted.`);
   };
 
   const showModal = (order) => {
@@ -55,46 +79,40 @@ const UserDetailsPage = () => {
     setIsModalVisible(true);
   };
 
-  const handleOk = () => {
-    setIsModalVisible(false);
-  };
-
   const handleCancel = () => {
     setIsModalVisible(false);
   };
 
   const handleEditUser = () => {
+    if (isEditingUser) {
+      setUserDetails({ ...userDetails });
+    }
     setIsEditingUser(!isEditingUser);
-  };
-
-  const handleEditDescription = () => {
-    setIsEditingDescription(!isEditingDescription);
-  };
-
-  const handleSaveUserDetails = () => {
-    setUserDetails({ ...userDetails });
-    setIsEditingUser(false);
-  };
-
-  const handleSaveDescription = () => {
-    setUserDescription(userDescription);
-    setIsEditingDescription(false);
   };
 
   return (
     <div className="user-details-page">
       <NavBar />
 
-      <Breadcrumb separator=">" items={[ 
+      <Breadcrumb separator=">" items={[
         { title: <Link to='/'><span className='breadcrum-title'>Home</span></Link> },
         { title: <Link to='/users'><span className='breadcrum-title'>User Management</span></Link> },
         { title: <span className='breadcrum-title'>{userDetails.name}</span> },
       ]} />
 
       <Row gutter={24} className="user-details-row">
-        {/* Left Column: Profile Information */}
+        {/* Left Column: User Info */}
         <Col span={8}>
-          <Card className="user-profile-card" cover={<Avatar className='user-avatar' size={150} src="https://img.daisyui.com/images/profile/demo/1@94.webp" />}>
+          <Card
+            className="user-profile-card"
+            cover={
+              <Avatar
+                className='user-avatar'
+                size={150}
+                src={`http://localhost:3001/uploads/users/${userDetails?.image}`}
+              />
+            }
+          >
             <Title level={3} className="user-name">
               {isEditingUser ? (
                 <Input
@@ -105,7 +123,7 @@ const UserDetailsPage = () => {
             </Title>
             <Text className="user-job">Singer and songwriter</Text>
             <Divider />
-            <Descriptions bordered column={1} className="user-description">
+            <Descriptions column={1} className="user-description">
               <Descriptions.Item label={<span><PhoneOutlined className="user-icon" />Phone</span>}>
                 {isEditingUser ? (
                   <Input
@@ -123,10 +141,10 @@ const UserDetailsPage = () => {
                 ) : userDetails.email}
               </Descriptions.Item>
               <Descriptions.Item label={<span><EnvironmentOutlined className="user-icon" />Country</span>}>
-                USA
+                {userDetails?.country}
               </Descriptions.Item>
               <Descriptions.Item label={<span><FieldTimeOutlined className="user-icon" />Member Since</span>}>
-                2023-01-01
+                {userDetails?.since.toString().slice(0, 10)}
               </Descriptions.Item>
             </Descriptions>
             <Button
@@ -140,74 +158,47 @@ const UserDetailsPage = () => {
           </Card>
         </Col>
 
-        {/* Right Column: About Section */}
+        {/* Right Column: Purchase History */}
         <Col span={16}>
-          <Card title="About User" bordered={false} className="user-about-card">
-            {isEditingDescription ? (
-              <Input.TextArea
-                value={userDescription}
-                onChange={(e) => setUserDescription(e.target.value)}
-                rows={4}
-              />
-            ) : (
-              <Text>{userDescription}</Text>
-            )}
-            <Divider />
-            <Button
-              type="primary"
-              icon={<EditOutlined />}
-              className="edit-description-button"
-              onClick={handleEditDescription}
-            >
-              {isEditingDescription ? 'Save' : 'Edit Description'}
-            </Button>
-            <Button type="default" icon={<MessageOutlined />} className="send-message-button">
-              Send Message
-            </Button>
-            <Divider />
-            {/* User Purchase History */}
-            <Card title={<span><ShoppingCartOutlined className="purchase-history-icon" />Purchase History</span>} bordered={false} className="purchase-history-card">
-              <List
-                itemLayout="horizontal"
-                dataSource={purchaseHistory}
-                renderItem={(item) => (
-                  <List.Item
-                    actions={[
-                      <Popconfirm
-                        title="Are you sure you want to delete this order?"
-                        onConfirm={() => handleDelete(item.orderId)}
-                        okText="Yes"
-                        cancelText="No"
-                      >
-                        <Button icon={<DeleteOutlined />} type="danger" className="delete-order-button">
-                          Delete
-                        </Button>
-                      </Popconfirm>,
-                      <Button
-                        type="default"
-                        onClick={() => showModal(item)}
-                      >
-                        View Details
-                      </Button>,
-                    ]}
-                  >
-                    <List.Item.Meta
-                      title={<span><strong>{item.orderId}</strong></span>}
-                      description={`Date: ${item.orderDate} | Total: ${item.products.reduce((sum, product) => sum + parseFloat(product.totalAmount.replace('$', '')), 0)}`}
-                    />
-                  </List.Item>
-                )}
-              />
-            </Card>
+          <Card
+            title={<span><ShoppingCartOutlined className="purchase-history-icon" /> Purchase History</span>}
+            className="purchase-history-card"
+          >
+            <List
+              itemLayout="horizontal"
+              dataSource={purchaseHistory}
+              renderItem={(item) => (
+                <List.Item
+                  actions={[
+                    <Popconfirm
+                      title="Are you sure you want to delete this order?"
+                      onConfirm={() => handleDelete(item.orderId)}
+                      okText="Yes"
+                      cancelText="No"
+                    >
+                      <Button icon={<DeleteOutlined />} type="primary" danger>
+                        Delete
+                      </Button>
+                    </Popconfirm>,
+                    <Button type="default" onClick={() => showModal(item)}>
+                      View Details
+                    </Button>,
+                  ]}
+                >
+                  <List.Item.Meta
+                    title={<strong>{item.orderId}</strong>}
+                    description={`Date: ${item.orderDate} | Total: $${item.products.reduce((sum, p) => sum + parseFloat(p.totalAmount.replace('$', '')), 0)}`}
+                  />
+                </List.Item>
+              )}
+            />
           </Card>
         </Col>
       </Row>
 
-      {/* Modal for Order Details */}
       <Modal
         title="Order Details"
-        visible={isModalVisible}
-        onOk={handleOk}
+        open={isModalVisible}
         onCancel={handleCancel}
         footer={[<Button key="back" onClick={handleCancel}>Close</Button>]}
       >

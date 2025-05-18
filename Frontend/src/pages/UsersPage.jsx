@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import NavBar from '../components/NavBar';
 import UserList from '../components/UserList';
 import SearchBox from '../components/SearchBox';
 import { Button, Breadcrumb, Spin } from 'antd';
 
 const UsersPage = () => {
+  const navigate = useNavigate();
   // States
   const [originalUsersArray, setOrginalUsersArray] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
@@ -35,8 +36,11 @@ const UsersPage = () => {
   const handleDelete = (userId) => {
     const updatedUsers = users.filter(user => user.id !== userId);
     setUsers(updatedUsers);
-    console.log(`Deleted user with ID: ${userId}`);
   };
+
+  const handleViewDetails = (userId, user) => {
+    navigate(`/users/${userId}` , {state: { user }});
+  }
 
   const handleSearch = (query) => {
     if (!query.trim()) {
@@ -49,6 +53,8 @@ const UsersPage = () => {
       setUsers(filteredUsers);
     }
   };
+
+  if (!originalUsersArray) return <Spin tip="Users product..." fullscreen />;
 
   return (
     <div>
@@ -72,16 +78,15 @@ const UsersPage = () => {
       </div>
 
       <div className='users-container'>
-        {loading ? (
-          <div className='flex justify-center items-center h-40'>
-            <Spin size='large' />
-          </div>
-        ) : (
-          // DO NOT REMOVE OR MODIFY THIS BLOCK AS PER INSTRUCTION
-          <Link to={`/users/${users[0]?.id}`} key={users[0]?.id}>
-            <UserList users={users} onEdit={handleEdit} onDelete={handleDelete} />
-          </Link>
-        )}
+        {users.map((user) => (
+          <UserList
+            key={user._id}
+            user={user}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onViewDetails={handleViewDetails}
+          />
+        ))}
       </div>
     </div>
   );

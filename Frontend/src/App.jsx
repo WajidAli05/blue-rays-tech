@@ -8,6 +8,7 @@ import ProductDetailsPage from './pages/ProductDetailsPage';
 import OrdersPage from './pages/OrdersPage';
 import ProductsListingPage from './pages/ProductsListingPage';
 import UserDetailsPage from './pages/UserDetailsPage';
+import UserNotFoundPage from './pages/UserNotFoundPage';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path='/products-listing' element={<ProductsListingPage />} />
         <Route path='/:sku' element={<ProductDetailsPage />} />
         <Route path='/users/:id' element={<UserDetailsPage />} />
+        <Route path="/user-not-found" element={<UserNotFoundPage />} />
       </Routes>
     </>
   )
