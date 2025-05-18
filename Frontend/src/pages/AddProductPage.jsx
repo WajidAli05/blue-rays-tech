@@ -404,7 +404,6 @@ const handleFormSubmit = (values) => {
 
             <div>
                 <div className='products-operation-div'>
-                    {console.log(products)}
                  {/* select all products checkbox */}
                  <div>
                     <input type="checkbox" defaultChecked={false} className="checkbox checkbox-md" />

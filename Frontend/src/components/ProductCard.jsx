@@ -8,7 +8,6 @@ const ProductCard = ({ product, onDelete }) => {
     <Card
       className="product-card"
       hoverable
-      // src={`http://localhost:3001/${product.image_link?.[0] ?? 'placeholder.jpg'}`}
       cover={<img alt={product.name} src={`http://localhost:3001/${
                                            !product.image_link ? 
                                            'placeholder.jpg' : 
@@ -20,8 +19,15 @@ const ProductCard = ({ product, onDelete }) => {
         <DeleteOutlined key="delete" onClick={() => onDelete(product.product_id)} />
       ]}
     >
-      <Meta title={product.name} description={product.description} />
-
+    <Meta
+      title={product.name}
+      description={
+        product.description
+          ? product.description.split(/\s+/).slice(0, 20).join(' ') +
+            (product.description.split(/\s+/).length > 20 ? '...' : '')
+          : ''
+      }
+    />
       <Divider plain><p>Details</p></Divider>
 
       <div className="product-detailed-info" style={{ marginTop: '16px' }}>
