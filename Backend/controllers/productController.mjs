@@ -8,75 +8,7 @@ import { dirname } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const allImages = (files) => files.every(file => file.mimetype.startsWith('image/'));
-
-// const addProduct = async (req, res) => {
-//     const {
-//         name,
-//         category,
-//         product_type,
-//         sku,
-//         brand,
-//         price,
-//         stock_level,
-//         units_sold,
-//         total_sales_revenue,
-//         description,
-//         availability,
-//         discount,
-//         profit_margin,
-//         gross_profit,
-//         click_through_rate,
-//         reviews_count,
-//         average_rating,
-//     } = req.body;
-
-//     // Handle image link
-//     const image_link = req.files && req.files.length > 0
-//     ? req.files.map(file => file.path)
-//     : [];
-
-//     // Check for empty required fields
-//     if (!name || !category || !product_type || !description || !sku || !price || !stock_level || !image_link) {
-//         return res.status(400).json({ status: false, message: "Please fill all required fields" });
-//     }
-
-//     // Check if the product already exists by SKU
-//     const productExists = await Products.findOne({ sku });
-//     if (productExists) {
-//         return res.status(400).json({ status: false, message: "Product already exists" });
-//     }
-
-//     // Create new product
-//     const newProduct = new Products({
-//         name,
-//         category,
-//         product_type,
-//         sku,
-//         brand,
-//         price,
-//         stock_level,
-//         units_sold,
-//         total_sales_revenue,
-//         description,
-//         availability,
-//         discount,
-//         profit_margin,
-//         gross_profit,
-//         click_through_rate,
-//         reviews_count,
-//         average_rating,
-//         image_link
-//     });
-
-//     // Save the product and respond
-//     newProduct.save()
-//         .then(() => {
-//             return res.status(201).json({ status: true, message: "Product added successfully" });
-//         })
-//         .catch((error) => {
-//             return res.status(500).json({ status: false, message: "Error adding product", error });
-//         });
-// };
+const baseDir = path.join(__dirname, '../uploads');
 
 // addProduct controller
 const addProduct = (req, res) => {
@@ -328,9 +260,37 @@ const deleteProduct = async (req, res) => {
         });
 };
 
+const deleteProductImages = (req, res) => {
+  const images = req.body.images;
+
+  if (!images || !Array.isArray(images)) {
+    return res.status(400).json({ status: false, message: 'No images provided.' });
+  }
+
+  const baseDir = path.join(__dirname, '../uploads');
+
+  const results = images.map(imagePath => {
+    const fullPath = path.join(baseDir, imagePath);
+    if (fs.existsSync(fullPath)) {
+      try {
+        fs.unlinkSync(fullPath);
+        return { image: imagePath, status: 'deleted' };
+      } catch (err) {
+        return { image: imagePath, status: 'error', error: err.message };
+      }
+    } else {
+      return { image: imagePath, status: 'not found' };
+    }
+  });
+
+  return res.status(200).json({ status: true, message: 'Processed image deletions.', results });
+};
+
+
 export { addProduct, 
     getProducts, 
     updateProduct, 
     deleteProduct, 
-    getProductBySKU
+    getProductBySKU,
+    deleteProductImages
 };

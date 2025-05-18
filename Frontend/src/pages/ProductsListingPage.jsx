@@ -97,9 +97,11 @@ const ProductsListingPage = () => {
 const onClickProductTypeSelect = e => {
   const productType = e.key;
   if (productType === 'clear') {
-    setProducts(origianlProducts);
+    setProducts(originalProducts);
   } else {
-    const filteredProducts = origianlProducts.filter(product => product.product_type === productType);
+    const filteredProducts = originalProducts.filter(
+    product => product.product_type?.toLowerCase() === productType.toLowerCase()
+    );
     setProducts(filteredProducts);
   }
 };
