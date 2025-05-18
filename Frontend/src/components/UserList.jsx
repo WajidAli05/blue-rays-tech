@@ -8,10 +8,13 @@ const UserList = ({ users, onEdit, onDelete }) => {
       {/* List Title */}      
       {/* User List */}
       {users.map(user => (
-        <li key={user.id}>
+        <li key={user._id}>
           <div className='checkbox-image-container'>
             <input type="checkbox" defaultUnchecked className="checkbox checkbox-xl" />
-            <img src={user.image} alt={`${user.name}'s profile`} />
+            <img 
+              src={`http://localhost:3001/uploads/users/${user.image}`} 
+              alt={`${user.name}'s profile`} 
+            />
           </div>
           <div>
             <div>{user.name}</div>

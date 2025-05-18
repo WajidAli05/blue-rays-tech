@@ -11,6 +11,7 @@ const __dirname = dirname(__filename);
 // Base directory for user uploads
 const userUploadDir = path.join(__dirname, '../uploads/users');
 
+//add a new user
 const addUser = (req, res) => {
   const { name, email, phone, country, job } = req.body;
   const file = req.file;
@@ -78,4 +79,25 @@ const addUser = (req, res) => {
     });
 };
 
-export { addUser };
+//get all users
+const getUsers = (req, res) => {
+  User.find()
+    .then(users => {
+      res.status(200).json({
+        status: true,
+        message: "Users retrieved successfully",
+        data: users,
+      });
+    })
+    .catch(error => {
+      res.status(500).json({
+        status: false,
+        message: "Error retrieving users",
+        error,
+      });
+    });
+}
+
+export { addUser,
+         getUsers
+ };

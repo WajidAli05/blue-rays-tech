@@ -1,6 +1,9 @@
 import express from 'express';
 import multer from 'multer';
-import {addUser} from '../../controllers/userController.mjs';
+import {
+        addUser,
+        getUsers 
+      } from '../../controllers/userController.mjs';
 
 const router = express.Router();
 
@@ -19,5 +22,6 @@ const upload = multer({ storage });
 
 // Routes
 router.post('/user', upload.single('image'), addUser);
+router.get('/users', getUsers);
 
 export default router;
