@@ -24,7 +24,7 @@ const UserList = ({ user, onEdit, onDelete, onViewDetails }) => {
             <small> {user?.country}</small>
           </div>
           <div>
-            <div>{`Since: ${user?.since}`}</div>
+            <div>{`Since: ${user?.since.slice(0,10)}`}</div>
             <small>{user?.job}</small>
           </div>
           <div className="actions-container">
@@ -36,7 +36,7 @@ const UserList = ({ user, onEdit, onDelete, onViewDetails }) => {
             </button>    
 
              <button className='action-btn edit-btn'>
-                <CiEdit onClick={() => onEdit(user?._id)} />    
+                <CiEdit onClick={() => onEdit(user)} />    
             </button>              
 
             {/* Delete Button */}

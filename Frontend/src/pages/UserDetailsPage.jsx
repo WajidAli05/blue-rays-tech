@@ -71,12 +71,11 @@ const UserDetailsPage = () => {
       return;
     }
 
-    fetch(`http://localhost:3001/api/user/${userId}`)
+    fetch(`http://localhost:3001/api/v1/user/${userId}`)
       .then((res) => res.json())
       .then((data) => {
-        if (data.status) {
+        if (data) {
           setUser(data.data);
-          console.log('User data:', data.data);
         } else {
           message.error(data.message || 'Failed to fetch user');
         }
@@ -111,7 +110,7 @@ const UserDetailsPage = () => {
   const handleEditUser = () => {
     if (isEditingUser) {
       // Save updates to backend
-      fetch(`http://localhost:3001/api/user/${userDetails._id}`, {
+      fetch(`http://localhost:3001/api/v1/user/${userDetails._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -141,8 +140,8 @@ const UserDetailsPage = () => {
 
   if (!userDetails) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
-        <Spin size="large" tip="Loading user..." />
+      <div className='loading-div' >  
+        <Spin size="large" tip="Loading user..." fullscreen />
       </div>
     );
   }

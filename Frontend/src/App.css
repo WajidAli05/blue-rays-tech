@@ -679,3 +679,8 @@
   }
 }
 /* =======================User not found page css ends here================= */
+.loading-div{
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}

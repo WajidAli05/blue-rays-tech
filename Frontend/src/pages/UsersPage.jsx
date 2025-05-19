@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import NavBar from '../components/NavBar';
 import UserList from '../components/UserList';
 import SearchBox from '../components/SearchBox';
+import EditUserModal from '../components/EditUserModal';
 import { Button, Breadcrumb, Spin } from 'antd';
 
 const UsersPage = () => {
@@ -12,6 +13,8 @@ const UsersPage = () => {
   const [allUsers, setAllUsers] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [editingUser, setEditingUser] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);  
 
   // Fetch users from API
   useEffect(() => {
@@ -29,8 +32,9 @@ const UsersPage = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleEdit = (userId) => {
-    console.log(`Edit user with ID: ${userId}`);
+  const handleEdit = (user) => {
+    setEditingUser(user);
+    setIsEditModalOpen(true);
   };
 
   const handleDelete = (userId) => {
@@ -39,7 +43,7 @@ const UsersPage = () => {
   };
 
   const handleViewDetails = (userId, user) => {
-    navigate(`/users/${userId}`);
+    navigate(`/user/${userId}`);
   }
 
   const handleSearch = (query) => {
@@ -87,6 +91,16 @@ const UsersPage = () => {
             onViewDetails={handleViewDetails}
           />
         ))}
+        <EditUserModal
+          visible={isEditModalOpen}
+          onCancel={() => setIsEditModalOpen(false)}
+          user={editingUser}
+          onSuccess={(updatedUser) => {
+            // Optionally update local state
+            setIsEditModalOpen(false);
+            navigate(0);
+          }}
+        />
       </div>
     </div>
   );

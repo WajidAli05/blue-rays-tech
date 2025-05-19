@@ -174,8 +174,46 @@ const getUser = (req, res) => {
     });
 }
 
+//delete user by id
+const deleteUser = (req, res) => {
+  const { userId } = req.params || req.body;
+
+  if (!userId) {
+    return res.status(400).json({
+      status: false,
+      message: "Please provide userId",
+    });
+  }
+
+  User.findByIdAndDelete(userId)
+    .then(user => {
+      if (!user) {
+        return res.status(404).json({
+          status: false,
+          message: "User not found",
+        });
+      }
+
+      // Successfully deleted
+      return res.status(200).json({
+        status: true,
+        message: "User deleted successfully",
+        user,
+      });
+    })
+    .catch(error => {
+      res.status(500).json({
+        status: false,
+        message: 'Error deleting user!',
+        error,
+      });
+    });
+};
+
+
 export { addUser,
          getUsers,
          updateUser,
-         getUser
+         getUser,
+         deleteUser
  };
