@@ -13,6 +13,7 @@ const Dashboard = () => {
   const [totalUsers, setTotalUsers] = useState(0);
   const [totalCategories, setTotalCategories] = useState(0);
   const [averageRating, setAverageRating] = useState(0);
+  const [websiteVisits, setWebsiteVisits] = useState(0);
 
   //fetch total users
   useEffect(()=> {
@@ -47,6 +48,33 @@ const Dashboard = () => {
     })
     .catch((error) => {
       console.error('Error fetching average rating:', error);
+    });
+  }, [])
+
+  //count website visits
+useEffect(() => {
+  if (!sessionStorage.getItem('visited')) {
+    fetch('http://localhost:3001/api/v1/visit-count', {
+      method: 'POST',
+    })
+    .then(() => {
+      sessionStorage.setItem('visited', 'true');
+    })
+    .catch(err => {
+      console.error('Error counting visit:', err);
+    });
+  }
+}, []);
+
+  //fetch total website visits
+  useEffect(()=>{
+    fetch('http://localhost:3001/api/v1/visit-count')
+    .then((response) => response.json())
+    .then((data) => {
+      setWebsiteVisits(data.data);
+    })
+    .catch((error) => {
+      console.error('Error fetching total visits:', error);
     });
   }, [])
 
@@ -113,8 +141,10 @@ const Dashboard = () => {
 
         {/* Total Page Views */}
         <StatisticCard
-          title="Total Page Views"
-          value={350000}
+          title="Total Website Visits"
+          value={websiteVisits >= 1e10
+                                ? websiteVisits.toFixed(0) + '+'
+                                : websiteVisits.toFixed(0)}
           prefix={<FaEye />}
           precision={0}
         />
