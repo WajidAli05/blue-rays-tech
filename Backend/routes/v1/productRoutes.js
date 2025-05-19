@@ -6,7 +6,8 @@ import {
   updateProduct, 
   deleteProduct, 
   getProductBySKU,
-  deleteProductImages
+  deleteProductImages,
+  getAverageRating
 } from '../../controllers/productController.mjs';
 
 const router = express.Router();
@@ -30,6 +31,7 @@ router.get('/products', getProducts);
 router.put('/product', upload.array('image_link', 10), updateProduct);
 router.delete('/product', upload.none(), deleteProduct);
 router.delete('/product/image', deleteProductImages);
+router.get('/average-rating', getAverageRating);
 router.get('/product/:sku', getProductBySKU);
 
 export default router;

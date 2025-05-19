@@ -5,7 +5,8 @@ import {
         getUsers,
         updateUser,
         getUser,
-        deleteUser
+        deleteUser,
+        getTotalUsers
       } from '../../controllers/userController.mjs';
 
 const router = express.Router();
@@ -26,6 +27,7 @@ const upload = multer({ storage });
 // Routes
 router.post('/user', upload.single('image'), addUser);
 router.get('/users', getUsers);
+router.get('/total-users', getTotalUsers);
 router.get('/user/:userId', getUser); 
 router.put('/user/:userId' , upload.none() , updateUser);
 router.delete('/user/:userId' , deleteUser);

@@ -286,11 +286,21 @@ const deleteProductImages = (req, res) => {
   return res.status(200).json({ status: true, message: 'Processed image deletions.', results });
 };
 
+//get average rating for all the products
+const getAverageRating = async (req, res) => {
+    const products = await Products.find();
+    const totalRating = products.reduce((acc, product) => acc + product.average_rating, 0);
+    const averageRating = totalRating / products.length;
+
+    return res.status(200).json({ status: true, message: "Average rating fetched successfully", data: averageRating });
+};
+
 
 export { addProduct, 
     getProducts, 
     updateProduct, 
     deleteProduct, 
     getProductBySKU,
-    deleteProductImages
+    deleteProductImages,
+    getAverageRating
 };

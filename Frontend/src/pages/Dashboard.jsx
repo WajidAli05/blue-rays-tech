@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import NavBar from '../components/NavBar'
 import CategoryWiseInventoryBarChart from '../components/charts/CategoryWiseInventoryBarChart'
 import CateggoryWiseProductStrength from '../components/charts/CategoryWiseProductStrength'
@@ -9,6 +9,47 @@ import StatisticCard from '../components/StatisticCard'
 import { FaDollarSign, FaShoppingCart, FaCashRegister, FaUsers, FaStar, FaList, FaBoxOpen, FaEye, FaClock, FaMobileAlt, FaLaptop} from 'react-icons/fa'; // Import icons from React Icons
 
 const Dashboard = () => {
+  //states
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [totalCategories, setTotalCategories] = useState(0);
+  const [averageRating, setAverageRating] = useState(0);
+
+  //fetch total users
+  useEffect(()=> {
+    fetch('http://localhost:3001/api/v1/total-users')
+    .then((response) => response.json())
+    .then((data) => {
+      setTotalUsers(data.data);
+    })
+    .catch((error) => {
+      console.error('Error fetching total users:', error);
+    });
+  }, [])
+
+  //fetch total categories
+  useEffect(()=> {
+    fetch('http://localhost:3001/api/v1/total-categories')
+    .then((response) => response.json())
+    .then((data) => {
+      setTotalCategories(data.data);
+    })
+    .catch((error) => {
+      console.error('Error fetching total categories:', error);
+    });
+  }, [])
+
+  //fetch total average rating for all the products in the database
+  useEffect(()=> {
+    fetch('http://localhost:3001/api/v1/average-rating')
+    .then((response) => response.json())
+    .then((data) => {
+      setAverageRating(data.data);
+    })
+    .catch((error) => {
+      console.error('Error fetching average rating:', error);
+    });
+  }, [])
+
   return (
     <div>
       <NavBar />
@@ -41,7 +82,7 @@ const Dashboard = () => {
         {/* Total Users */}
         <StatisticCard
           title="Total Users"
-          value={5000}
+          value={totalUsers}
           prefix={<FaUsers />}
           precision={0}
         />
@@ -49,7 +90,7 @@ const Dashboard = () => {
         {/* Average Review */}
         <StatisticCard
           title="Average Review"
-          value={4.5}
+          value={averageRating}
           prefix={<FaStar />}
           precision={1}
         />
@@ -57,7 +98,7 @@ const Dashboard = () => {
         {/* Total Categories */}
         <StatisticCard
           title="Total Categories"
-          value={12}
+          value={totalCategories}
           prefix={<FaList />}
           precision={0}
         />

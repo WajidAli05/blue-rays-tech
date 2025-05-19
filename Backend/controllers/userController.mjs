@@ -210,10 +210,29 @@ const deleteUser = (req, res) => {
     });
 };
 
+//get total number of users
+const getTotalUsers = (req, res) => {
+  User.countDocuments()
+    .then(count => {
+      res.status(200).json({
+        status: true,
+        message: "Total users retrieved successfully",
+        data: count,
+      });
+    })
+    .catch(error => {
+      res.status(500).json({
+        status: false,
+        message: "Error retrieving total users",
+        error,
+      });
+    });
+}
 
 export { addUser,
          getUsers,
          updateUser,
          getUser,
-         deleteUser
+         deleteUser,
+         getTotalUsers
  };
