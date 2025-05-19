@@ -14,6 +14,8 @@ import {
   Popconfirm,
   Modal,
   Input,
+  message,
+  Spin,
 } from 'antd';
 import {
   EditOutlined,
@@ -24,25 +26,19 @@ import {
   DeleteOutlined,
   ShoppingCartOutlined,
 } from '@ant-design/icons';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 
 const { Title, Text } = Typography;
 
 const UserDetailsPage = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const user = location.state?.user;
+  const { userId } = useParams();
 
-  useEffect(() => {
-    if (!user) {
-      navigate('/user-not-found');
-    }
-  }, [user, navigate]);
-
+  const [user, setUser] = useState(null);
+  const [userDetails, setUserDetails] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isEditingUser, setIsEditingUser] = useState(false);
-  const [userDetails, setUserDetails] = useState(user);
 
   const [purchaseHistory, setPurchaseHistory] = useState([
     {
@@ -69,6 +65,35 @@ const UserDetailsPage = () => {
     },
   ]);
 
+  useEffect(() => {
+    if (!userId) {
+      navigate('/user-not-found');
+      return;
+    }
+
+    fetch(`http://localhost:3001/api/user/${userId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status) {
+          setUser(data.data);
+          console.log('User data:', data.data);
+        } else {
+          message.error(data.message || 'Failed to fetch user');
+        }
+      })
+      .catch((err) => {
+        message.error('Error fetching user');
+        console.error(err);
+      });
+  }, [userId, navigate]);
+
+  // Sync userDetails once user is loaded
+  useEffect(() => {
+    if (user) {
+      setUserDetails(user);
+    }
+  }, [user]);
+
   const handleDelete = (orderId) => {
     const updatedPurchaseHistory = purchaseHistory.filter(order => order.orderId !== orderId);
     setPurchaseHistory(updatedPurchaseHistory);
@@ -85,10 +110,42 @@ const UserDetailsPage = () => {
 
   const handleEditUser = () => {
     if (isEditingUser) {
-      setUserDetails({ ...userDetails });
+      // Save updates to backend
+      fetch(`http://localhost:3001/api/user/${userDetails._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: userDetails.name,
+          email: userDetails.email,
+          phone: userDetails.phone,
+        }),
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.status) {
+            message.success('User updated successfully');
+            setUser(data.data); // Update main user state
+          } else {
+            message.error(data.message || 'Failed to update user');
+          }
+        })
+        .catch(err => {
+          message.error('Error updating user');
+          console.error(err);
+        });
     }
     setIsEditingUser(!isEditingUser);
   };
+
+  if (!userDetails) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
+        <Spin size="large" tip="Loading user..." />
+      </div>
+    );
+  }
 
   return (
     <div className="user-details-page">
@@ -144,7 +201,7 @@ const UserDetailsPage = () => {
                 {userDetails?.country}
               </Descriptions.Item>
               <Descriptions.Item label={<span><FieldTimeOutlined className="user-icon" />Member Since</span>}>
-                {userDetails?.since.toString().slice(0, 10)}
+                {new Date(userDetails?.since).toLocaleDateString()}
               </Descriptions.Item>
             </Descriptions>
             <Button

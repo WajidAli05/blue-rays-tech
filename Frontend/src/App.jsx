@@ -20,9 +20,9 @@ function App() {
         <Route path='/add-product' element={<AddProductPage />} />  
         <Route path='/orders' element={<OrdersPage />} />
         <Route path='/products-listing' element={<ProductsListingPage />} />
+        <Route path="/user-not-found" element={<UserNotFoundPage />} />
         <Route path='/:sku' element={<ProductDetailsPage />} />
         <Route path='/users/:id' element={<UserDetailsPage />} />
-        <Route path="/user-not-found" element={<UserNotFoundPage />} />
       </Routes>
     </>
   )

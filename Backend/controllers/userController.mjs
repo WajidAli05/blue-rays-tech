@@ -98,6 +98,84 @@ const getUsers = (req, res) => {
     });
 }
 
+//udpate user
+const updateUser = (req , res) => {
+  const userId = req.params.userId;
+  const { name, email, phone } = req.body;
+
+  // Validate userId param
+  !userId && res.status(400).json({
+    status: false,
+    message: "Please provide userId",
+  });
+
+  // Validate required fields
+  !name || !email || !phone && res.status(400).json({
+    status: false,
+    message: "Please provide name, email, and phone",
+  });
+
+  //find user by id
+  User.findByIdAndUpdate(userId, {
+    name,
+    email,
+    phone,
+  })
+  .then((updatedUser) => {
+    !updatedUser && res.status(404).json({
+      status: false,
+      message: "User not found",
+    });
+  })
+  .then(() => {
+    res.status(200).json({
+      status: true,
+      message: "User updated successfully",
+    });
+  })
+  .catch((error) => {
+    res.status(500).json({
+      status: false,
+      message: "Error updating user",
+      error,
+    });
+  });
+}
+
+//get user by id
+const getUser = (req, res) => {
+  const userId = req.params.userId;
+
+  // Validate userId param
+  !userId && res.status(400).json({
+    status: false,
+    message: "Please provide userId",
+  });
+
+  //find user by id
+  User.findById(userId)
+    .then(user => {
+      !user && res.status(404).json({
+        status: false,
+        message: "User not found",
+      });
+      res.status(200).json({
+        status: true,
+        message: "User retrieved successfully",
+        data: user,
+      });
+    })
+    .catch(error => {
+      res.status(500).json({
+        status: false,
+        message: "Error retrieving user",
+        error,
+      });
+    });
+}
+
 export { addUser,
-         getUsers
+         getUsers,
+         updateUser,
+         getUser
  };

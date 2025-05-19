@@ -39,7 +39,7 @@ const UsersPage = () => {
   };
 
   const handleViewDetails = (userId, user) => {
-    navigate(`/users/${userId}` , {state: { user }});
+    navigate(`/users/${userId}`);
   }
 
   const handleSearch = (query) => {

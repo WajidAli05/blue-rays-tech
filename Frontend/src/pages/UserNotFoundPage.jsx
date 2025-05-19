@@ -16,7 +16,7 @@ const UserNotFoundPage = () => {
           <Button 
             type="primary" 
             icon={<ArrowLeftOutlined />} 
-            onClick={() => navigate(-1)} 
+            onClick={() => navigate('/users')} 
             key="back"
           >
             Go Back
