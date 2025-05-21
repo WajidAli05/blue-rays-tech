@@ -40,6 +40,7 @@ const getVisitCount = (req, res) => {
     });
 };
 
-export { getVisitCount,
+export { 
+         getVisitCount,
          increaseVisitCount
  }

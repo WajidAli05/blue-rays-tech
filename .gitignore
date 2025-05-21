@@ -44,6 +44,7 @@ Frontend/build/
 /Backend/node_modules/
 Backend/dist/
 Backend/build/
+Backend/scripts/
 
 # Docker and other container-related files
 .docker/
