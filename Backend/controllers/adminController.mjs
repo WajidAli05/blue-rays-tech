@@ -64,6 +64,13 @@ const loginAdmin = (req, res) => {
             { expiresIn: '1h' }
           );
 
+          res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+            sameSite: 'Strict', // Prevent CSRF attacks
+            maxAge: 3600000, // 1 hour
+          });
+
           return res.status(200).json({
             status: true,
             message: "Login successful",
@@ -74,7 +81,6 @@ const loginAdmin = (req, res) => {
                 email: updatedAdmin.email,
                 role: updatedAdmin.role,
               },
-              token,
             },
           });
         });
@@ -88,4 +94,17 @@ const loginAdmin = (req, res) => {
     });
 };
 
-export { loginAdmin };
+const logoutAdmin = (req, res)=>{
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+    sameSite: 'Strict', // Prevent CSRF attacks
+  })
+
+  return res.status(200).json({
+    status: true,
+    message: "Logout successful",
+  });
+}
+
+export { loginAdmin, logoutAdmin };

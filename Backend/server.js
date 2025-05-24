@@ -1,6 +1,7 @@
 import express, { json } from 'express';
 import { config } from 'dotenv';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 import dbConnection from './config/dbConnection.js';
 import productRoutes from './routes/v1/productRoutes.js';
@@ -14,11 +15,15 @@ import adminRoutes from './routes/v1/adminRoutes.js';
 const app = express();
 config();
 app.use(json());
+app.use(cookieParser());
 
 //connect to database
 dbConnection();
 
-app.use(cors());
+app.use(cors({
+  origin: process.env.CLIENT_URL || 'http://localhost:3000',
+  credentials: true, // Allow cookies to be sent
+}));
 
 //routes
 app.use('/uploads', express.static('uploads'));

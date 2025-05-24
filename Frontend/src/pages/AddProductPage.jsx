@@ -55,7 +55,10 @@ const AddProductPage = () => {
 
     //fetch categories from the API
     useEffect(() => {
-        fetch('http://localhost:3001/api/v1/category')
+        fetch('http://localhost:3001/api/v1/category', {
+            method: 'GET',
+            credentials: 'include',
+        })
             .then((response) => response.json())
             .then((data) => {
                 setCategories(data.data);
@@ -82,7 +85,12 @@ const AddProductPage = () => {
 
     //fetch affiliate programs from the API
     useEffect(() => {
-        fetch('http://localhost:3001/api/v1/affiliate-program')
+        fetch('http://localhost:3001/api/v1/affiliate-program',
+            {
+                method: 'GET',
+                credentials: 'include',
+            }
+        )
             .then((response) => response.json())
             .then((data) => {
                 setAffiliatePrograms(data.data);

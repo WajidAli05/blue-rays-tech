@@ -17,7 +17,10 @@ const Dashboard = () => {
 
   //fetch total users
   useEffect(()=> {
-    fetch('http://localhost:3001/api/v1/total-users')
+    fetch('http://localhost:3001/api/v1/total-users', {
+      method: 'GET',
+      credentials: 'include',
+    })
     .then((response) => response.json())
     .then((data) => {
       setTotalUsers(data.data);
@@ -29,7 +32,12 @@ const Dashboard = () => {
 
   //fetch total categories
   useEffect(()=> {
-    fetch('http://localhost:3001/api/v1/total-categories')
+    fetch('http://localhost:3001/api/v1/total-categories',
+      {
+        method: 'GET',
+        credentials: 'include',
+      }
+    )
     .then((response) => response.json())
     .then((data) => {
       setTotalCategories(data.data);
@@ -41,7 +49,12 @@ const Dashboard = () => {
 
   //fetch total average rating for all the products in the database
   useEffect(()=> {
-    fetch('http://localhost:3001/api/v1/average-rating')
+    fetch('http://localhost:3001/api/v1/average-rating',
+      {
+        method: 'GET',
+        credentials: 'include',
+      }
+    )
     .then((response) => response.json())
     .then((data) => {
       setAverageRating(data.data);

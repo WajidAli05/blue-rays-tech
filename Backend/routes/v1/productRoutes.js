@@ -9,6 +9,7 @@ import {
   deleteProductImages,
   getAverageRating
 } from '../../controllers/productController.mjs';
+import { validateToken } from '../../middlewares/accessTokenHandler.js';
 
 const router = express.Router();
 
@@ -26,12 +27,12 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Routes
-router.post('/product', upload.array('image_link', 10), addProduct);
+router.post('/product', validateToken, upload.array('image_link', 10), addProduct);
 router.get('/products', getProducts);
-router.put('/product', upload.array('image_link', 10), updateProduct);
-router.delete('/product', upload.none(), deleteProduct);
-router.delete('/product/image', deleteProductImages);
-router.get('/average-rating', getAverageRating);
+router.put('/product', validateToken, upload.array('image_link', 10), updateProduct);
+router.delete('/product', validateToken, upload.none(), deleteProduct);
+router.delete('/product/image', validateToken, deleteProductImages);
+router.get('/average-rating', validateToken, getAverageRating);
 router.get('/product/:sku', getProductBySKU);
 
 export default router;
