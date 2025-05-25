@@ -8,14 +8,15 @@ import {
   LogoutOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import { Tooltip } from 'antd';
 
-const SideBar = () => {
+const NavBar = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
     fetch('http://localhost:3001/api/v1/admin-logout', {
       method: 'POST',
-      credentials: 'include', // Important to include cookies
+      credentials: 'include',
     })
       .then((res) => {
         if (!res.ok) throw new Error('Logout failed');
@@ -23,7 +24,7 @@ const SideBar = () => {
       })
       .then((data) => {
         alert(data.message || 'Logout successful');
-        navigate('/ad-lg'); // Redirect to login page
+        navigate('/ad-lg');
       })
       .catch((err) => {
         console.error('Logout error:', err);
@@ -31,22 +32,86 @@ const SideBar = () => {
       });
   };
 
+  const tooltipStyle = {
+    color: 'black',
+  };
+
   return (
     <div>
       <nav className='navbar'>
         <img src='/logo.png' alt='logo' className='logo' />
         <ul className="navbar-list">
-          <li><a href="/"><DashboardOutlined /> Dashboard</a></li>
-          <li><a href="/add-product"><AppstoreAddOutlined /> Add Product</a></li>
-          <li className="dropdown">
-            <a href="/products-listing" className="dropdown-link"><ProductOutlined /> Products</a>
-          </li>
-          <li><a href="/users"><UsergroupAddOutlined /> Users</a></li>
-          <li><a href="/orders"><ShoppingCartOutlined /> Orders</a></li>
           <li>
-            <button onClick={handleLogout} className="logout-btn">
-              <LogoutOutlined /> Logout
-            </button>
+            <Tooltip
+              color="white"
+              title="Dashboard"
+              placement="top"
+              overlayInnerStyle={tooltipStyle}
+            >
+              <a href="/" className="nav-link">
+                <DashboardOutlined /> Dashboard
+              </a>
+            </Tooltip>
+          </li>
+          <li>
+            <Tooltip
+              color="white"
+              title="Add Product"
+              placement="top"
+              overlayInnerStyle={tooltipStyle}
+            >
+              <a href="/add-product" className="nav-link">
+                <AppstoreAddOutlined /> Add Product
+              </a>
+            </Tooltip>
+          </li>
+          <li className="dropdown">
+            <Tooltip
+              color="white"
+              title="Products"
+              placement="top"
+              overlayInnerStyle={tooltipStyle}
+            >
+              <a href="/products-listing" className="dropdown-link">
+                <ProductOutlined /> Products
+              </a>
+            </Tooltip>
+          </li>
+          <li>
+            <Tooltip
+              color="white"
+              title="Users"
+              placement="top"
+              overlayInnerStyle={tooltipStyle}
+            >
+              <a href="/users" className="nav-link">
+                <UsergroupAddOutlined /> Users
+              </a>
+            </Tooltip>
+          </li>
+          <li>
+            <Tooltip
+              color="white"
+              title="Orders"
+              placement="top"
+              overlayInnerStyle={tooltipStyle}
+            >
+              <a href="/orders" className="nav-link">
+                <ShoppingCartOutlined /> Orders
+              </a>
+            </Tooltip>
+          </li>
+          <li>
+            <Tooltip
+              color="white"
+              title="Logout"
+              placement="top"
+              overlayInnerStyle={tooltipStyle}
+            >
+              <button onClick={handleLogout} className="logout-btn">
+                <LogoutOutlined /> Logout
+              </button>
+            </Tooltip>
           </li>
         </ul>
       </nav>
@@ -54,4 +119,4 @@ const SideBar = () => {
   );
 };
 
-export default SideBar;
+export default NavBar;

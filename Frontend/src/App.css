@@ -685,3 +685,12 @@
   justify-content: center;
   padding: 2rem;
 }
+
+/* ====================loading div=================== */
+.loading-div{
+  text-align: center;
+}
+
+.logout-btn{
+  cursor: pointer;
+}

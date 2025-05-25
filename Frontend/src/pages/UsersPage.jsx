@@ -8,8 +8,9 @@ import { Button, Breadcrumb, Spin } from 'antd';
 
 const UsersPage = () => {
   const navigate = useNavigate();
+
   // States
-  const [originalUsersArray, setOrginalUsersArray] = useState([]);
+  const [originalUsersArray, setOriginalUsersArray] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,10 +20,15 @@ const UsersPage = () => {
   // Fetch users from API
   useEffect(() => {
     setLoading(true);
-    fetch('http://localhost:3001/api/v1/users')
-      .then((res) => res.json())
+    fetch('http://localhost:3001/api/v1/users', {
+      credentials: 'include'
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to fetch users');
+        return res.json();
+      })
       .then((data) => {
-        setOrginalUsersArray(data.data);
+        setOriginalUsersArray(data.data);
         setAllUsers(data.data);
         setUsers(data.data);
       })
@@ -38,13 +44,13 @@ const UsersPage = () => {
   };
 
   const handleDelete = (userId) => {
-    const updatedUsers = users.filter(user => user.id !== userId);
+    const updatedUsers = users.filter(user => user._id !== userId);
     setUsers(updatedUsers);
   };
 
-  const handleViewDetails = (userId, user) => {
+  const handleViewDetails = (userId) => {
     navigate(`/user/${userId}`);
-  }
+  };
 
   const handleSearch = (query) => {
     if (!query.trim()) {
@@ -58,30 +64,36 @@ const UsersPage = () => {
     }
   };
 
-  if (!originalUsersArray) return <Spin tip="Users product..." fullscreen />;
+  // ✅ Use loading spinner properly
+  if (loading) return <Spin tip="Loading users..." fullscreen />;
 
   return (
     <div>
       <NavBar />
+
       <Breadcrumb
-        separator='>'
+        separator=">"
         items={[
           {
-            title: <Link to='/'><span className='breadcrum-title'>Home</span></Link>,
+            title: <Link to="/"><span className="breadcrum-title">Home</span></Link>,
           },
           {
-            title: <span className='breadcrum-title'>User Management</span>,
+            title: <span className="breadcrum-title">User Management</span>,
           },
         ]}
       />
-      <div className='search-comp-container'>
+
+      <div className="search-comp-container">
         <Button type="primary" danger>
           Delete Selected
         </Button>
-        <SearchBox onSearch={handleSearch} placeholder={'Search by name or email'} />
+        <SearchBox
+          onSearch={handleSearch}
+          placeholder="Search by name or email"
+        />
       </div>
 
-      <div className='users-container'>
+      <div className="users-container">
         {users.map((user) => (
           <UserList
             key={user._id}
@@ -91,17 +103,17 @@ const UsersPage = () => {
             onViewDetails={handleViewDetails}
           />
         ))}
-        <EditUserModal
-          visible={isEditModalOpen}
-          onCancel={() => setIsEditModalOpen(false)}
-          user={editingUser}
-          onSuccess={(updatedUser) => {
-            // Optionally update local state
-            setIsEditModalOpen(false);
-            navigate(0);
-          }}
-        />
       </div>
+
+      <EditUserModal
+        visible={isEditModalOpen}
+        onCancel={() => setIsEditModalOpen(false)}
+        user={editingUser}
+        onSuccess={(updatedUser) => {
+          setIsEditModalOpen(false);
+          navigate(0); // force refresh
+        }}
+      />
     </div>
   );
 };
