@@ -2,7 +2,7 @@ import express from 'express';
 const router = express.Router();
 
 import { getCategories,
-         getTotalCategories
+         getTotalCategories,
  } from '../../controllers/categoryController.mjs';
  import { validateToken } from '../../middlewares/accessTokenHandler.js';
 

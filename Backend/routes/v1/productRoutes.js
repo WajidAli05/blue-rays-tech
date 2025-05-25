@@ -7,7 +7,8 @@ import {
   deleteProduct, 
   getProductBySKU,
   deleteProductImages,
-  getAverageRating
+  getAverageRating,
+  getStockLevelByCategory
 } from '../../controllers/productController.mjs';
 import { validateToken } from '../../middlewares/accessTokenHandler.js';
 
@@ -33,6 +34,7 @@ router.put('/product', validateToken, upload.array('image_link', 10), updateProd
 router.delete('/product', validateToken, upload.none(), deleteProduct);
 router.delete('/product/image', validateToken, deleteProductImages);
 router.get('/average-rating', validateToken, getAverageRating);
+router.get('/category-wise-stock', validateToken, getStockLevelByCategory)
 router.get('/product/:sku', getProductBySKU);
 
 export default router;

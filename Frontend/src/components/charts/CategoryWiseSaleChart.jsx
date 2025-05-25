@@ -52,7 +52,6 @@ const CategoryWiseSaleChart = () => {
     <div>
       {/* Responsive container ensures the chart is fully responsive */}
       <ResponsiveContainer width="50%" height={300}>
-        {console.log('Category Wise Sale Chart')}
         <BarChart
           data={data}
           margin={{

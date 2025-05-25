@@ -50,5 +50,5 @@ const getTotalCategories = async (req, res) => {
 }
 
 export { getCategories,
-         getTotalCategories
+         getTotalCategories,
  };

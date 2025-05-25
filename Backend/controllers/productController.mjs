@@ -295,6 +295,39 @@ const getAverageRating = async (req, res) => {
     return res.status(200).json({ status: true, message: "Average rating fetched successfully", data: averageRating });
 };
 
+//get stock level of each category
+const getStockLevelByCategory = async (req, res) => {
+    Products.aggregate([
+        {
+            $group: {
+                _id: '$category',
+                stockLevel: {
+                    $sum: '$stock_level'
+                }
+            }
+        },
+        {
+            $project: {
+                _id: 0,
+                category: '$_id',
+                stockLevel: 1,
+            }
+        },
+        {
+            $limit: 15
+        }
+    ])
+    .then((stockData)=>{
+        res.status(200).json({
+            status: true,
+            data: stockData
+        })
+    })
+    .catch((error)=> {
+        res.status(500).json({status: false, message: "Error fetching stock levels by category", error});
+    })
+}
+
 
 export { addProduct, 
     getProducts, 
@@ -302,5 +335,6 @@ export { addProduct,
     deleteProduct, 
     getProductBySKU,
     deleteProductImages,
-    getAverageRating
+    getAverageRating,
+    getStockLevelByCategory
 };
