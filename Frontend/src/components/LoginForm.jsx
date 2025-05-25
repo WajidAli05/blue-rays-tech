@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 
 export default function LoginForm() {
   const [formData, setFormData] = useState({
@@ -11,6 +13,9 @@ export default function LoginForm() {
     password: "",
   });
 
+  const { setAdmin } = useContext(AuthContext);
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -21,39 +26,63 @@ export default function LoginForm() {
 
   const validateForm = () => {
     let isValid = true;
-    let errors = { email: "", password: "" };
+    let newErrors = { email: "", password: "" };
 
-    // Simple email validation
     if (!formData.email) {
-      errors.email = "Email is required";
+      newErrors.email = "Email is required";
       isValid = false;
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = "Email is invalid";
+      newErrors.email = "Email is invalid";
       isValid = false;
     }
 
-    // Simple password validation
     if (!formData.password) {
-      errors.password = "Password is required";
+      newErrors.password = "Password is required";
       isValid = false;
     }
 
-    setErrors(errors);
+    setErrors(newErrors);
     return isValid;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      // Handle form submission, e.g., send data to the server
-      console.log(formData);
-    }
+    if (!validateForm()) return;
+
+    console.log("Submitting login:", formData);
+
+    fetch("http://localhost:3001/api/v1/admin-login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include", // ⬅️ This is correct for cookie-based auth
+      body: JSON.stringify(formData),
+    })
+      .then((response) => {
+        console.log("Response status:", response.status);
+        return response.json().then((data) => {
+          if (!response.ok) {
+            throw new Error(data.message || "Login failed");
+          }
+          return data;
+        });
+      })
+      .then((data) => {
+        console.log("Login successful. Admin data:", data.data.admin);
+        setAdmin(data.data.admin);
+        navigate("/");
+      })
+      .catch((error) => {
+        console.error("Login error:", error);
+        alert(error.message || "Server error during login.");
+      });
   };
 
   return (
     <form onSubmit={handleSubmit} className="login-form">
       <h2>Login</h2>
-      
+
       <div className="input-group">
         <label htmlFor="email">Email</label>
         <input

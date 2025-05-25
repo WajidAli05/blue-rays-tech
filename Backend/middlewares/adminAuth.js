@@ -6,14 +6,14 @@ const validateAdmin = (req, res, next)=>{
 
     Admin.findOne({email})
     .then((admin)=>{
-    if(!admin){
+    if(!admin || admin.isActive === false){
         return res.status(404).json({
             status: false,
             message: 'Admin not found',
             data: null
         })
     }
-    else if(admin.role !== 'superadmin' && admin.role !== 'admin'){
+    else if(!["admin", "superadmin"].includes(admin.role)){
             return res.status(404).json({
             status: false,
             message: 'You are not authorized!',

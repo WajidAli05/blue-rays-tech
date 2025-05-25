@@ -107,4 +107,17 @@ const logoutAdmin = (req, res)=>{
   });
 }
 
-export { loginAdmin, logoutAdmin };
+const checkAdminAuth = (req, res) => {
+  return res.status(200).json({
+    status: true,
+    message: "Admin is authenticated",
+    user: {
+      id: req.user._id,
+      name: req.user.name,
+      email: req.user.email,
+      role: req.user.role
+    }
+  });
+};
+
+export { loginAdmin, logoutAdmin, checkAdminAuth };
