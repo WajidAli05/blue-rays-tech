@@ -1,12 +1,14 @@
 import express from 'express';
 import multer from 'multer';
 import {
-        addUser,
+        signupUser,
+        loginUser,
         getUsers,
         updateUser,
         getUser,
         deleteUser,
-        getTotalUsers
+        getTotalUsers,
+        signupWithGoogle
       } from '../../controllers/userController.mjs';
 import { validateToken } from '../../middlewares/accessTokenHandler.js';
 
@@ -26,7 +28,9 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Routes
-router.post('/user', upload.single('image'), addUser);
+router.post('/signup/google', signupWithGoogle);
+router.post('/user/signup', upload.single('image'), signupUser);
+router.post('/user/login', loginUser);
 router.get('/users', validateToken, getUsers);
 router.get('/total-users', validateToken, getTotalUsers);
 router.get('/user/:userId', getUser); 

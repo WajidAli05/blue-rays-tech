@@ -12,6 +12,13 @@ const baseDir = path.join(__dirname, '../uploads');
 
 // addProduct controller
 const addProduct = (req, res) => {
+    if(req.user.role !== 'admin' && req.user.role !== 'superadmin') {
+        return res.status(403).json({ 
+            status: false, 
+            message: "Access denied. Only admins can add products." 
+        });
+    }
+
     let {
         name,
         category,
@@ -151,6 +158,12 @@ const getProductBySKU = async (req, res) => {
 
 // updateProduct controller
 const updateProduct = (req, res) => {
+    if(req.user.role !== 'admin' && req.user.role !== 'superadmin') {
+        return res.status(403).json({
+            status: false,
+            message: "Access denied. Only admins can update products."
+        });
+    }
     const { sku, product_type, link, file_type, commission, affiliate_program, ...updateData } = req.body;
 
     if (!sku) {
@@ -223,6 +236,13 @@ const updateProduct = (req, res) => {
 };
 
 const deleteProduct = async (req, res) => {
+    if(req.user.role !== 'admin' && req.user.role !== 'superadmin') {
+        return res.status(403).json({
+            status: false,
+            message: "Access denied. Only admins can delete products."
+        });
+    }
+
     const { sku } = req.body;
 
     if (!sku) {
@@ -261,6 +281,13 @@ const deleteProduct = async (req, res) => {
 };
 
 const deleteProductImages = (req, res) => {
+    if(req.user.role !== 'admin' && req.user.role !== 'superadmin') {
+        return res.status(403).json({
+            status: false,
+            message: "Access denied. Only admins can delete product images."
+        });
+    }
+
   const images = req.body.images;
 
   if (!images || !Array.isArray(images)) {
@@ -288,6 +315,13 @@ const deleteProductImages = (req, res) => {
 
 //get average rating for all the products
 const getAverageRating = async (req, res) => {
+    if(req.user.role !== 'admin' && req.user.role !== 'superadmin') {
+        return res.status(403).json({ 
+            status: false, 
+            message: "Access denied. Only admins can view average rating." 
+        });
+    }
+    
     const products = await Products.find();
     const totalRating = products.reduce((acc, product) => acc + product.average_rating, 0);
     const averageRating = totalRating / products.length;

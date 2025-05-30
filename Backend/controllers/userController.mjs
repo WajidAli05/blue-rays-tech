@@ -1,8 +1,14 @@
-import User from "../models/userModal.js";
+import User from "../models/userModel.js";
 import fs from 'fs';
+import { OAuth2Client } from "google-auth-library";
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import { config } from 'dotenv';
+
+config(); 
 
 // __dirname setup for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -11,16 +17,19 @@ const __dirname = dirname(__filename);
 // Base directory for user uploads
 const userUploadDir = path.join(__dirname, '../uploads/users');
 
+//create instance of Google OAuth2 client
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
 //add a new user
-const addUser = (req, res) => {
-  const { name, email, phone, country, job } = req.body;
+const signupUser = (req, res) => {
+  const { name, email, password, phone, country, job } = req.body;
   const file = req.file;
 
   // Validate required fields
-  if (!name || !email || !phone) {
+  if (!name || !email || !password) {
     return res.status(400).json({
       status: false,
-      message: "Please provide name, email, phone, and since date",
+      message: "Please provide name, email, and password!",
     });
   }
 
@@ -45,14 +54,19 @@ const addUser = (req, res) => {
         });
       }
 
+      //hash password before saving
+      const hashedPassword = bcrypt.hashSync(password, 10);
+
       // Create new user
       const newUser = new User({
         name,
         email,
+        password: hashedPassword,
         phone,
         image,
         country,
         job,
+        role: "customer"
       });
 
       newUser.save()
@@ -79,8 +93,93 @@ const addUser = (req, res) => {
     });
 };
 
+//login user
+const loginUser= (req, res)=> {
+  const { email, password } = req.body;
+
+  //validate required fields
+  if (!email || !password) {
+    return res.status(400).json({
+      status: false,
+      message: "Please provide email and password",
+    });
+  }
+
+    // Validate email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({
+      status: false,
+      message: "Please provide a valid email",
+    });
+  }
+
+  //find user
+  User.findOne({ email })
+  .then((user)=> {
+    if(!user){
+      return res.status(404).json({
+        status: false,
+        message: "User not found",
+      });
+    }
+
+    //compare password
+    return bcrypt.compare(password, user.password)
+    .then((isMatch)=> {
+      if(!isMatch){
+        return res.status(401).json({
+          status: false,
+          message: "Invalid password",
+        });
+      }
+
+      //generate token
+      const token = jwt.sign(
+        {
+          id: user._id,
+          role: user.role,
+          email: user.email,
+        },
+        process.env.JWT_SECRET_KEY,
+        { expiresIn: '1h' }
+      );
+
+      //return coookie
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+        maxAge: 3600000, // 1 hour
+      });
+
+      res.status(200).json({
+        status: true,
+        message: "User logged in successfully",
+        data: {
+          userId: user._id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          image: user.image,
+          country: user.country,
+          job: user.job,
+          role: user.role,
+        },
+      });
+    })
+
+  })
+}
+
 //get all users
 const getUsers = (req, res) => {
+  if(req.user.role !== 'admin' || req.user.role !== 'superadmin') {
+    return res.status(403).json({
+      status: false,
+      message: "Access denied. Only admins can view users.",
+    });
+  }
+
   User.find()
     .then(users => {
       res.status(200).json({
@@ -178,6 +277,13 @@ const getUser = (req, res) => {
 const deleteUser = (req, res) => {
   const { userId } = req.params || req.body;
 
+  if (req.user.role !== 'admin' && req.user.role !== 'superadmin') {
+    return res.status(403).json({
+      status: false,
+      message: "Access denied. Only admins can delete users.",
+    });
+  }
+
   if (!userId) {
     return res.status(400).json({
       status: false,
@@ -212,6 +318,12 @@ const deleteUser = (req, res) => {
 
 //get total number of users
 const getTotalUsers = (req, res) => {
+  if (req.user.role !== 'admin' && req.user.role !== 'superadmin') {
+    return res.status(403).json({
+      status: false,
+      message: "Access denied. Only admins can view total users.",
+    });
+  }
   User.countDocuments()
     .then(count => {
       res.status(200).json({
@@ -229,10 +341,39 @@ const getTotalUsers = (req, res) => {
     });
 }
 
-export { addUser,
+//signup with google
+const signupWithGoogle = (req, res) => {
+  const { googleToken } = req.body;
+  if (!googleToken) {
+    return res.status(400).json({
+      status: false,
+      message: "Could not be signed up with Google.",
+    });
+  }
+
+  //decode the token
+  const decoded= jwt.decode(googleToken, {complete: true})
+  console.log(decoded)
+  if(!decoded){
+    res.status(400).json({
+      status: false,
+      message: "Invalid Google token",
+    });
+  }
+
+  res.status(200).json({
+    status: true,
+    message: "Google token decoded successfully",
+    data: decoded,
+  });
+};
+
+export { signupUser,
+         loginUser,
          getUsers,
          updateUser,
          getUser,
          deleteUser,
-         getTotalUsers
+         getTotalUsers,
+         signupWithGoogle
  };

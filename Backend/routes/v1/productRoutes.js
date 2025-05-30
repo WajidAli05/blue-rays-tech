@@ -11,6 +11,7 @@ import {
   getStockLevelByCategory
 } from '../../controllers/productController.mjs';
 import { validateToken } from '../../middlewares/accessTokenHandler.js';
+import { validateRole } from '../../middlewares/roleAuth.js';
 
 const router = express.Router();
 
@@ -28,12 +29,12 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Routes
-router.post('/product', validateToken, upload.array('image_link', 10), addProduct);
+router.post('/product', validateToken, validateRole, upload.array('image_link', 10), addProduct);
 router.get('/products', getProducts);
-router.put('/product', validateToken, upload.array('image_link', 10), updateProduct);
-router.delete('/product', validateToken, upload.none(), deleteProduct);
+router.put('/product', validateToken, validateRole, upload.array('image_link', 10), updateProduct);
+router.delete('/product', validateToken, validateRole, upload.none(), deleteProduct);
 router.delete('/product/image', validateToken, deleteProductImages);
-router.get('/average-rating', validateToken, getAverageRating);
+router.get('/average-rating', validateToken, validateRole, getAverageRating);
 router.get('/category-wise-stock', validateToken, getStockLevelByCategory)
 router.get('/product/:sku', getProductBySKU);
 

@@ -12,10 +12,10 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
+    required: true,
   },
   phone: {
     type: String,
-    required: true,
   },
   image: {
     type: String,
@@ -31,6 +31,10 @@ const userSchema = new mongoose.Schema({
   },
   job: {
     type: String,
+  },
+  role: {
+    type: String,
+    default: 'customer',
   }
 }, { timestamps: true });
 
