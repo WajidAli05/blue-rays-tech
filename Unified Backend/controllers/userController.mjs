@@ -173,12 +173,12 @@ const loginUser= (req, res)=> {
 
 //get all users
 const getUsers = (req, res) => {
-  if(req.user.role !== 'admin' || req.user.role !== 'superadmin') {
-    return res.status(403).json({
-      status: false,
-      message: "Access denied. Only admins can view users.",
-    });
-  }
+  // if(req.user.role !== 'admin' || req.user.role !== 'superadmin') {
+  //   return res.status(403).json({
+  //     status: false,
+  //     message: "Access denied. Only admins can view users.",
+  //   });
+  // }
 
   User.find()
     .then(users => {
@@ -277,12 +277,12 @@ const getUser = (req, res) => {
 const deleteUser = (req, res) => {
   const { userId } = req.params || req.body;
 
-  if (req.user.role !== 'admin' && req.user.role !== 'superadmin') {
-    return res.status(403).json({
-      status: false,
-      message: "Access denied. Only admins can delete users.",
-    });
-  }
+  // if (req.user.role !== 'admin' && req.user.role !== 'superadmin') {
+  //   return res.status(403).json({
+  //     status: false,
+  //     message: "Access denied. Only admins can delete users.",
+  //   });
+  // }
 
   if (!userId) {
     return res.status(400).json({
@@ -318,12 +318,12 @@ const deleteUser = (req, res) => {
 
 //get total number of users
 const getTotalUsers = (req, res) => {
-  if (req.user.role !== 'admin' && req.user.role !== 'superadmin') {
-    return res.status(403).json({
-      status: false,
-      message: "Access denied. Only admins can view total users.",
-    });
-  }
+  // if (req.user.role !== 'admin' && req.user.role !== 'superadmin') {
+  //   return res.status(403).json({
+  //     status: false,
+  //     message: "Access denied. Only admins can view total users.",
+  //   });
+  // }
   User.countDocuments()
     .then(count => {
       res.status(200).json({

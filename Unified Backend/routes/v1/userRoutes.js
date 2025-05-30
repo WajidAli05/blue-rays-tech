@@ -11,6 +11,7 @@ import {
         signupWithGoogle
       } from '../../controllers/userController.mjs';
 import { validateToken } from '../../middlewares/accessTokenHandler.js';
+import { validateRole } from '../../middlewares/roleAuth.js';
 
 const router = express.Router();
 
@@ -31,10 +32,10 @@ const upload = multer({ storage });
 router.post('/signup/google', signupWithGoogle);
 router.post('/user/signup', upload.single('image'), signupUser);
 router.post('/user/login', loginUser);
-router.get('/users', validateToken, getUsers);
+router.get('/users', validateToken, validateRole(['admin', 'superadmmin']), getUsers);
 router.get('/total-users', validateToken, getTotalUsers);
 router.get('/user/:userId', getUser); 
 router.put('/user/:userId' , upload.none() , updateUser);
-router.delete('/user/:userId', validateToken, deleteUser);
+router.delete('/user/:userId', validateToken, validateRole(['admin', 'superadmin']), deleteUser);
 
 export default router;
