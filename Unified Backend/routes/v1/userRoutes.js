@@ -33,9 +33,9 @@ router.post('/signup/google', signupWithGoogle);
 router.post('/user/signup', upload.single('image'), signupUser);
 router.post('/user/login', loginUser);
 router.get('/users', validateToken, validateRole(['admin', 'superadmmin']), getUsers);
-router.get('/total-users', validateToken, getTotalUsers);
-router.get('/user/:userId', getUser); 
-router.put('/user/:userId' , upload.none() , updateUser);
+router.get('/total-users', validateToken, validateRole(), getTotalUsers);
+router.get('/user/:userId', validateRole(), getUser); 
+router.put('/user/:userId' , validateRole(), upload.none() , updateUser);
 router.delete('/user/:userId', validateToken, validateRole(['admin', 'superadmin']), deleteUser);
 
 export default router;

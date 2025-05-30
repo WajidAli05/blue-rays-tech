@@ -30,12 +30,12 @@ const upload = multer({ storage });
 
 // Routes
 router.post('/product', validateToken, validateRole(['admin', 'superadmin']), upload.array('image_link', 10), addProduct);
-router.get('/products', getProducts);
+router.get('/products', validateRole(), getProducts);
 router.put('/product', validateToken, validateRole(['admin', 'superadmin']), upload.array('image_link', 10), updateProduct);
 router.delete('/product', validateToken, validateRole(['admin', 'superadmin']), upload.none(), deleteProduct);
 router.delete('/product/image', validateToken, validateRole(['admin', 'superadmin']), deleteProductImages);
 router.get('/average-rating', validateToken, validateRole(['admin', 'superadmin']), getAverageRating);
-router.get('/category-wise-stock', validateToken, getStockLevelByCategory)
-router.get('/product/:sku', getProductBySKU);
+router.get('/category-wise-stock', validateToken, validateRole(), getStockLevelByCategory)
+router.get('/product/:sku', validateRole(), getProductBySKU);
 
 export default router;
