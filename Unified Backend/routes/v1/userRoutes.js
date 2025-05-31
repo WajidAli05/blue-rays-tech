@@ -32,7 +32,7 @@ const upload = multer({ storage });
 router.post('/signup/google', signupWithGoogle);
 router.post('/user/signup', upload.single('image'), signupUser);
 router.post('/user/login', loginUser);
-router.get('/users', validateToken, validateRole(['admin', 'superadmmin']), getUsers);
+router.get('/users', validateToken, getUsers);
 router.get('/total-users', validateToken, validateRole(), getTotalUsers);
 router.get('/user/:userId', validateRole(), getUser); 
 router.put('/user/:userId' , validateRole(), upload.none() , updateUser);

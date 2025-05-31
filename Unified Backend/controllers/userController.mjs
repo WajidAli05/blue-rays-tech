@@ -21,83 +21,160 @@ const userUploadDir = path.join(__dirname, '../uploads/users');
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 //add a new user
+// const signupUser = (req, res) => {
+//   const { name, email, password, phone, country, job } = req.body;
+//   const file = req.file;
+
+//   // Validate required fields
+//   if (!name || !email || !password) {
+//     return res.status(400).json({
+//       status: false,
+//       message: "Please provide name, email, and password!",
+//     });
+//   }
+
+//   let image = '';
+//   if (file) {
+//     if (!file.mimetype.startsWith('image/')) {
+//       return res.status(400).json({
+//         status: false,
+//         message: "Only image files are allowed",
+//       });
+//     }
+//     image = `/uploads/users/${file.filename}`;
+//   }
+
+//   // Check for existing user by email
+//   User.findOne({ email })
+//     .then(existingUser => {
+//       if (existingUser) {
+//         return res.status(400).json({
+//           status: false,
+//           message: "A user with this email already exists",
+//         });
+//       }
+
+//       //check if user is signing up with Google
+//       if (existingUser && existingUser.googleId) {
+//         return res.status(400).json({
+//           status: false,
+//           message: "Email is registered with Google. Please sign in with Google.",
+//         });
+//       }
+
+//       // Validate email format
+//       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+//       if (!emailRegex.test(email)) {
+//         return res.status(400).json({
+//           status: false,
+//           message: "Please provide a valid email",
+//         });
+//       }
+
+//       //hash password before saving
+//       const hashedPassword = bcrypt.hashSync(password, 10);
+
+//       // Create new user
+//       const newUser = new User({
+//         name,
+//         email,
+//         password: hashedPassword,
+//         phone,
+//         image,
+//         country,
+//         job,
+//         role: "customer"
+//       });
+
+//       newUser.save()
+//         .then(() => {
+//           res.status(201).json({
+//             status: true,
+//             message: "User added successfully",
+//           });
+//         })
+//         .catch(error => {
+//           res.status(500).json({
+//             status: false,
+//             message: "Error saving user to database",
+//             error,
+//           });
+//         });
+//     })
+//     .catch(error => {
+//       res.status(500).json({
+//         status: false,
+//         message: "Error checking existing user",
+//         error,
+//       });
+//     });
+// };
+
+//login user
+
+
 const signupUser = (req, res) => {
-  const { name, email, password, phone, country, job } = req.body;
-  const file = req.file;
+  const { name, email, password, phone, job, country } = req.body;
 
-  // Validate required fields
-  if (!name || !email || !password) {
-    return res.status(400).json({
-      status: false,
-      message: "Please provide name, email, and password!",
-    });
+  if (!name || !email || !password || !phone || !job || !country) {
+    return res.status(400).json({ status: false, message: "All fields are required" });
   }
 
-  let image = '';
-  if (file) {
-    if (!file.mimetype.startsWith('image/')) {
-      return res.status(400).json({
-        status: false,
-        message: "Only image files are allowed",
-      });
-    }
-    image = `/uploads/users/${file.filename}`;
-  }
-
-  // Check for existing user by email
   User.findOne({ email })
     .then(existingUser => {
       if (existingUser) {
+        if (existingUser.googleId) {
+          return res.status(400).json({
+            status: false,
+            message: "Email is registered with Google. Please sign in with Google.",
+          });
+        }
+
         return res.status(400).json({
           status: false,
           message: "A user with this email already exists",
         });
       }
 
-      //hash password before saving
-      const hashedPassword = bcrypt.hashSync(password, 10);
+      return bcrypt.hash(password, 10);
+    })
+    .then(hashedPassword => {
+      if (!hashedPassword) return; 
 
-      // Create new user
       const newUser = new User({
         name,
         email,
         password: hashedPassword,
         phone,
-        image,
-        country,
         job,
-        role: "customer"
+        country,
+        role: "customer",
       });
 
-      newUser.save()
-        .then(() => {
-          res.status(201).json({
-            status: true,
-            message: "User added successfully",
-          });
-        })
-        .catch(error => {
-          res.status(500).json({
-            status: false,
-            message: "Error saving user to database",
-            error,
-          });
-        });
+      return newUser.save();
     })
-    .catch(error => {
-      res.status(500).json({
-        status: false,
-        message: "Error checking existing user",
-        error,
-      });
+    .then(savedUser => {
+      if (savedUser) {
+        res.status(201).json({
+          status: true,
+          message: "User signed up successfully",
+          user: savedUser,
+        });
+      }
+    })
+    .catch(err => {
+      console.error("Signup error:", err);
+      if (!res.headersSent) {
+        res.status(500).json({ status: false, message: "Internal server error", error: err.message });
+      }
     });
 };
 
-//login user
-const loginUser= (req, res)=> {
+//manual login user
+const loginUser = (req, res) => {
   const { email, password } = req.body;
 
-  //validate required fields
+  // Validate required fields
   if (!email || !password) {
     return res.status(400).json({
       status: false,
@@ -105,7 +182,7 @@ const loginUser= (req, res)=> {
     });
   }
 
-    // Validate email format
+  // Validate email format
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
     return res.status(400).json({
@@ -114,72 +191,80 @@ const loginUser= (req, res)=> {
     });
   }
 
-  //find user
+  // Find user
   User.findOne({ email })
-  .then((user)=> {
-    if(!user){
-      return res.status(404).json({
-        status: false,
-        message: "User not found",
-      });
-    }
-
-    //compare password
-    return bcrypt.compare(password, user.password)
-    .then((isMatch)=> {
-      if(!isMatch){
-        return res.status(401).json({
+    .then(user => {
+      if (!user) {
+        return res.status(404).json({
           status: false,
-          message: "Invalid password",
+          message: "User not found",
         });
       }
 
-      //generate token
-      const token = jwt.sign(
-        {
-          id: user._id,
-          role: user.role,
-          email: user.email,
-        },
-        process.env.JWT_SECRET_KEY,
-        { expiresIn: '1h' }
-      );
+      // If user signed up using Google, block manual login
+      if (user.googleId) {
+        return res.status(400).json({
+          status: false,
+          message: "This account is registered with Google. Please log in using Google.",
+        });
+      }
 
-      //return coookie
-      res.cookie('token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-        maxAge: 3600000, // 1 hour
-      });
+      // Compare password
+      return bcrypt.compare(password, user.password)
+        .then(isMatch => {
+          if (!isMatch) {
+            return res.status(401).json({
+              status: false,
+              message: "Invalid password",
+            });
+          }
 
-      res.status(200).json({
-        status: true,
-        message: "User logged in successfully",
-        data: {
-          userId: user._id,
-          name: user.name,
-          email: user.email,
-          phone: user.phone,
-          image: user.image,
-          country: user.country,
-          job: user.job,
-          role: user.role,
-        },
-      });
+          // Generate token
+          const token = jwt.sign(
+            {
+              id: user._id,
+              role: user.role,
+              email: user.email,
+            },
+            process.env.JWT_SECRET_KEY,
+            { expiresIn: "1h" }
+          );
+
+          // Return cookie
+          res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            maxAge: 3600000, // 1 hour
+          });
+
+          res.status(200).json({
+            status: true,
+            message: "User logged in successfully",
+            data: {
+              userId: user._id,
+              name: user.name,
+              email: user.email,
+              phone: user.phone,
+              image: user.image,
+              country: user.country,
+              job: user.job,
+              role: user.role,
+            },
+          });
+        });
     })
-
-  })
-}
+    .catch(err => {
+      console.error("Login error:", err);
+      res.status(500).json({
+        status: false,
+        message: "Internal server error",
+        error: err.message,
+      });
+    });
+};
 
 //get all users
 const getUsers = (req, res) => {
-  // if(req.user.role !== 'admin' || req.user.role !== 'superadmin') {
-  //   return res.status(403).json({
-  //     status: false,
-  //     message: "Access denied. Only admins can view users.",
-  //   });
-  // }
-
   User.find()
     .then(users => {
       res.status(200).json({
@@ -276,14 +361,6 @@ const getUser = (req, res) => {
 //delete user by id
 const deleteUser = (req, res) => {
   const { userId } = req.params || req.body;
-
-  // if (req.user.role !== 'admin' && req.user.role !== 'superadmin') {
-  //   return res.status(403).json({
-  //     status: false,
-  //     message: "Access denied. Only admins can delete users.",
-  //   });
-  // }
-
   if (!userId) {
     return res.status(400).json({
       status: false,
@@ -318,12 +395,6 @@ const deleteUser = (req, res) => {
 
 //get total number of users
 const getTotalUsers = (req, res) => {
-  // if (req.user.role !== 'admin' && req.user.role !== 'superadmin') {
-  //   return res.status(403).json({
-  //     status: false,
-  //     message: "Access denied. Only admins can view total users.",
-  //   });
-  // }
   User.countDocuments()
     .then(count => {
       res.status(200).json({
@@ -342,30 +413,116 @@ const getTotalUsers = (req, res) => {
 }
 
 //signup with google
+// const signupWithGoogle = (req, res) => {
+//   const { googleToken } = req.body;
+//   if (!googleToken) {
+//     return res.status(400).json({
+//       status: false,
+//       message: "Could not be signed up with Google.",
+//     });
+//   }
+
+//   //decode the token
+//   const decoded= jwt.decode(googleToken, {complete: true})
+//   if(!decoded){
+//     res.status(400).json({
+//       status: false,
+//       message: "Invalid Google token",
+//     });
+//   }
+
+//   //check if user already exists
+//   User.findOne({ email: decoded.payload.email })
+//     .then(existingUser => {
+//       if (existingUser && existingUser.googleId) {
+//         return res.status(200).json({
+//           status: true,
+//           message: "Already registered. Signing in instead.",
+//         });
+//       }
+
+//       return new User({
+//           name: `${decoded.payload.given_name} ${decoded.payload.family_name}`,
+//           email: decoded.payload.email,
+//           password,
+//           phone,
+//           image: decoded.payload.picture,
+//           country,
+//           job,
+//           role: "customer"
+//         })
+//     })
+//   .then((newUser)=>{
+//     res.status(200).json({
+//     status: true,
+//     message: "Google token decoded successfully",
+//     data: newUser,
+//   });
+//   })
+//   .catch((error)=>{
+//     res.status(500).json({
+//       status: false,
+//       message: "Error decoding Google token",
+//       error,
+//     });
+//   })
+// };
 const signupWithGoogle = (req, res) => {
   const { googleToken } = req.body;
+
   if (!googleToken) {
-    return res.status(400).json({
-      status: false,
-      message: "Could not be signed up with Google.",
-    });
+    return res.status(400).json({ status: false, message: "Google token is missing." });
   }
 
-  //decode the token
-  const decoded= jwt.decode(googleToken, {complete: true})
-  console.log(decoded)
-  if(!decoded){
-    res.status(400).json({
-      status: false,
-      message: "Invalid Google token",
-    });
+  let decoded;
+  try {
+    decoded = jwt.decode(googleToken);
+    if (!decoded) throw new Error("Invalid Google token");
+  } catch (err) {
+    return res.status(400).json({ status: false, message: "Invalid Google token." });
   }
 
-  res.status(200).json({
-    status: true,
-    message: "Google token decoded successfully",
-    data: decoded,
-  });
+  const { email, given_name, family_name, picture, sub } = decoded;
+
+  User.findOne({ email })
+    .then(existingUser => {
+      if (existingUser) {
+        if (!existingUser.googleId) {
+          return res.status(400).json({
+            status: false,
+            message: "Email is already registered manually. Please login with email and password.",
+          });
+        }
+
+        return res.status(200).json({
+          status: true,
+          message: "Signed in successfully",
+          user: existingUser,
+        });
+      }
+
+      const newUser = new User({
+        name: `${given_name} ${family_name}`,
+        email,
+        image: picture,
+        googleId: sub,
+        role: "customer",
+      });
+
+      return newUser.save().then(savedUser => {
+        res.status(201).json({
+          status: true,
+          message: "Signed up successfully with Google",
+          user: savedUser,
+        });
+      });
+    })
+    .catch(err => {
+      console.error("Google signup error:", err);
+      if (!res.headersSent) {
+        res.status(500).json({ status: false, message: "Internal server error", error: err.message });
+      }
+    });
 };
 
 export { signupUser,

@@ -12,7 +12,9 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true,
+    required: function(){
+      return !this.googleId;
+    },
   },
   phone: {
     type: String,
@@ -35,7 +37,11 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     default: 'customer',
-  }
+  },
+  googleId: {
+    type: String,
+    default: '',
+  },
 }, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);
