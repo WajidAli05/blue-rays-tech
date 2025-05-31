@@ -20,6 +20,105 @@ const userUploadDir = path.join(__dirname, '../uploads/users');
 //create instance of Google OAuth2 client
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
+const signupUser = (req, res) => {
+  const { name, email, password, phone, job, country } = req.body;
+  const file = req.file;
+
+  // Validate required fields
+  if (!name || !email || !password || !phone || !job || !country) {
+    return res.status(400).json({
+      status: false,
+      message: "All fields are required",
+    });
+  }
+
+  // Optional: validate email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({
+      status: false,
+      message: "Please provide a valid email",
+    });
+  }
+
+  // Handle image validation
+  let image = "";
+  if (file) {
+    if (!file.mimetype.startsWith("image/")) {
+      return res.status(400).json({
+        status: false,
+        message: "Only image files are allowed",
+      });
+    }
+    image = `/uploads/users/${file.filename}`; 
+  }
+
+
+  // Check for existing user
+  User.findOne({ email })
+    .then(existingUser => {
+      if (existingUser) {
+        if (existingUser.googleId) {
+          return res.status(400).json({
+            status: false,
+            message: "Email is registered with Google. Please sign in with Google.",
+          });
+        }
+
+        return res.status(400).json({
+          status: false,
+          message: "A user with this email already exists",
+        });
+      }
+
+      return bcrypt.hash(password, 10);
+    })
+    .then(hashedPassword => {
+      if (!hashedPassword) return;
+
+      const newUser = new User({
+        name,
+        email,
+        password: hashedPassword,
+        phone,
+        job,
+        country,
+        image,
+        role: "customer",
+      });
+
+      return newUser.save();
+    })
+    .then(savedUser => {
+      if (savedUser) {
+        res.status(201).json({
+          status: true,
+          message: "User signed up successfully",
+          data: {
+            userId: savedUser._id,
+            name: savedUser.name,
+            email: savedUser.email,
+            phone: savedUser.phone,
+            image: savedUser.image,
+            country: savedUser.country,
+            job: savedUser.job,
+            role: savedUser.role,
+          },
+        });
+      }
+    })
+    .catch(err => {
+      console.error("Signup error:", err);
+      if (!res.headersSent) {
+        res.status(500).json({
+          status: false,
+          message: "Internal server error",
+          error: err.message,
+        });
+      }
+    });
+};
+
 //add a new user
 // const signupUser = (req, res) => {
 //   const { name, email, password, phone, country, job } = req.body;
@@ -113,62 +212,6 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 //login user
 
 
-const signupUser = (req, res) => {
-  const { name, email, password, phone, job, country } = req.body;
-
-  if (!name || !email || !password || !phone || !job || !country) {
-    return res.status(400).json({ status: false, message: "All fields are required" });
-  }
-
-  User.findOne({ email })
-    .then(existingUser => {
-      if (existingUser) {
-        if (existingUser.googleId) {
-          return res.status(400).json({
-            status: false,
-            message: "Email is registered with Google. Please sign in with Google.",
-          });
-        }
-
-        return res.status(400).json({
-          status: false,
-          message: "A user with this email already exists",
-        });
-      }
-
-      return bcrypt.hash(password, 10);
-    })
-    .then(hashedPassword => {
-      if (!hashedPassword) return; 
-
-      const newUser = new User({
-        name,
-        email,
-        password: hashedPassword,
-        phone,
-        job,
-        country,
-        role: "customer",
-      });
-
-      return newUser.save();
-    })
-    .then(savedUser => {
-      if (savedUser) {
-        res.status(201).json({
-          status: true,
-          message: "User signed up successfully",
-          user: savedUser,
-        });
-      }
-    })
-    .catch(err => {
-      console.error("Signup error:", err);
-      if (!res.headersSent) {
-        res.status(500).json({ status: false, message: "Internal server error", error: err.message });
-      }
-    });
-};
 
 //manual login user
 const loginUser = (req, res) => {
