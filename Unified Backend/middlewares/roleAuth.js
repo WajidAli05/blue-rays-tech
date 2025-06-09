@@ -1,67 +1,150 @@
+// // import Admin from '../models/adminModel.js';
+// // import User from '../models/userModel.js';
+
+// // const validateRole = (req, res, next) => {
+// //   const email = req.user?.email;
+
+// //   if (!email) {
+// //     return res.status(401).json({
+// //       status: false,
+// //       message: "Unauthorized: No email found in token!",
+// //       data: null
+// //     });
+// //   }
+
+// //   // Step 1: Check Admin collection
+// //   Admin.findOne({ email })
+// //     .then(admin => {
+// //       if (admin) {
+// //         if (!admin.isActive) {
+// //           return res.status(403).json({
+// //             status: false,
+// //             message: 'Admin is inactive',
+// //             data: null
+// //           });
+// //         }
+// //         if (!["admin", "superadmin"].includes(admin.role)) {
+// //           return res.status(403).json({
+// //             status: false,
+// //             message: 'You are not authorized as admin!',
+// //             data: null
+// //           });
+// //         }
+// //         req.user = admin;
+// //         req.user.role = admin.role;
+// //         return next();
+// //       }
+
+// //       // Step 2: Not an admin — check User collection
+// //       return User.findOne({ email });
+// //     })
+// //     .then(user => {
+// //       if (!user) {
+// //         return res.status(404).json({
+// //           status: false,
+// //           message: 'User not found',
+// //           data: null
+// //         });
+// //       }
+
+// //       req.user = user;
+// //       req.user.role = user.role || 'customer'; // Fallback if role missing
+// //       return next();
+// //     })
+// //     .catch(err => {
+// //       return res.status(500).json({
+// //         status: false,
+// //         message: 'Internal server error: ' + err.message,
+// //         data: null
+// //       });
+// //     });
+// // };
+
+// // export { validateRole };
+
+
+// // middlewares/validateRole.js
 // import Admin from '../models/adminModel.js';
 // import User from '../models/userModel.js';
 
-// const validateRole = (req, res, next) => {
-//   const email = req.user?.email;
+// /**
+//  * Middleware to validate user/admin role and optionally restrict to allowed roles.
+//  * @param {Array} allowedRoles - Optional array of roles allowed to proceed.
+//  */
+// const validateRole = (allowedRoles = []) => {
+//   return (req, res, next) => {
+//     const email = req.user?.email;
 
-//   if (!email) {
-//     return res.status(401).json({
-//       status: false,
-//       message: "Unauthorized: No email found in token!",
-//       data: null
-//     });
-//   }
-
-//   // Step 1: Check Admin collection
-//   Admin.findOne({ email })
-//     .then(admin => {
-//       if (admin) {
-//         if (!admin.isActive) {
-//           return res.status(403).json({
-//             status: false,
-//             message: 'Admin is inactive',
-//             data: null
-//           });
-//         }
-//         if (!["admin", "superadmin"].includes(admin.role)) {
-//           return res.status(403).json({
-//             status: false,
-//             message: 'You are not authorized as admin!',
-//             data: null
-//           });
-//         }
-//         req.user = admin;
-//         req.user.role = admin.role;
-//         return next();
-//       }
-
-//       // Step 2: Not an admin — check User collection
-//       return User.findOne({ email });
-//     })
-//     .then(user => {
-//       if (!user) {
-//         return res.status(404).json({
-//           status: false,
-//           message: 'User not found',
-//           data: null
-//         });
-//       }
-
-//       req.user = user;
-//       req.user.role = user.role || 'customer'; // Fallback if role missing
-//       return next();
-//     })
-//     .catch(err => {
-//       return res.status(500).json({
+//     if (!email) {
+//       return res.status(401).json({
 //         status: false,
-//         message: 'Internal server error: ' + err.message,
+//         message: "Unauthorized: No email found in token!",
 //         data: null
 //       });
-//     });
+//     }
+
+//     // Try finding user in Admins
+//     Admin.findOne({ email })
+//       .then(admin => {
+//         if (admin) {
+//           if (!admin.isActive) {
+//             return res.status(403).json({
+//               status: false,
+//               message: 'Admin is inactive',
+//               data: null
+//             });
+//           }
+
+//           req.user = admin;
+//           req.user.role = admin.role;
+
+//           if (allowedRoles.length > 0 && !allowedRoles.includes(admin.role)) {
+//             return res.status(403).json({
+//               status: false,
+//               message: 'Access denied: Role not authorized',
+//               data: null
+//             });
+//           }
+
+//           return next();
+//         }
+
+//         // Not an admin, check Users
+//         return User.findOne({ email });
+//       })
+//       .then(user => {
+//         if (!user) {
+//           return res.status(404).json({
+//             status: false,
+//             message: 'User not found',
+//             data: null
+//           });
+//         }
+
+//         req.user = user;
+//         req.user.role = user.role || 'customer';
+
+//         if (allowedRoles.length > 0 && !allowedRoles.includes(req.user.role)) {
+//           return res.status(403).json({
+//             status: false,
+//             message: 'Access denied: Role not authorized',
+//             data: null
+//           });
+//         }
+
+//         return next();
+//       })
+//       .catch(err => {
+//         return res.status(500).json({
+//           status: false,
+//           message: 'Internal server error: ' + err.message,
+//           data: null
+//         });
+//       });
+//   };
 // };
 
 // export { validateRole };
-
 
 // middlewares/validateRole.js
 import Admin from '../models/adminModel.js';
@@ -83,7 +166,6 @@ const validateRole = (allowedRoles = []) => {
       });
     }
 
-    // Try finding user in Admins
     Admin.findOne({ email })
       .then(admin => {
         if (admin) {
@@ -95,9 +177,6 @@ const validateRole = (allowedRoles = []) => {
             });
           }
 
-          req.user = admin;
-          req.user.role = admin.role;
-
           if (allowedRoles.length > 0 && !allowedRoles.includes(admin.role)) {
             return res.status(403).json({
               status: false,
@@ -106,33 +185,34 @@ const validateRole = (allowedRoles = []) => {
             });
           }
 
+          req.user = admin;
+          req.user.role = admin.role;
+          return next(); // ✅ Early return, stops execution here
+        }
+
+        // Only proceed to User check if not found in Admins
+        return User.findOne({ email }).then(user => {
+          if (!user) {
+            return res.status(404).json({
+              status: false,
+              message: 'User not found',
+              data: null
+            });
+          }
+
+          req.user = user;
+          req.user.role = user.role || 'customer';
+
+          if (allowedRoles.length > 0 && !allowedRoles.includes(req.user.role)) {
+            return res.status(403).json({
+              status: false,
+              message: 'Access denied: Role not authorized',
+              data: null
+            });
+          }
+
           return next();
-        }
-
-        // Not an admin, check Users
-        return User.findOne({ email });
-      })
-      .then(user => {
-        if (!user) {
-          return res.status(404).json({
-            status: false,
-            message: 'User not found',
-            data: null
-          });
-        }
-
-        req.user = user;
-        req.user.role = user.role || 'customer';
-
-        if (allowedRoles.length > 0 && !allowedRoles.includes(req.user.role)) {
-          return res.status(403).json({
-            status: false,
-            message: 'Access denied: Role not authorized',
-            data: null
-          });
-        }
-
-        return next();
+        });
       })
       .catch(err => {
         return res.status(500).json({
