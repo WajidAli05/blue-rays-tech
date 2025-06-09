@@ -74,7 +74,106 @@ const getAnnouncements = (req, res) => {
     });
 };
 
+// Edit a specific message inside an announcement document
+const editAnnouncement = (req, res) => {
+  const { announcementId, messageId } = req.params;
+  const { message, isActive } = req.body;
+
+  // Validate message input
+  if (!message || typeof message !== 'string' || message.trim().length === 0) {
+    return res.status(400).json({
+      status: false,
+      message: "Message field is required and cannot be empty."
+    });
+  }
+
+  AnnouncementBar.findOneAndUpdate(
+    { _id: announcementId },
+    {
+      $set: {
+        "messages.$[elem].text": message.trim(),
+        "messages.$[elem].isActive": isActive
+      }
+    },
+    {
+      arrayFilters: [{ "elem._id": messageId }],
+      new: true
+    }
+  )
+    .then(updatedAnnouncement => {
+      if (!updatedAnnouncement) {
+        return res.status(404).json({
+          status: false,
+          message: "Announcement or message not found."
+        });
+      }
+
+      return res.status(200).json({
+        status: true,
+        message: "Message updated successfully.",
+        data: updatedAnnouncement
+      });
+    })
+    .catch(err => {
+      console.error("Failed to update message:", err);
+      if (!res.headersSent) {
+        return res.status(500).json({
+          status: false,
+          message: "Server error while updating message.",
+          error: err.message
+        });
+      }
+    });
+};
+
+
+// Delete a specific message inside an announcement
+const deleteAnnouncement = (req, res) => {
+  const { announcementId, messageId } = req.params;
+
+  // Validate IDs
+  if (!announcementId || !messageId) {
+    return res.status(400).json({
+      status: false,
+      message: "Announcement ID and Message ID are required."
+    });
+  }
+
+  // Use $pull to remove the message from the array
+  AnnouncementBar.findByIdAndUpdate(
+    announcementId,
+    { $pull: { messages: { _id: messageId } } },
+    { new: true }
+  )
+  .then(updatedDoc => {
+    if (!updatedDoc) {
+      return res.status(404).json({
+        status: false,
+        message: "Announcement not found."
+      });
+    }
+
+    return res.status(200).json({
+      status: true,
+      message: "Message deleted successfully.",
+      data: updatedDoc
+    });
+  })
+  .catch(error => {
+    console.error("Delete failed:", error);
+    if (!res.headersSent) {
+      return res.status(500).json({
+        status: false,
+        message: "Failed to delete message.",
+        error: error.message
+      });
+    }
+  });
+};
+
 export {
   createAnnouncement,
-  getAnnouncements
+  getAnnouncements,
+  editAnnouncement,
+  deleteAnnouncement
 };
