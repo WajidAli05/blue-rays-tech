@@ -95,61 +95,6 @@ const categories = [
     subCategories: ['Skincare', 'Haircare', 'Supplements', 'Makeup']
   },
   {
-    label: 'Automotive',
-    key: '8',
-    subCategories: ['Car Accessories', 'Motorbike Accessories', 'Tools']
-  },
-  {
-    label: 'Grocery',
-    key: '9',
-    subCategories: ['Snacks', 'Beverages', 'Organic', 'Daily Essentials']
-  },
-  {
-    label: 'Pet Supplies',
-    key: '10',
-    subCategories: ['Food', 'Toys', 'Grooming', 'Health']
-  },
-  {
-    label: 'Office Supplies',
-    key: '11',
-    subCategories: ['Stationery', 'Furniture', 'Electronics']
-  },
-  {
-    label: 'Music',
-    key: '12',
-    subCategories: ['Instruments', 'CDs', 'Vinyl']
-  },
-  {
-    label: 'Video Games',
-    key: '13',
-    subCategories: ['Consoles', 'Games', 'Accessories']
-  },
-  {
-    label: 'Movies & TV',
-    key: '14',
-    subCategories: ['DVDs', 'Blu-ray', 'Streaming Devices']
-  },
-  {
-    label: 'Collectibles',
-    key: '15',
-    subCategories: ['Stamps', 'Coins', 'Action Figures']
-  },
-  {
-    label: 'Handmade',
-    key: '16',
-    subCategories: ['Jewelry', 'Home Decor', 'Gifts']
-  },
-  {
-    label: 'Arts & Crafts',
-    key: '17',
-    subCategories: ['Supplies', 'Paints', 'Brushes']
-  },
-  {
-    label: 'Baby Products',
-    key: '18',
-    subCategories: ['Diapers', 'Clothing', 'Toys']
-  },
-  {
     label: 'Jewelry',
     key: '19',
     subCategories: ['Necklaces', 'Rings', 'Earrings']
