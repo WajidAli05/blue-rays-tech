@@ -8,7 +8,8 @@
     "seed:categories": "node seed/seedCategories.js",
     "seed:affiliates": "node seed/seedAffiliatePrograms.js",
     "seed:filetypes": "node seed/seedFileTypes.js",
-    "seed:users": "node seed/seedUsers.js"
+    "seed:users": "node seed/seedUsers.js",
+    "seed:products": "node seed/seedProducts.js"
   },
   "type": "module",
   "keywords": [],

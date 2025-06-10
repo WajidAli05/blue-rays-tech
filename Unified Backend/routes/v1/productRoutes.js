@@ -30,7 +30,7 @@ const upload = multer({ storage });
 
 // Routes
 router.post('/product', validateToken, validateRole(['admin', 'superadmin']), upload.array('image_link', 10), addProduct);
-router.get('/products', validateRole(), getProducts);
+router.get('/products', validateToken, validateRole(), getProducts);
 router.put('/product', validateToken, validateRole(['admin', 'superadmin']), upload.array('image_link', 10), updateProduct);
 router.delete('/product', validateToken, validateRole(['admin', 'superadmin']), upload.none(), deleteProduct);
 router.delete('/product/image', validateToken, validateRole(['admin', 'superadmin']), deleteProductImages);

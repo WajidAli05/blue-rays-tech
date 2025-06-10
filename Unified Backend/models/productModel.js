@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 const productSchema = new mongoose.Schema({
     name: { type: String, required: true },
     category: { type: String, required: true },
+      subcategory: { type: String, required: true },
     product_type: { type: String, enum: ['physical', 'digital', 'affiliate'], required: true },
     sku: { type: String, required: true, unique: true },
     brand: { type: String },
