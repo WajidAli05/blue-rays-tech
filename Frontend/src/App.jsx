@@ -10,6 +10,7 @@ import UserDetailsPage from './pages/UserDetailsPage';
 import UserNotFoundPage from './pages/UserNotFoundPage';
 import ProductDetailsPage from './pages/ProductDetailsPage';
 import PrivateRoutes from '../routes/PrivateRoutes';
+import Announcements from "./pages/Announcements";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/" element={<Dashboard />} />
         <Route path="/users" element={<UsersPage />} />
         <Route path="/add-product" element={<AddProductPage />} />
+        <Route path="/announcements" element={<Announcements />} />
         <Route path="/orders" element={<OrdersPage />} />
         <Route path="/products-listing" element={<ProductsListingPage />} />
         <Route path="/user-not-found" element={<UserNotFoundPage />} />

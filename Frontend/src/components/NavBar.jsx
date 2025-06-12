@@ -5,7 +5,8 @@ import {
   ProductOutlined,
   UsergroupAddOutlined,
   ShoppingCartOutlined,
-  LogoutOutlined
+  LogoutOutlined,
+  SoundOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { Tooltip } from 'antd';
@@ -62,6 +63,18 @@ const NavBar = () => {
             >
               <a href="/add-product" className="nav-link">
                 <AppstoreAddOutlined /> Add Product
+              </a>
+            </Tooltip>
+          </li>
+          <li>
+            <Tooltip
+              color="white"
+              title="Announcements"
+              placement="top"
+              overlayInnerStyle={tooltipStyle}
+            >
+              <a href="/announcements" className="nav-link">
+                <SoundOutlined /> Announcements
               </a>
             </Tooltip>
           </li>

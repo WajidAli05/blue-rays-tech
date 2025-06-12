@@ -45,7 +45,7 @@ const createAnnouncement = (req, res) => {
     });
 };
 
-// Get active messages only
+// Get messages
 const getAnnouncements = (req, res) => {
   AnnouncementBar.findOne()
     .then(announcement => {
@@ -56,13 +56,10 @@ const getAnnouncements = (req, res) => {
         });
       }
 
-      // Filter only active messages
-      const activeMessages = announcement.messages.filter(msg => msg.isActive);
-
       return res.status(200).json({
         status: true,
-        message: "Active announcements retrieved successfully.",
-        data: activeMessages
+        message: "Announcements retrieved successfully.",
+        data: announcement
       });
     })
     .catch(err => {

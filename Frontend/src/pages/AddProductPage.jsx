@@ -193,7 +193,6 @@ const handleCategoryChange = (value) => {
 
 //handle form submission
 const handleFormSubmit = (values) => {
-    console.log(values)
   setSubmitting(true);
   const formData = new FormData();
 
