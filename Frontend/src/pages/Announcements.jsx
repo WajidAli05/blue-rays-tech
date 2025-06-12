@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Button,
   Input,
@@ -9,6 +10,7 @@ import {
   Modal,
   Tag,
   Divider,
+  Breadcrumb
 } from 'antd';
 import {
   EditOutlined,
@@ -35,7 +37,7 @@ const Announcements = () => {
       .then((res) => res.json())
       .then((data) => {
         if (data.status) {
-          setAnnouncements(data.data.messages);
+          setAnnouncements(data.data.announcement);
         } else {
           message.error('Failed to load announcements');
         }
@@ -69,27 +71,28 @@ const Announcements = () => {
       .catch(() => message.error('Request failed'));
   };
 
-  const handleDelete = (id) => {
-    Modal.confirm({
-      title: 'Confirm Deletion',
-      content: 'Are you sure you want to delete this message?',
-      onOk: () => {
-        fetch(`http://localhost:3001/api/v1/announcement/${id}`, {
-          method: 'DELETE',
+const handleDelete = (messageId) => {
+  Modal.confirm({
+    title: 'Confirm Deletion',
+    content: 'Are you sure you want to delete this message?',
+    onOk: () => {
+      fetch(`http://localhost:3001/api/v1/announcement/${messageId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.status) {
+            message.success('Deleted successfully');
+            fetchAnnouncements();
+          } else {
+            message.error(data.message || 'Failed to delete');
+          }
         })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.status) {
-              message.success('Deleted successfully');
-              fetchAnnouncements();
-            } else {
-              message.error('Failed to delete');
-            }
-          })
-          .catch(() => message.error('Network error'));
-      },
-    });
-  };
+        .catch(() => message.error('Network error'));
+    },
+  });
+};
 
   const handleDeactivate = (id) => {
     fetch(`http://localhost:3001/api/v1/announcement/${id}`, {
@@ -111,128 +114,141 @@ const Announcements = () => {
       .catch(() => message.error('Network error'));
   };
 
-  const handleUpdate = (id) => {
-    if (!editingText.trim()) return message.warning('Message cannot be empty');
+ const handleUpdate = (messageId) => {
+  if (!editingText.trim()) return message.warning('Message cannot be empty');
 
-    fetch(`http://localhost:3001/api/v1/announcement/${id}`, {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ text: editingText }),
+  fetch(`http://localhost:3001/api/v1/announcements/${messageId}`, {
+    method: 'PUT',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ message: editingText }),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.status) {
+        message.success('Updated successfully');
+        setEditingId(null);
+        fetchAnnouncements();
+      } else {
+        message.error(data.message || 'Update failed');
+      }
     })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.status) {
-          message.success('Updated successfully');
-          setEditingId(null);
-          fetchAnnouncements();
-        } else {
-          message.error('Update failed');
-        }
-      })
-      .catch(() => message.error('Network error'));
-  };
+    .catch(() => message.error('Network error'));
+};
 
   useEffect(() => {
     fetchAnnouncements();
   }, []);
 
-  return (
-    <>
+return (
+  <>
     <NavBar />
-    <Divider plain style={{borderColor: 'white'}}><Title style={{color: 'white'}}>Announcement Management</Title></Divider>
+    <Breadcrumb
+        separator='>'
+        items={[
+        {
+            title: <Link to='/'><span className='breadcrum-title'>Home</span></Link>,
+        },
+        {
+            title: <span className='breadcrum-title'>Announcement Management</span>,
+        },
+        ]}
+    />
+    <Divider plain style={{ borderColor: 'white' }}>
+      <Title style={{ color: 'white' }}>Announcement Management</Title>
+    </Divider>
     <div className="announcement-wrapper">
-        <div className="announcement-content">
+      <div className="announcement-content">
         {/* Form */}
         <div className="announcement-form">
-            <Space.Compact style={{ width: '100%' }}>
+          <Space.Compact style={{ width: '100%' }}>
             <Input
-                placeholder="Enter announcement message"
-                value={newText}
-                onChange={(e) => setNewText(e.target.value)}
+              placeholder="Enter announcement message"
+              value={newText}
+              onChange={(e) => setNewText(e.target.value)}
             />
             <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-                Add
+              Add
             </Button>
-            </Space.Compact>
+          </Space.Compact>
         </div>
 
         {/* List */}
         <List
-            header={<h3>All Announcements</h3>}
-            dataSource={announcements}
-            bordered
-            renderItem={(item) => (
+          header={<h3>All Announcements</h3>}
+          dataSource={announcements}
+          bordered
+          renderItem={(item) => (
             <List.Item
-                className="announcement-item"
-                actions={[
+              className="announcement-item"
+              actions={[
                 item.isActive && (
-                    <Button type="link" onClick={() => handleDeactivate(item._id)}>
+                  <Button type="link" onClick={() => handleDeactivate(item._id)}>
                     Deactivate
-                    </Button>
+                  </Button>
                 ),
                 editingId === item._id ? (
-                    <>
+                  <>
                     <Button
-                        type="link"
-                        icon={<CheckOutlined />}
-                        onClick={() => handleUpdate(item._id)}
+                      type="link"
+                      icon={<CheckOutlined />}
+                      onClick={() => handleUpdate(item._id)}
                     />
                     <Button
-                        type="link"
-                        icon={<CloseOutlined />}
-                        onClick={() => {
+                      type="link"
+                      icon={<CloseOutlined />}
+                      onClick={() => {
                         setEditingId(null);
                         setEditingText('');
-                        }}
+                      }}
                     />
-                    </>
+                  </>
                 ) : (
-                    <Button
+                  <Button
                     type="primary"
                     icon={<EditOutlined />}
                     onClick={() => {
-                        setEditingId(item._id);
-                        setEditingText(item.text);
+                      setEditingId(item._id);
+                      setEditingText(item.message); // <-- FIXED
                     }}
-                    >
+                  >
                     Edit
-                    </Button>
+                  </Button>
                 ),
                 <Button
-                    type="link"
-                    icon={<DeleteOutlined />}
-                    danger
-                    onClick={() => handleDelete(item._id)}
+                  type="link"
+                  icon={<DeleteOutlined />}
+                  danger
+                  onClick={() => handleDelete(item._id)}
                 />,
-                ].filter(Boolean)}
+              ].filter(Boolean)}
             >
-                <div style={{ flex: 1 }}>
+              <div style={{ flex: 1 }}>
                 {editingId === item._id ? (
-                    <Input
+                  <Input
                     value={editingText}
                     onChange={(e) => setEditingText(e.target.value)}
-                    />
+                  />
                 ) : (
-                    <>
-                    <Typography.Text>{item.text}</Typography.Text>{' '}
+                  <>
+                    <Typography.Text>{item.message}</Typography.Text> {/* <-- FIXED */}
                     {item.isActive ? (
-                        <Tag color="green">Active</Tag>
+                      <Tag color="green">Active</Tag>
                     ) : (
-                        <Tag color="default">Inactive</Tag>
+                      <Tag color="default">Inactive</Tag>
                     )}
-                    </>
+                  </>
                 )}
-                </div>
+              </div>
             </List.Item>
-            )}
+          )}
         />
-        </div>
+      </div>
     </div>
-    </>
-  );
+  </>
+);
 };
 
 export default Announcements;

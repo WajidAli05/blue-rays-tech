@@ -1,26 +1,25 @@
 import mongoose from 'mongoose';
 
-const messageSchema = new mongoose.Schema({
-  text: {
-    type: String,
-    required: true,
-    trim: true
+const announcementBarSchema = new mongoose.Schema(
+  {
+    announcement: [
+      {
+        message: {
+          type: String,
+          required: true,
+          trim: true,
+          default: '',
+        },
+        isActive: {
+          type: Boolean,
+          default: true,
+        },
+      },
+    ],
   },
-  isActive: {
-    type: Boolean,
-    default: true
+  {
+    timestamps: true,
   }
-}, {
-  timestamps: true 
-});
-
-const announcementBarSchema = new mongoose.Schema({
-  messages: {
-    type: [messageSchema],
-    default: []
-  }
-}, {
-  timestamps: true  
-});
+);
 
 export default mongoose.model('AnnouncementBar', announcementBarSchema);
