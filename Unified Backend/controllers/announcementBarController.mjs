@@ -138,9 +138,9 @@ const editAnnouncement = (req, res) => {
 
 
 const deleteAnnouncement = (req, res) => {
-  const { messageId } = req.params;
+  const { id } = req.params;
 
-  if (!messageId) {
+  if (!id) {
     return res.status(400).json({
       status: false,
       message: "Message ID is required.",
@@ -148,8 +148,8 @@ const deleteAnnouncement = (req, res) => {
   }
 
   AnnouncementBar.findOneAndUpdate(
-    { "announcement._id": messageId },
-    { $pull: { announcement: { _id: messageId } } },
+    { "announcement._id": id },
+    { $pull: { announcement: { _id: id } } },
     { new: true }
   )
     .then(updatedDoc => {
