@@ -176,10 +176,90 @@ const deleteAnnouncement = (req, res) => {
     });
 };
 
+const deactivateAnnouncement = (req, res) => {
+  const { messageId } = req.params;
+
+  if (!messageId) {
+    return res.status(400).json({
+      status: false,
+      message: "Message ID is required.",
+    });
+  }
+
+  AnnouncementBar.findOneAndUpdate(
+    { "announcement._id": messageId },
+    { $set: { "announcement.$.isActive": false } },
+    { new: true }
+  )
+    .then(updatedDoc => {
+      if (!updatedDoc) {
+        return res.status(404).json({
+          status: false,
+          message: "Message not found.",
+        });
+      }
+
+      return res.status(200).json({
+        status: true,
+        message: "Message deactivated successfully.",
+        data: updatedDoc,
+      });
+    })
+    .catch(error => {
+      console.error("Deactivate failed:", error);
+      return res.status(500).json({
+        status: false,
+        message: "Failed to deactivate message.",
+        error: error.message,
+      });
+    });
+}
+
+//activate announcement
+const activateAnnouncement = (req, res) => {
+  const { messageId } = req.params;
+
+  if (!messageId) {
+    return res.status(400).json({
+      status: false,
+      message: "Message ID is required.",
+    });
+  }
+
+  AnnouncementBar.findOneAndUpdate(
+    { "announcement._id": messageId },
+    { $set: { "announcement.$.isActive": true } },
+    { new: true }
+  )
+    .then(updatedDoc => {
+      if (!updatedDoc) {
+        return res.status(404).json({
+          status: false,
+          message: "Message not found.",
+        });
+      }
+
+      return res.status(200).json({
+        status: true,
+        message: "Message activated successfully.",
+        data: updatedDoc,
+      });
+    })
+    .catch(error => {
+      console.error("Activate failed:", error);
+      return res.status(500).json({
+        status: false,
+        message: "Failed to activate message.",
+        error: error.message,
+      });
+    });
+}
 
 export {
   createAnnouncement,
   getAnnouncements,
   editAnnouncement,
-  deleteAnnouncement
+  deleteAnnouncement,
+  deactivateAnnouncement,
+  activateAnnouncement
 };
