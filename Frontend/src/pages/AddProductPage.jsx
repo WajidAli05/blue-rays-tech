@@ -52,6 +52,7 @@ const AddProductPage = () => {
     const [affiliatePrograms, setAffiliatePrograms] = useState([]);
     const [fileTypes, setFileTypes] = useState([]);
     const [submitting, setSubmitting] = useState(false);
+    const [subcategories, setSubcategories] = useState([]);
 
     //fetch categories from the API
     useEffect(() => {
@@ -71,7 +72,10 @@ const AddProductPage = () => {
 
     //fetch products from the API
     useEffect(() => {
-        fetch('http://localhost:3001/api/v1/products')
+        fetch('http://localhost:3001/api/v1/products', {
+            method: 'GET',
+            credentials: 'include',
+        })
             .then((data)=> data.json())
             .then((data) => {
                 setProducts(data.data);
@@ -102,8 +106,11 @@ const AddProductPage = () => {
     }, [])
 
     //fetch file types from the API
-        useEffect(() => {
-        fetch('http://localhost:3001/api/v1/file-types')
+    useEffect(() => {
+        fetch('http://localhost:3001/api/v1/file-types',{
+            method: 'GET',
+            credentials: 'include',
+        })
             .then((response) => response.json())
             .then((data) => {
                 setFileTypes(data.data);
@@ -150,13 +157,49 @@ const AddProductPage = () => {
     }
 };
 
+const fetchSubcategories = (categoryId) => {
+  if (!categoryId) {
+    setSubcategories([]);
+    return;
+  }
+
+  fetch(`http://localhost:3001/api/v1/categories/${categoryId}/subcategories`, {
+    method: 'GET',
+    credentials: 'include'
+  })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Failed to fetch subcategories");
+      }
+      return res.json();
+    })
+    .then((data) => {
+      const formatted = (data.data || []).map((sub) => ({
+        label: sub,
+        value: sub,
+      }));
+      setSubcategories(formatted);
+    })
+    .catch((err) => {
+      console.error("Error fetching subcategories:", err);
+      setSubcategories([]);
+    });
+};
+
+const handleCategoryChange = (value) => {
+  form.setFieldsValue({ sub_category: undefined });
+  fetchSubcategories(value);
+};
+
 //handle form submission
 const handleFormSubmit = (values) => {
+    console.log(values)
   setSubmitting(true);
   const formData = new FormData();
 
   formData.append('name', values.name);
   formData.append('category', values.category);
+  formData.append('sub_category', values.sub_category)
   formData.append('product_type', values.product_type);
   formData.append('sku', values.sku);
   formData.append('brand', values.brand || '');
@@ -189,6 +232,7 @@ const handleFormSubmit = (values) => {
   fetch('http://localhost:3001/api/v1/product', {
     method: 'POST',
     body: formData,
+    credentials: 'include'
   })
     .then((response) => response.json())
     .then((data) => {
@@ -269,10 +313,27 @@ const handleFormSubmit = (values) => {
                     name="category"
                     rules={[{ required: true, message: 'No category selected!' }]}
                 >
-                    <Select placeholder="Select a category" allowClear>
+                    <Select placeholder="Select a category" allowClear onChange={handleCategoryChange}>
                         {categories.map((category) => (
-                            <Select.Option key={category.key} value={category.key}>
+                            <Select.Option key={category.key} value={category._id}>
                                 {category.label}
+                            </Select.Option>
+                        ))}
+                    </Select>
+                </Form.Item>
+
+                {/* {Sub category} */}
+                <Form.Item
+                    className='form-item'
+                    label="Sub Category"
+                    name="sub_category"
+                    options={subcategories}
+                    rules={[{ required: true, message: 'No sub category selected!' }]}
+                >
+                    <Select placeholder="Select a sub category" allowClear>
+                        {subcategories.map((sub) => (
+                            <Select.Option key={sub.value} value={sub.value}>
+                                {sub.label}
                             </Select.Option>
                         ))}
                     </Select>

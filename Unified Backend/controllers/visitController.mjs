@@ -23,7 +23,7 @@ const increaseVisitCount = (req, res) => {
 
 //get total visits so far
 const getVisitCount = (req, res) => {
-  if(req.user.role !== 'admin' && req.user.role !== 'superadmin') {
+  if(req.user?.role !== 'admin' && req.user?.role !== 'superadmin') {
     return res.status(403).json({
       success: false,
       message: "Access denied. Only admins can view visit count.",

@@ -12,16 +12,10 @@ const baseDir = path.join(__dirname, '../uploads');
 
 // addProduct controller
 const addProduct = (req, res) => {
-    // if(req.user.role !== 'admin' && req.user.role !== 'superadmin') {
-    //     return res.status(403).json({ 
-    //         status: false, 
-    //         message: "Access denied. Only admins can add products." 
-    //     });
-    // }
-
     let {
         name,
         category,
+        sub_category,
         product_type,
         sku,
         brand,
@@ -47,7 +41,7 @@ const addProduct = (req, res) => {
     const image_link = files.length > 0 ? files.map(file => file.path) : [];
 
     // Validate required fields
-    if (!name || !category || !product_type || !description || !sku || !price || !stock_level || image_link.length === 0) {
+    if (!name || !category || !sub_category|| !product_type || !description || !sku || !price || !stock_level || image_link.length === 0) {
         return res.status(400).json({ status: false, message: "Please fill all required fields" });
     }
 
@@ -98,6 +92,7 @@ const addProduct = (req, res) => {
             const newProduct = new Products({
                 name,
                 category,
+                sub_category,
                 product_type,
                 sku,
                 brand,
@@ -128,7 +123,7 @@ const addProduct = (req, res) => {
 };
 
 const getProducts = async (req, res) => {
-    const prodcuts = await Products.find()
+    await Products.find()
     .then((products) => {
         return res.status(200).json({ status: true, message: "Products fetched successfully", data: products });
     })

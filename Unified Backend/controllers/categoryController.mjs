@@ -49,6 +49,35 @@ const getTotalCategories = async (req, res) => {
     });
 }
 
+//get sub category by id
+const getSubcategoriesByCategoryId = (req, res) => {
+  const { id } = req.params;
+
+  Categories.findById(id)
+    .then((category) => {
+      if (!category) {
+        return res.status(404).json({
+          status: false,
+          message: "Category not found"
+        });
+      }
+
+      res.status(200).json({
+        status: true,
+        message: "Subcategories fetched successfully",
+        data: Array.isArray(category.subCategories) ? category.subCategories : []
+      });
+    })
+    .catch((error) => {
+      res.status(500).json({
+        status: false,
+        message: "Error fetching subcategories",
+        error
+      });
+    });
+};
+
 export { getCategories,
          getTotalCategories,
+         getSubcategoriesByCategoryId
  };

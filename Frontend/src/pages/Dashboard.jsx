@@ -81,7 +81,10 @@ useEffect(() => {
 
   //fetch total website visits
   useEffect(()=>{
-    fetch('http://localhost:3001/api/v1/visit-count')
+    fetch('http://localhost:3001/api/v1/visit-count' , {
+      method: 'GET',
+      credentials: 'include',
+    })
     .then((response) => response.json())
     .then((data) => {
       setWebsiteVisits(data.data);
