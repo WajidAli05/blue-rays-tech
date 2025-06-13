@@ -17,6 +17,7 @@ const categories = [
   { key: "5", label: "Sports & Outdoors", sub: ["Fitness", "Cycling", "Camping", "Outdoor Gear"] },
   { key: "6", label: "Toys & Games", sub: ["Board Games", "Action Figures", "Puzzles"] },
   { key: "7", label: "Health & Beauty", sub: ["Skincare", "Haircare", "Supplements", "Makeup"] },
+  { key: "8", label: "Digital Products", sub: ["E-books", "Online Courses", "Software", "Music"] }
 ];
 
 const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
@@ -37,7 +38,7 @@ categories.forEach(({ label, sub }) => {
       const base = {
         name: `${subcat} Product ${i}`,
         category: label,
-        subcategory: subcat,
+        sub_category: subcat,
         product_type: type,
         sku: `${subcat.substring(0, 3).toUpperCase()}-${i}-${Date.now() + i}`,
         brand: getRandom(sampleBrands),
