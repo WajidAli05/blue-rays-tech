@@ -50,6 +50,41 @@ const getTotalCategories = async (req, res) => {
 }
 
 //get sub category by id
+const getSubcategoriesByCategoryName = (req, res) => {
+  const categoryName = decodeURIComponent(req.params.categoryName)
+
+    // Add validation
+  if (!categoryName || categoryName === 'undefined' || categoryName === '[object Object]') {
+    return res.status(400).json({
+      status: false,
+      message: "Invalid category name provided"
+    });
+  }
+  Categories.findOne({ label: { $regex: new RegExp(categoryName, 'i') } })
+    .then((category) => {
+      if (!category) {
+        return res.status(404).json({
+          status: false,
+          message: "Category not found"
+        });
+      }
+
+      res.status(200).json({
+        status: true,
+        message: "Subcategories fetched successfully",
+        data: Array.isArray(category.subCategories) ? category.subCategories : []
+      });
+    })
+    .catch((error) => {
+      res.status(500).json({
+        status: false,
+        message: "Error fetching subcategories",
+        error
+      });
+    });
+};
+
+
 const getSubcategoriesByCategoryId = (req, res) => {
   const { id } = req.params;
 
@@ -79,5 +114,6 @@ const getSubcategoriesByCategoryId = (req, res) => {
 
 export { getCategories,
          getTotalCategories,
-         getSubcategoriesByCategoryId
+         getSubcategoriesByCategoryId,
+         getSubcategoriesByCategoryName
  };
