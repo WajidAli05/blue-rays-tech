@@ -90,6 +90,41 @@ const getAnnouncements = (req, res) => {
     });
 };
 
+const getActiveAnnouncements = (req, res) => {
+  AnnouncementBar.findOne()
+    .then((announcement) => {
+      if (!announcement) {
+        return res.status(404).json({
+          status: false,
+          message: 'No announcements found.',
+        });
+      }
+
+      const activeAnnouncements = announcement.announcement.filter(ann => ann.isActive);
+      if (activeAnnouncements.length === 0) {
+        return res.status(404).json({
+          status: false,
+          message: 'No active announcements found.',
+        });
+      }
+
+      return res.status(200).json({
+        status: true,
+        message: "Announcements retrieved successfully.",
+        data: activeAnnouncements
+      });
+    })
+    .catch(err => {
+      return res.status(500).json({
+        status: false,
+        message: "Failed to retrieve announcements.",
+        error: err.message
+      });
+    });
+};
+
+
+
 const editAnnouncement = (req, res) => {
   const { messageId } = req.params;
   const { message, isActive } = req.body;
@@ -261,5 +296,6 @@ export {
   editAnnouncement,
   deleteAnnouncement,
   deactivateAnnouncement,
-  activateAnnouncement
+  activateAnnouncement,
+  getActiveAnnouncements
 };

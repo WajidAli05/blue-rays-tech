@@ -88,7 +88,9 @@ const addProduct = (req, res) => {
             if (productExists) {
                 return res.status(400).json({ status: false, message: "Product already exists" });
             }
-
+            
+            category = category.toLowerCase();
+            sub_category = sub_category.toLowerCase()
             const newProduct = new Products({
                 name,
                 category,
@@ -357,6 +359,119 @@ const getStockLevelByCategory = async (req, res) => {
     })
 }
 
+// Get products based on category name with full/partial and case-insensitive match
+// const getProductsByCategoryName = (req, res) => {
+//     let { category } = req.params;
+
+//     if (!category) {
+//         return res.status(400).json({
+//             status: false,
+//             message: "Category parameter is required"
+//         });
+//     }
+
+//     // Decode URL-encoded characters (like %26 for &)
+//     category = decodeURIComponent(category);
+    
+//     // Debug: Log the incoming category parameter
+//     console.log("Original category param:", req.params.category);
+//     console.log("Decoded category:", category);
+
+//     // Use case-insensitive and partial match with promise chaining
+//     Products.find({
+//         category: { $regex: category, $options: "i" }
+//     })
+//         .then((products) => {
+//             console.log("Found products:", products.length);
+
+//             if (!products || products.length === 0) {
+//                 // Get all unique categories for debugging
+//                 return Products.distinct('category')
+//                     .then((allCategories) => {
+//                         return res.status(404).json({
+//                             status: false,
+//                             message: "No products found for this category",
+//                             debug: {
+//                                 searchedCategory: category,
+//                                 originalParam: req.params.category,
+//                                 availableCategories: allCategories
+//                             }
+//                         });
+//                     })
+//                     .catch((distinctError) => {
+//                         return res.status(404).json({
+//                             status: false,
+//                             message: "No products found for this category",
+//                             debug: {
+//                                 searchedCategory: category,
+//                                 originalParam: req.params.category,
+//                                 distinctError: distinctError.message
+//                             }
+//                         });
+//                     });
+//             }
+
+//             return res.status(200).json({
+//                 status: true,
+//                 message: "Products fetched successfully",
+//                 data: products,
+//                 count: products.length
+//             });
+//         })
+//         .catch((error) => {
+//             console.error("Error in getProductsByCategoryName:", error);
+//             return res.status(500).json({
+//                 status: false,
+//                 message: "Error fetching products by category",
+//                 error: error.message
+//             });
+//         });
+// };
+
+
+const getProductsByCategoryName = (req, res) => {
+    let { category } = req.params;
+
+    if (!category) {
+        return res.status(400).json({
+            status: false,
+            message: "Category parameter is required"
+        });
+    }
+
+    category = decodeURIComponent(category).toLowerCase();
+
+    Products.find({ category: { $regex: category, $options: "i" } })
+        .then(products => {
+            if (!products.length) {
+                return Products.findOne({})
+                    .then(sample => {
+                        res.status(404).json({
+                            status: false,
+                            message: "No products found for this category",
+                            debug: {
+                                searchedCategory: category,
+                                sampleProductStructure: sample ? Object.keys(sample.toObject()) : "No products available"
+                            }
+                        });
+                    });
+            }
+
+            res.status(200).json({
+                status: true,
+                message: "Products fetched successfully",
+                data: products
+            });
+        })
+        .catch(err => {
+            console.error("Error fetching products by category:", err);
+            res.status(500).json({
+                status: false,
+                message: "Server error while fetching products",
+                error: err.message
+            });
+        });
+};
 
 export { addProduct, 
     getProducts, 
@@ -365,5 +480,6 @@ export { addProduct,
     getProductBySKU,
     deleteProductImages,
     getAverageRating,
-    getStockLevelByCategory
+    getStockLevelByCategory,
+    getProductsByCategoryName
 };

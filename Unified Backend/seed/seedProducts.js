@@ -10,14 +10,14 @@ config();
 await dbConnection();
 
 const categories = [
-  { key: "1", label: "Electronics", sub: ["Mobiles", "Laptops", "Cameras", "Headphones", "Accessories"] },
-  { key: "2", label: "Clothing", sub: ["Men", "Women", "Kids", "Footwear", "Accessories"] },
-  { key: "3", label: "Books", sub: ["Fiction", "Non-Fiction", "Academic", "Children's Books"] },
-  { key: "4", label: "Home & Kitchen", sub: ["Furniture", "Kitchenware", "Decor", "Lighting"] },
-  { key: "5", label: "Sports & Outdoors", sub: ["Fitness", "Cycling", "Camping", "Outdoor Gear"] },
-  { key: "6", label: "Toys & Games", sub: ["Board Games", "Action Figures", "Puzzles"] },
-  { key: "7", label: "Health & Beauty", sub: ["Skincare", "Haircare", "Supplements", "Makeup"] },
-  { key: "8", label: "Digital Products", sub: ["E-books", "Online Courses", "Software", "Music"] }
+  { key: "1", label: "electronics", sub: ["mobiles", "laptops", "cameras", "headphones", "accessories"] },
+  { key: "2", label: "clothing", sub: ["men", "women", "kids", "footwear", "accessories"] },
+  { key: "3", label: "books", sub: ["fiction", "non-fiction", "academic", "children's books"] },
+  { key: "4", label: "home & kitchen", sub: ["furniture", "kitchenware", "decor", "lighting"] },
+  { key: "5", label: "sports & outdoors", sub: ["fitness", "cycling", "camping", "outdoor gear"] },
+  { key: "6", label: "toys & games", sub: ["board games", "action figures", "puzzles"] },
+  { key: "7", label: "health & beauty", sub: ["skincare", "haircare", "supplements", "makeup"] },
+  { key: "8", label: "digital products", sub: ["e-books", "online courses", "software", "music"] }
 ];
 
 const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];

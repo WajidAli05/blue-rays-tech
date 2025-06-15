@@ -7,13 +7,16 @@ import {
     editAnnouncement,
     deleteAnnouncement,
     deactivateAnnouncement,
-    activateAnnouncement
+    activateAnnouncement,
+    getActiveAnnouncements
 } from "../../controllers/announcementBarController.mjs";
 import { validateToken } from '../../middlewares/accessTokenHandler.js';
 import { validateRole } from '../../middlewares/roleAuth.js';
 
 router.post("/announcement", validateToken, validateRole(['admin', 'superadmin']), createAnnouncement);
 router.get("/announcement", validateToken, validateRole(), getAnnouncements);
+router.get("/active-announcement", getActiveAnnouncements);
+// router.get("/active-announcement", validateToken, validateRole(), getActiveAnnouncements);
 router.put("/announcement/:messageId", validateToken, validateRole(['admin', 'superadmin']), editAnnouncement);
 router.delete('/announcement/:id', validateToken, validateRole(['admin', 'superadmin']), deleteAnnouncement);
 router.patch('/announcement/deactivate/:messageId', validateToken, validateRole(['admin', 'superadmin']), deactivateAnnouncement);
