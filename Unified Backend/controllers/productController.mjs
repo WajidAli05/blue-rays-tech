@@ -124,6 +124,7 @@ const addProduct = (req, res) => {
         .catch(error => res.status(500).json({ status: false, message: "Error checking existing product", error }));
 };
 
+//get all products
 const getProducts = async (req, res) => {
     await Products.find()
     .then((products) => {
@@ -473,6 +474,44 @@ const getProductsByCategoryName = (req, res) => {
         });
 };
 
+const getProductBySubCategoryName = (req, res) => { 
+  let { subcategory } = req.params; 
+ 
+  if (!subcategory) { 
+    return res.status(400).json({ 
+      status: false, 
+      message: "Sub-category parameter is required" 
+    }); 
+  } 
+ 
+  const normalizedSubcategory = decodeURIComponent(subcategory).toLowerCase();  
+
+  //find products
+  Products.find({
+    sub_category: { $regex: new RegExp(normalizedSubcategory, 'i') }
+  })
+  .then((products)=> {
+    if(products?.length === 0){
+        return res.status(404).json({
+            status: false,
+            message: `No products found for sub category ${normalizedSubcategory}`,
+            data: null
+        })
+    }
+
+    return res.status(200).json({
+        status: true,
+        message: `${products.length} products found for sub category ${normalizedSubcategory}`,
+        data: products
+    })
+  })
+  .catch((error)=>{
+    console.log(error.message)
+  })
+  
+};
+
+
 export { addProduct, 
     getProducts, 
     updateProduct, 
@@ -481,5 +520,6 @@ export { addProduct,
     deleteProductImages,
     getAverageRating,
     getStockLevelByCategory,
-    getProductsByCategoryName
+    getProductsByCategoryName,
+    getProductBySubCategoryName
 };

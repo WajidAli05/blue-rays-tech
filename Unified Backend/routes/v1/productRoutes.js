@@ -9,7 +9,8 @@ import {
   deleteProductImages,
   getAverageRating,
   getStockLevelByCategory,
-  getProductsByCategoryName
+  getProductsByCategoryName,
+  getProductBySubCategoryName
 } from '../../controllers/productController.mjs';
 import { validateToken } from '../../middlewares/accessTokenHandler.js';
 import { validateRole } from '../../middlewares/roleAuth.js';
@@ -39,6 +40,7 @@ router.get('/average-rating', validateToken, validateRole(['admin', 'superadmin'
 router.get('/category-wise-stock', validateToken, validateRole(), getStockLevelByCategory)
 router.get('/product/:sku', getProductBySKU);
 router.get('/product/category/:category', getProductsByCategoryName);
+router.get('/product/sub-category/:subcategory', getProductBySubCategoryName);
 
 
 export default router;
