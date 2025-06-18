@@ -1,6 +1,7 @@
 import express from "express";
 import {
     addToCart,
+    getCart,
     removeFromCart,
     increaseQuantity,
     decreaseQuantity
@@ -11,6 +12,7 @@ import { validateRole } from '../../middlewares/roleAuth.js';
 const router = express.Router();
 
 router.post("/cart/add", validateToken, addToCart);
+router.get("/cart", validateToken, getCart);
 router.delete("/cart/remove", validateToken, removeFromCart);
 router.patch("/cart/increase", validateToken, increaseQuantity);
 router.patch("/cart/decrease", validateToken, decreaseQuantity);

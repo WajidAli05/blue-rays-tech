@@ -7,7 +7,8 @@ const addToCart = (req, res) => {
   const { productId, quantity } = req.body;
 
   if (!productId || !quantity || quantity <= 0) {
-    return res.status(400).json({ message: "Invalid product ID or quantity" });
+    return res.status(400).json({ 
+      message: "Invalid product ID or quantity" });
   }
 
   let foundProduct;
@@ -69,13 +70,78 @@ const addToCart = (req, res) => {
     });
 };
 
+//get cart controller
+const getCart = (req, res) => {
+  Cart.findOne({ userId: req.user.id })
+    .populate({
+      path: 'products.productId',
+      model: 'Products'
+    })
+    .then(userCart => {
+      if (!userCart) {
+        return res.status(404).json({
+          message: "Cart not found"
+        });
+      }
+
+      res.status(200).json({
+        message: "Cart retrieved successfully",
+        cart: userCart,
+      });
+    })
+    .catch(err => {
+      res.status(500).json({
+        message: "Server error",
+        error: err.message || err,
+      });
+    });
+};
+
 //remove from cart
 const removeFromCart = (req, res) => {
-    res.status(200).json({
-        message: "Remove from cart controller is working",
-        data: req.body
+  const { productId } = req.body;
+
+  //validate productId
+  if (!productId) {
+    return res.status(400).json({ 
+      message: "Product ID is required" 
     });
-}
+  }
+
+  //find the user's cart
+  Cart.findOne({ userId: req.user.id })
+    .then(userCart => {
+      if (!userCart) {
+        return res.status(404).json({ 
+          message: "Cart not found" 
+        });
+      }
+
+      //find the product in the cart
+      const productIndex = userCart.products.findIndex(p => p.productId.toString() === productId);
+      if (productIndex === -1) {
+        return res.status(404).json({ 
+          message: "Product not found in cart" 
+        });
+      }
+
+      //remove the product from the cart
+      userCart.products.splice(productIndex, 1);
+      return userCart.save();
+    })
+    .then(updatedCart => {
+      res.status(200).json({
+        message: "Product removed from cart successfully",
+        cart: updatedCart,
+      });
+    })
+    .catch(err => {
+      res.status(500).json({
+        message: "Server error",
+        error: err.message || err,
+      });
+    });
+};
 
 //increase quantity in cart
 const increaseQuantity = (req, res) => {
@@ -96,6 +162,7 @@ const decreaseQuantity = (req, res) => {
 
 export {
     addToCart,
+    getCart,
     removeFromCart,
     increaseQuantity,
     decreaseQuantity
