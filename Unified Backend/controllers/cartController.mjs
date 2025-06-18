@@ -47,11 +47,11 @@ const addToCart = (req, res) => {
 
       return userCart.save();
     })
-    .then(savedOrUpdatedCart => {
-      // Step 2: Decrease stock_level
-      foundProduct.stock_level -= quantity;
-      return foundProduct.save().then(() => savedOrUpdatedCart);
-    })
+    // .then(savedOrUpdatedCart => {
+    //   // Step 2: Decrease stock_level
+    //   foundProduct.stock_level -= quantity;
+    //   return foundProduct.save().then(() => savedOrUpdatedCart);
+    // })
     .then(finalCart => {
       res.status(200).json({
         message: "Product added to cart successfully",
@@ -145,20 +145,118 @@ const removeFromCart = (req, res) => {
 
 //increase quantity in cart
 const increaseQuantity = (req, res) => {
-    res.status(200).json({
-        message: "Increase quantity in cart controller is working",
-        data: req.body
-    }); 
-}
+  const { productId, quantity } = req.body;
+
+  // Step 1: Validate input
+  if (!productId || !quantity || quantity <= 0) {
+    return res.status(400).json({
+      message: "Invalid product ID or quantity",
+    });
+  }
+
+  let userCart;
+  let productInCart;
+
+  Cart.findOne({ userId: req.user.id })
+    .then(cart => {
+      if (!cart) {
+        throw { status: 404, message: "Cart not found" };
+      }
+
+      userCart = cart;
+
+      productInCart = userCart.products.find(p => p.productId.toString() === productId);
+      if (!productInCart) {
+        throw { status: 404, message: "Product not found in cart" };
+      }
+
+      return Product.findById(productId);
+    })
+    .then(product => {
+      if (!product) {
+        throw { status: 404, message: "Product not found in database" };
+      }
+
+      const newQuantity = productInCart.quantity + quantity;
+
+      if (newQuantity > product.stock_level) {
+        throw {
+          status: 400,
+          message: `Cannot increase quantity. Only ${product.stock_level} item(s) in stock.`,
+        };
+      }
+
+      productInCart.quantity = newQuantity;
+      return userCart.save();
+    })
+    .then(updatedCart => {
+      res.status(200).json({
+        message: "Product quantity increased successfully",
+        cart: updatedCart,
+      });
+    })
+    .catch(err => {
+      res.status(err.status || 500).json({
+        message: err.message || "Server error",
+        error: err,
+      });
+    });
+};
 
 //decrease quantity in cart
 const decreaseQuantity = (req, res) => {
-    res.status(200).json({
-        message: "Decrease quantity in cart controller is working",
-        data: req.body
-    });
-}
+  const { productId, quantity } = req.body;
 
+  // Step 1: Validate input
+  if (!productId || !quantity || quantity <= 0) {
+    return res.status(400).json({
+      message: "Invalid product ID or quantity",
+    });
+  }
+
+  let userCart;
+  let productInCart;
+
+  Cart.findOne({ userId: req.user.id })
+    .then(cart => {
+      if (!cart) {
+        throw { status: 404, message: "Cart not found" };
+      }
+
+      userCart = cart;
+
+      productInCart = userCart.products.find(p => p.productId.toString() === productId);
+      if (!productInCart) {
+        throw { status: 404, message: "Product not found in cart" };
+      }
+
+      const newQuantity = productInCart.quantity - quantity;
+
+      if (newQuantity < 1) {
+        // Option 1: Auto-remove product when quantity < 1
+        userCart.products = userCart.products.filter(
+          p => p.productId.toString() !== productId
+        );
+      } else {
+        // Option 2: Just reduce quantity
+        productInCart.quantity = newQuantity;
+      }
+
+      return userCart.save();
+    })
+    .then(updatedCart => {
+      res.status(200).json({
+        message: "Product quantity decreased successfully",
+        cart: updatedCart,
+      });
+    })
+    .catch(err => {
+      res.status(err.status || 500).json({
+        message: err.message || "Server error",
+        error: err,
+      });
+    });
+};
 
 export {
     addToCart,
