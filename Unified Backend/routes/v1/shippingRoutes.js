@@ -6,8 +6,6 @@ import {
   deleteShipping,
   getShippingById,
   updateShippingStatus,
-  markAsDelivered,
-  cancelShipping,
   getAllShippings,
   getShippingStats,
   getShippingsByDateRange
@@ -18,6 +16,11 @@ import { validateRole } from '../../middlewares/roleAuth.js';
 
 const router = express.Router();
 
+// ----------- ADMIN ROUTES ---------------
+router.get('/shippings', validateToken, validateRole(['admin', 'superadmin']), getAllShippings); // All shipping records
+router.get('/shipping/stats', validateToken, validateRole(['admin', 'superadmin']), getShippingStats); // Stats summary
+router.get('/shipping/range', validateToken, validateRole(['admin', 'superadmin']), getShippingsByDateRange); // By date range
+
 // ----------- BASIC CRUD ---------------
 router.post('/shipping/', validateToken, createShipping); // Create new shipping
 router.get('/shipping/user/', validateToken, getShipping); // Get shipping by user
@@ -27,12 +30,6 @@ router.delete('/shipping/:id', validateToken, deleteShipping); // Delete by ID
 
 // ----------- STATUS MANAGEMENT ---------------
 router.patch('/shipping/status/:id', validateToken, updateShippingStatus); // Update shipping status
-router.patch('/shipping/delivered/:id', validateToken, markAsDelivered); // Mark as delivered
-router.patch('/shipping/cancel/:id', validateToken, cancelShipping); // Cancel shipping
 
-// ----------- ADMIN ROUTES ---------------
-router.get('/shipping', validateToken, validateRole(['admin', 'superadmin']), getAllShippings); // All shipping records
-router.get('/shipping/stats', validateToken, validateRole(['admin', 'superadmin']), getShippingStats); // Stats summary
-router.get('/shipping/range/:startDate/:endDate', validateToken, validateRole(['admin', 'superadmin']), getShippingsByDateRange); // By date range
 
 export default router;

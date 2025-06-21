@@ -167,13 +167,71 @@ const updateShippingStatus = (req, res) => {
         });
     });
 }
-const markAsDelivered = (req, res) => { /* Mark as delivered */ }
-const cancelShipping = (req, res) => { /* Cancel shipping */ }
+
 
 // Admin & Reporting
-const getAllShippings = (req, res) => { /* Admin: Get all records */ }
+const getAllShippings = (req, res) => {
+    Shipping.find({})
+    .then(shippings =>{
+        if(!shippings || shippings?.length === 0){
+            res.status(404).json({
+                status: false,
+                message: "No shippings found!",
+                data: []
+            })
+        }
+
+        //send shippings to admin
+        res.status(200).json({
+            status: true,
+            message: "Shippings retrieved successfully!",
+            data: shippings
+        });
+    })
+    .catch(error => {
+        res.status(500).json({
+            status: false,
+            message: 'Failed to retrieve shipping records',
+            error: error.message
+        });
+    })
+}
+
+//TODO: Implement stats like total, status counts, etc.
 const getShippingStats = (req, res) => { /* Admin: Stats like total, status counts */ }
-const getShippingsByDateRange = (req, res) => { /* Admin: Records in date range */ }
+
+//TODO: only if required otherwise won't be used
+const getShippingsByDateRange = (req, res) => {
+  const { start, end } = req.query;
+
+  if (!start || !end) {
+    return res.status(400).json({
+      status: false,
+      message: "Start and end dates are required",
+    });
+  }
+
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+
+  Shipping.find({
+    createdAt: { $gte: startDate, $lte: endDate }
+  })
+    .then((records) => {
+      res.status(200).json({
+        status: true,
+        message: "Shipping records retrieved successfully",
+        data: records
+      });
+    })
+    .catch((error) => {
+      res.status(500).json({
+        status: false,
+        message: "Failed to fetch shipping records",
+        error: error.message
+      });
+    });
+};
 
 export {
   // Basic
@@ -185,8 +243,6 @@ export {
 
   // Status
   updateShippingStatus,
-  markAsDelivered,
-  cancelShipping,
 
   // Admin
   getAllShippings,
