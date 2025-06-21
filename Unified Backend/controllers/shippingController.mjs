@@ -74,9 +74,51 @@ const getShipping = (req, res) => {
 
 }
 
-const updateShipping = (req, res) => { /* Update shipping record by ID */ }
+//update a shipping record for a logged in user
+//TODO: will implement if required after the application is fully functional
+const updateShipping = (req, res) => {
+}
+
+//TODO: only if required. Does not see it required for now
 const deleteShipping = (req, res) => { /* Delete shipping record by ID */ }
-const getShippingById = (req, res) => { /* Get single shipping record by ID */ }
+
+// Get single shipping record by ID for a logged in user
+const getShippingById = (req, res) => {
+    const shippingId = req.params.id;
+
+    //validate id
+    if(!shippingId) {
+        return res.status(400).json({
+            status: false,
+            message: 'Shipping ID is required'
+        });
+    }
+
+    //find shipping by ID
+    Shipping.findById(shippingId)
+    .then(shipping => {
+        if(!shipping) {
+            return res.status(404).json({
+                status: false,
+                message: 'Shipping record not found'
+            });
+        }
+
+        //check if the user is authorized to view this shipping record
+        if(shipping.user.toString() !== req.user.id) {
+            return res.status(403).json({
+                status: false,
+                message: 'You are not authorized to view this shipping record'
+            });
+        }
+
+        res.status(200).json({
+            status: true,
+            message: 'Shipping record retrieved successfully',
+            data: shipping
+        });
+    })
+}
 
 // Status Management
 const updateShippingStatus = (req, res) => { /* Update shipping status */ }

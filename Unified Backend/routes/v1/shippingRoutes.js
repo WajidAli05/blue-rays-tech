@@ -22,7 +22,7 @@ const router = express.Router();
 router.post('/shipping/', validateToken, createShipping); // Create new shipping
 router.get('/shipping/user/', validateToken, getShipping); // Get shipping by user
 router.get('/shipping/:id', validateToken, getShippingById); // Get by ID
-router.put('/shipping/:id', validateToken, updateShipping); // Update by ID
+router.patch('/shipping/:id', validateToken, updateShipping); // Update by ID
 router.delete('/shipping/:id', validateToken, deleteShipping); // Delete by ID
 
 // ----------- STATUS MANAGEMENT ---------------
