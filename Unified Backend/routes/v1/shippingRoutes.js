@@ -19,20 +19,20 @@ import { validateRole } from '../../middlewares/roleAuth.js';
 const router = express.Router();
 
 // ----------- BASIC CRUD ---------------
-router.post('/', validateToken, createShipping); // Create new shipping
-router.get('/user/:userId', validateToken, getShipping); // Get shipping by user
-router.get('/:id', validateToken, getShippingById); // Get by ID
-router.put('/:id', validateToken, updateShipping); // Update by ID
-router.delete('/:id', validateToken, deleteShipping); // Delete by ID
+router.post('/shipping/', validateToken, createShipping); // Create new shipping
+router.get('/shipping/user/', validateToken, getShipping); // Get shipping by user
+router.get('/shipping/:id', validateToken, getShippingById); // Get by ID
+router.put('/shipping/:id', validateToken, updateShipping); // Update by ID
+router.delete('/shipping/:id', validateToken, deleteShipping); // Delete by ID
 
 // ----------- STATUS MANAGEMENT ---------------
-router.put('/status/:id', validateToken, updateShippingStatus); // Update shipping status
-router.patch('/delivered/:id', validateToken, markAsDelivered); // Mark as delivered
-router.patch('/cancel/:id', validateToken, cancelShipping); // Cancel shipping
+router.put('/shipping/status/:id', validateToken, updateShippingStatus); // Update shipping status
+router.patch('/shipping/delivered/:id', validateToken, markAsDelivered); // Mark as delivered
+router.patch('/shipping/cancel/:id', validateToken, cancelShipping); // Cancel shipping
 
 // ----------- ADMIN ROUTES ---------------
-router.get('/', validateToken, validateRole(['admin', 'superadmin']), getAllShippings); // All shipping records
-router.get('/stats', validateToken, validateRole(['admin', 'superadmin']), getShippingStats); // Stats summary
-router.get('/range/:startDate/:endDate', validateToken, validateRole(['admin', 'superadmin']), getShippingsByDateRange); // By date range
+router.get('/shipping', validateToken, validateRole(['admin', 'superadmin']), getAllShippings); // All shipping records
+router.get('/shipping/stats', validateToken, validateRole(['admin', 'superadmin']), getShippingStats); // Stats summary
+router.get('/shipping/range/:startDate/:endDate', validateToken, validateRole(['admin', 'superadmin']), getShippingsByDateRange); // By date range
 
 export default router;
