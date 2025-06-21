@@ -26,7 +26,7 @@ router.patch('/shipping/:id', validateToken, updateShipping); // Update by ID
 router.delete('/shipping/:id', validateToken, deleteShipping); // Delete by ID
 
 // ----------- STATUS MANAGEMENT ---------------
-router.put('/shipping/status/:id', validateToken, updateShippingStatus); // Update shipping status
+router.patch('/shipping/status/:id', validateToken, updateShippingStatus); // Update shipping status
 router.patch('/shipping/delivered/:id', validateToken, markAsDelivered); // Mark as delivered
 router.patch('/shipping/cancel/:id', validateToken, cancelShipping); // Cancel shipping
 

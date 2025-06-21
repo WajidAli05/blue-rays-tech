@@ -121,7 +121,52 @@ const getShippingById = (req, res) => {
 }
 
 // Status Management
-const updateShippingStatus = (req, res) => { /* Update shipping status */ }
+const updateShippingStatus = (req, res) => {
+    const shippingId = req.params.id;
+    const { status } = req.body;
+
+    // Validate ID and status
+    if (!shippingId || !status) {
+        return res.status(400).json({
+            status: false,
+            message: 'Shipping ID and status are required'
+        });
+    }
+
+    const lowerCasedStatus = status?.toLowerCase();
+    //change status to lower case
+    const validStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+    if (!validStatuses.includes(lowerCasedStatus)) {
+        return res.status(400).json({
+            status: false,
+            message: 'Invalid status. Valid statuses are: ' + validStatuses.join(', ')
+        });
+    }
+
+    //find by shipping id and update status
+    Shipping.findByIdAndUpdate(shippingId, { status: lowerCasedStatus }, { new: true })
+    .then(shipping => {
+        if (!shipping) {
+            return res.status(404).json({
+                status: false,
+                message: 'Shipping record not found'
+            });
+        }
+
+        res.status(200).json({
+            status: true,
+            message: 'Shipping status updated successfully',
+            data: shipping
+        });
+    })
+    .catch(error => {
+        res.status(500).json({
+            status: false,
+            message: 'Failed to update shipping status',
+            error: error.message
+        });
+    });
+}
 const markAsDelivered = (req, res) => { /* Mark as delivered */ }
 const cancelShipping = (req, res) => { /* Cancel shipping */ }
 
