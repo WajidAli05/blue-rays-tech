@@ -25,7 +25,7 @@ const signupUser = (req, res) => {
   const file = req.file;
 
   // Validate required fields
-  if (!name || !email || !password || !phone || !job || !country) {
+  if (!name || !email || !password || !phone || !country) {
     return res.status(400).json({
       status: false,
       message: "All fields are required",
