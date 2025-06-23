@@ -568,6 +568,14 @@ const signupWithGoogle = (req, res) => {
     });
 };
 
+const validateUser = (req, res) => {
+  res.status(200).json({
+    status: true,
+    message: "Token is valid",
+    user: req.user, // optional: return basic user info
+  });
+}
+
 export { signupUser,
          loginUser,
          getUsers,
@@ -575,5 +583,6 @@ export { signupUser,
          getUser,
          deleteUser,
          getTotalUsers,
-         signupWithGoogle
+         signupWithGoogle,
+         validateUser
  };
