@@ -9,7 +9,8 @@ import {
         deleteUser,
         getTotalUsers,
         signupWithGoogle,
-        validateUser
+        getProfile,
+        logoutUser
       } from '../../controllers/userController.mjs';
 import { validateToken } from '../../middlewares/accessTokenHandler.js';
 import { validateRole } from '../../middlewares/roleAuth.js';
@@ -35,7 +36,8 @@ router.post('/user/signup', upload.single('image'), signupUser);
 router.post('/user/login', loginUser);
 router.get('/users', validateToken, getUsers);
 router.get('/total-users', validateToken, validateRole(), getTotalUsers);
-router.get("user/validate", validateToken, validateUser);
+router.get("/user/profile", validateToken, getProfile);
+router.get("/user/logout", logoutUser);
 router.get('/user/:userId', validateRole(), getUser); 
 router.put('/user/:userId' , validateRole(), upload.none() , updateUser);
 router.delete('/user/:userId', validateToken, validateRole(['admin', 'superadmin']), deleteUser);

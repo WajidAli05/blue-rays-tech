@@ -568,13 +568,56 @@ const signupWithGoogle = (req, res) => {
     });
 };
 
-const validateUser = (req, res) => {
+//get profile
+const getProfile = (req, res) => {
+  const userId = req.user.id;
+
+  User.findById(userId)
+    .select("-password") // Don't return password
+    .then(user => {
+      if (!user) {
+        return res.status(404).json({
+          status: false,
+          message: "User not found",
+        });
+      }
+
+      res.status(200).json({
+        status: true,
+        data: {
+          userId: user._id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          image: user.image,
+          country: user.country,
+          job: user.job,
+          role: user.role,
+        },
+      });
+    })
+    .catch(err => {
+      console.error("Profile fetch error:", err);
+      res.status(500).json({
+        status: false,
+        message: "Internal server error",
+        error: err.message,
+      });
+    });
+};
+
+const logoutUser = (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "Lax"
+  });
+
   res.status(200).json({
     status: true,
-    message: "Token is valid",
-    user: req.user, // optional: return basic user info
+    message: "Logged out successfully",
   });
-}
+};
 
 export { signupUser,
          loginUser,
@@ -584,5 +627,6 @@ export { signupUser,
          deleteUser,
          getTotalUsers,
          signupWithGoogle,
-         validateUser
+         getProfile,
+         logoutUser
  };
