@@ -34,7 +34,6 @@ const ProductDetailsPage = () => {
     fetch(`http://localhost:3001/api/v1/product/${sku}`)
       .then((res) => res.json())
       .then((data) => {
-        console.log('Fetched data:', data);
         if (data?.data) {
           const product = data.data;
           setP(product);
@@ -80,33 +79,35 @@ const ProductDetailsPage = () => {
     setDeleteModalOpen(true);
   };
 
-  const handleDeleteConfirm = async () => {
-    setDeleteLoading(true);
-    try {
-      const formData = new FormData();
-      formData.append('sku', sku);
+const handleDeleteConfirm = () => {
+  setDeleteLoading(true);
 
-      const res = await fetch('http://localhost:3001/api/v1/product', {
-        method: 'DELETE',
-        body: formData,
-      });
-
-      const result = await res.json();
-
+  fetch(`http://localhost:3001/api/v1/product/${sku}`, {
+    method: 'DELETE',
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json',
+    },
+  })
+    .then(res => res.json())
+    .then(result => {
+      console.log('Delete result:', result);
       if (result.status) {
         message.success('Product deleted successfully');
         navigate('/products-listing');
       } else {
         message.error(result.message || 'Failed to delete product');
       }
-    } catch (error) {
-      message.error('Something went wrong while deleting the product');
+    })
+    .catch(error => {
       console.error('Delete error:', error);
-    } finally {
+      message.error('Something went wrong while deleting the product');
+    })
+    .finally(() => {
       setDeleteLoading(false);
       setDeleteModalOpen(false);
-    }
-  };
+    });
+};
 
   if (!p) {
     return (

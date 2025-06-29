@@ -232,50 +232,95 @@ const updateProduct = (req, res) => {
             });
         });
 };
+//     if(req.user.role !== 'admin' && req.user.role !== 'superadmin') {
+//         return res.status(403).json({
+//             status: false,
+//             message: "Access denied. Only admins can delete products."
+//         });
+//     }
 
-const deleteProduct = async (req, res) => {
-    if(req.user.role !== 'admin' && req.user.role !== 'superadmin') {
-        return res.status(403).json({
-            status: false,
-            message: "Access denied. Only admins can delete products."
+//     const { sku } = req.body;
+
+//     if (!sku) {
+//         return res.status(400).json({ status: false, message: "SKU is required to delete product" });
+//     }
+
+//     Products.findOneAndDelete({ sku })
+//         .then((product) => {
+//             if (!product) {
+//                 return res.status(404).json({ status: false, message: "Product not found with the given SKU" });
+//             }
+
+//             // Delete associated images from uploads folder
+//             if (product.image_link && product.image_link.length > 0) {
+//                 product.image_link.forEach(imagePath => {
+//                     const filePath = path.join(__dirname, '..', imagePath);
+//                     if (fs.existsSync(filePath)) {
+//                         fs.unlinkSync(filePath);
+//                     }
+//                 });
+//             }
+
+//             res.status(200).json({
+//                 status: true,
+//                 message: "Product deleted successfully",
+//                 data: product
+//             });
+//         })
+//         .catch((error) => {
+//             res.status(500).json({
+//                 status: false,
+//                 message: "Error deleting product",
+//                 error
+//             });
+//         });
+// };
+
+
+const deleteProductBySku = async (req, res) => {
+  const { sku } = req.params;
+  const user = req.user; // assuming auth middleware sets this
+
+  if (user.role !== 'admin' && user.role !== 'superadmin') {
+    return res.status(403).json({
+      status: false,
+      message: "Access denied. Only admins can delete products."
+    });
+  }
+
+  if (!sku) {
+    return res.status(400).json({ status: false, message: "SKU is required to delete product" });
+  }
+
+  Products.findOneAndDelete({ sku })
+    .then((product) => {
+      if (!product) {
+        return res.status(404).json({ status: false, message: "Product not found with the given SKU" });
+      }
+
+      // Delete associated images
+      if (product.image_link && product.image_link.length > 0) {
+        product.image_link.forEach(imagePath => {
+          const filePath = path.join(__dirname, '..', imagePath);
+          if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+          }
         });
-    }
+      }
 
-    const { sku } = req.body;
-
-    if (!sku) {
-        return res.status(400).json({ status: false, message: "SKU is required to delete product" });
-    }
-
-    Products.findOneAndDelete({ sku })
-        .then((product) => {
-            if (!product) {
-                return res.status(404).json({ status: false, message: "Product not found with the given SKU" });
-            }
-
-            // Delete associated images from uploads folder
-            if (product.image_link && product.image_link.length > 0) {
-                product.image_link.forEach(imagePath => {
-                    const filePath = path.join(__dirname, '..', imagePath);
-                    if (fs.existsSync(filePath)) {
-                        fs.unlinkSync(filePath);
-                    }
-                });
-            }
-
-            res.status(200).json({
-                status: true,
-                message: "Product deleted successfully",
-                data: product
-            });
-        })
-        .catch((error) => {
-            res.status(500).json({
-                status: false,
-                message: "Error deleting product",
-                error
-            });
-        });
+      res.status(200).json({
+        status: true,
+        message: "Product deleted successfully",
+        data: product
+      });
+    })
+    .catch((error) => {
+      res.status(500).json({
+        status: false,
+        message: "Error deleting product",
+        error
+      });
+    });
 };
 
 const deleteProductImages = (req, res) => {
@@ -515,7 +560,7 @@ const getProductBySubCategoryName = (req, res) => {
 export { addProduct, 
     getProducts, 
     updateProduct, 
-    deleteProduct, 
+    deleteProductBySku, 
     getProductBySKU,
     deleteProductImages,
     getAverageRating,

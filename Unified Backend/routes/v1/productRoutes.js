@@ -4,7 +4,7 @@ import {
   addProduct, 
   getProducts, 
   updateProduct, 
-  deleteProduct, 
+  deleteProductBySku, 
   getProductBySKU,
   deleteProductImages,
   getAverageRating,
@@ -34,10 +34,10 @@ const upload = multer({ storage });
 router.post('/product', validateToken, validateRole(['admin', 'superadmin']), upload.array('image_link', 10), addProduct);
 router.get('/products', validateToken, validateRole(), getProducts);
 router.put('/product', validateToken, validateRole(['admin', 'superadmin']), upload.array('image_link', 10), updateProduct);
-router.delete('/product', validateToken, validateRole(['admin', 'superadmin']), upload.none(), deleteProduct);
 router.delete('/product/image', validateToken, validateRole(['admin', 'superadmin']), deleteProductImages);
 router.get('/average-rating', validateToken, validateRole(['admin', 'superadmin']), getAverageRating);
 router.get('/category-wise-stock', validateToken, validateRole(), getStockLevelByCategory)
+router.delete('/product/:sku', validateToken, validateRole(['admin', 'superadmin']), upload.none(), deleteProductBySku);
 router.get('/product/:sku', getProductBySKU);
 router.get('/product/category/:category', getProductsByCategoryName);
 router.get('/product/sub-category/:subcategory', getProductBySubCategoryName);

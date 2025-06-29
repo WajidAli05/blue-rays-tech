@@ -31,24 +31,41 @@ const EditProductModal = ({ open, setOpen, confirmLoading, setConfirmLoading, p,
 
   //fetch categories
   useEffect(() => {
-    fetch('http://localhost:3001/api/v1/category')
+    fetch('http://localhost:3001/api/v1/category', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include'
+    })
       .then((res) => res.json())
       .then((data) => {
-        console.log('Categories:', data.data);
         setCategories(data.data)
       })
       .catch(() => message.error('Failed to fetch categories'));
   }, []);
 
   useEffect(() => {
-    fetch('http://localhost:3001/api/v1/affiliate-program')
+    fetch('http://localhost:3001/api/v1/affiliate-program', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include'
+    })
       .then((res) => res.json())
       .then((data) => setAffiliatePrograms(data.data))
       .catch(() => message.error('Failed to fetch affiliate programs'));
   }, []);
 
   useEffect(() => {
-    fetch('http://localhost:3001/api/v1/file-types')
+    fetch('http://localhost:3001/api/v1/file-types', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include'
+    })
       .then((res) => res.json())
       .then((data) => setFileTypes(data.data))
       .catch(() => message.error('Failed to fetch file types'));
@@ -91,6 +108,10 @@ const handleFormSubmit = (values) => {
   fetch('http://localhost:3001/api/v1/product', {
     method: 'PUT',
     body: formData,
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json',
+    },
   })
     .then(res => res.json())
     .then((data) => {
