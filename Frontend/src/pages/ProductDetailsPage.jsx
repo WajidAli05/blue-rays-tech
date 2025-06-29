@@ -11,6 +11,8 @@ import DeleteProductConfirmModal from '../components/DeleteProductConfirmModal';
 
 const { Title, Paragraph } = Typography;
 
+const safeToFixed = (val, digits = 2) => typeof val === 'number' ? val.toFixed(digits) : '0.00';
+
 const ProductDetailsPage = () => {
   const { sku } = useParams();
   const [p, setP] = useState(null);
@@ -24,25 +26,40 @@ const ProductDetailsPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (!sku) {
+      message.error("Invalid product identifier");
+      return;
+    }
+
     fetch(`http://localhost:3001/api/v1/product/${sku}`)
       .then((res) => res.json())
       .then((data) => {
+        console.log('Fetched data:', data);
         if (data?.data) {
           const product = data.data;
           setP(product);
+
           if (product.image_link?.length > 0) {
-            setSelectedImage(`http://localhost:3001/${product.image_link[0].replace(/\\/g, '/')}`);
+            const firstImage = product.image_link[0];
+            const imageURL = firstImage.startsWith('http')
+              ? firstImage
+              : `http://localhost:3001/${firstImage.replace(/\\/g, '/')}`;
+            setSelectedImage(imageURL);
           }
+        } else {
+          message.error(data.message || 'Product not found');
         }
       })
-      .catch((error) => console.error('Error fetching product data:', error));
+      .catch((error) => {
+        console.error('Error fetching product data:', error);
+        message.error('Failed to load product');
+      });
   }, [sku]);
 
   const handleImageClick = (image) => {
     setSelectedImage(image);
   };
 
-  // ================= Edit Modal ==================
   const handleEdit = () => {
     setOpen(true);
   };
@@ -59,7 +76,6 @@ const ProductDetailsPage = () => {
     setOpen(false);
   };
 
-  // ================= Delete Modal ==================
   const handleDeleteClick = () => {
     setDeleteModalOpen(true);
   };
@@ -92,7 +108,14 @@ const ProductDetailsPage = () => {
     }
   };
 
-  if (!p) return <Spin tip="Loading product..." fullscreen />;
+  if (!p) {
+    return (
+      <div style={{ padding: 50 }}>
+        <Spin tip="Loading product..." size="large" />
+        <Paragraph>Fetching product details...</Paragraph>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -111,24 +134,29 @@ const ProductDetailsPage = () => {
         <Col xs={24} sm={12} lg={10}>
           <Image
             width="100%"
-            src={selectedImage}
+            src={selectedImage || 'https://via.placeholder.com/400'}
             alt={p.name}
             preview={{ visible: previewVisible, onVisibleChange: setPreviewVisible }}
             onClick={() => setPreviewVisible(true)}
           />
           <Row gutter={16} style={{ marginTop: '15px' }}>
-            {p.image_link?.map((imagePath, index) => (
-              <Col key={index}>
-                <Image
-                  width={60}
-                  height={60}
-                  src={`http://localhost:3001/${imagePath.replace(/\\/g, '/')}`}
-                  alt={`product-thumbnail-${index}`}
-                  style={{ cursor: 'pointer' }}
-                  onClick={() => handleImageClick(`http://localhost:3001/${imagePath.replace(/\\/g, '/')}`)}
-                />
-              </Col>
-            ))}
+            {p.image_link?.map((imagePath, index) => {
+              const imageURL = imagePath.startsWith('http')
+                ? imagePath
+                : `http://localhost:3001/${imagePath.replace(/\\/g, '/')}`;
+              return (
+                <Col key={index}>
+                  <Image
+                    width={60}
+                    height={60}
+                    src={imageURL}
+                    alt={`product-thumbnail-${index}`}
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => handleImageClick(imageURL)}
+                  />
+                </Col>
+              );
+            })}
           </Row>
         </Col>
 
@@ -155,11 +183,15 @@ const ProductDetailsPage = () => {
               <Descriptions.Item label="Brand">{p.brand}</Descriptions.Item>
               <Descriptions.Item label="Product Type">{p.product_type}</Descriptions.Item>
               <Descriptions.Item label="SKU">{p.sku}</Descriptions.Item>
-              <Descriptions.Item label="Units Sold">{p.units_sold}</Descriptions.Item>
-              <Descriptions.Item label="Total Sales Revenue">${p.total_sales_revenue.toFixed(2)}</Descriptions.Item>
-              <Descriptions.Item label="Profit Margin">{(p.profit_margin * 100).toFixed(2)}%</Descriptions.Item>
-              <Descriptions.Item label="Gross Profit">${p.gross_profit.toFixed(2)}</Descriptions.Item>
-              <Descriptions.Item label="Click-through Rate">{(p.click_through_rate * 100).toFixed(2)}%</Descriptions.Item>
+              <Descriptions.Item label="Units Sold">{p.units_sold ?? 0}</Descriptions.Item>
+              <Descriptions.Item label="Total Sales Revenue">${safeToFixed(p.total_sales_revenue)}</Descriptions.Item>
+              <Descriptions.Item label="Profit Margin">
+                {p.profit_margin !== undefined ? `${(p.profit_margin * 100).toFixed(2)}%` : 'N/A'}
+              </Descriptions.Item>
+              <Descriptions.Item label="Gross Profit">${safeToFixed(p.gross_profit)}</Descriptions.Item>
+              <Descriptions.Item label="Click-through Rate">
+                {p.click_through_rate !== undefined ? `${(p.click_through_rate * 100).toFixed(2)}%` : 'N/A'}
+              </Descriptions.Item>
             </Descriptions>
 
             <Row gutter={16} style={{ marginTop: '20px' }}>
@@ -180,6 +212,11 @@ const ProductDetailsPage = () => {
         <Col span={24}>
           <Card title="Product Description" bordered={false}>
             <Paragraph>{p.description}</Paragraph>
+            {p.product_type === 'affiliate' && p.affiliate_link && (
+              <Button type="link" href={p.affiliate_link} target="_blank">
+                View Affiliate Product
+              </Button>
+            )}
           </Card>
         </Col>
       </Row>
@@ -195,7 +232,6 @@ const ProductDetailsPage = () => {
         handleCancel={handleCancel}
       />
 
-      {/* Custom Delete Modal */}
       <DeleteProductConfirmModal
         open={deleteModalOpen}
         onCancel={() => setDeleteModalOpen(false)}

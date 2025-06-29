@@ -5,7 +5,6 @@ import { MdDeleteOutline } from "react-icons/md";
 const ProductListItem = ({ product, onEdit, onDelete }) => {
   return (
     <ul className="product-list">
-      {console.log(product)}
       {/* Single Product Item */}
       <li key={product._id}>
         <div className='checkbox-image-container'>
