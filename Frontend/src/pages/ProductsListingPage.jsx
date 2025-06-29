@@ -108,7 +108,6 @@ const onClickProductTypeSelect = e => {
 
     return (
         <div>
-            {console.log(products)}
             <NavBar />
             <Breadcrumb
                 separator='>'
