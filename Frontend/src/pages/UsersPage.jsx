@@ -17,7 +17,7 @@ const UsersPage = () => {
   const [editingUser, setEditingUser] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);  
 
-  // Fetch users from API
+  // Fetch users
   useEffect(() => {
     setLoading(true);
     fetch('http://localhost:3001/api/v1/users', {
@@ -44,8 +44,26 @@ const UsersPage = () => {
   };
 
   const handleDelete = (userId) => {
-    const updatedUsers = users.filter(user => user._id !== userId);
-    setUsers(updatedUsers);
+    if (!userId) return console.error("User ID is required");
+
+    fetch(`http://localhost:3001/api/v1/user/${userId}`, {
+      method: 'DELETE',
+      credentials: 'include',
+    })
+      .then(res => res.json())
+      .then(result => {
+        if (result.status) {
+          const updatedUsers = users.filter(user => user._id !== userId);
+          setUsers(updatedUsers);
+          setAllUsers(updatedUsers);
+          setOriginalUsersArray(updatedUsers);
+        } else {
+          console.error(result.message || 'Failed to delete user');
+        }
+      })
+      .catch(err => {
+        console.error('Error deleting user:', err);
+      });
   };
 
   const handleViewDetails = (userId) => {
@@ -64,7 +82,6 @@ const UsersPage = () => {
     }
   };
 
-  // ✅ Use loading spinner properly
   if (loading) return <Spin tip="Loading users..." fullscreen />;
 
   return (
@@ -109,9 +126,9 @@ const UsersPage = () => {
         visible={isEditModalOpen}
         onCancel={() => setIsEditModalOpen(false)}
         user={editingUser}
-        onSuccess={(updatedUser) => {
+        onSuccess={() => {
           setIsEditModalOpen(false);
-          navigate(0); // force refresh
+          navigate(0); // refresh
         }}
       />
     </div>

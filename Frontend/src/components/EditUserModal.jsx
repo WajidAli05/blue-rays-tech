@@ -20,6 +20,7 @@ const EditUserModal = ({ visible, user, onCancel, onSuccess }) => {
 
     fetch(`http://localhost:3001/api/v1/user/${user._id}`, {
       method: 'PUT',
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
       },

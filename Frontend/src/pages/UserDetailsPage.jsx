@@ -71,7 +71,13 @@ const UserDetailsPage = () => {
       return;
     }
 
-    fetch(`http://localhost:3001/api/v1/user/${userId}`)
+    fetch(`http://localhost:3001/api/v1/user/${userId}`,{
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
       .then((res) => res.json())
       .then((data) => {
         if (data) {
@@ -115,6 +121,7 @@ const UserDetailsPage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({
           name: userDetails.name,
           email: userDetails.email,

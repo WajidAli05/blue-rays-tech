@@ -38,8 +38,8 @@ router.get('/users', validateToken, getUsers);
 router.get('/total-users', validateToken, validateRole(), getTotalUsers);
 router.get("/user/profile", validateToken, getProfile);
 router.get("/user/logout", logoutUser);
-router.get('/user/:userId', validateRole(), getUser); 
-router.put('/user/:userId' , validateRole(), upload.none() , updateUser);
+router.get('/user/:userId', validateToken, validateRole(), getUser); 
+router.put('/user/:userId' , validateToken, validateRole(), upload.none() , updateUser);
 router.delete('/user/:userId', validateToken, validateRole(['admin', 'superadmin']), deleteUser);
 
 export default router;
