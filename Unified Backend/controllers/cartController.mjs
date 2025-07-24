@@ -166,10 +166,14 @@ const increaseQuantity = (req, res) => {
       if (!cart) {
         throw { status: 404, message: "Cart not found" };
       }
-
       userCart = cart;
+  
+      productInCart = userCart.products.find(p => {
+        let prodId = p.productId.toString();
+        return prodId === productId;
+      });
 
-      productInCart = userCart.products.find(p => p.productId.toString() === productId);
+
       if (!productInCart) {
         throw { status: 404, message: "Product not found in cart" };
       }
