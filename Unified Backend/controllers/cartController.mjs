@@ -7,29 +7,34 @@ const addToCart = (req, res) => {
   const { productId, quantity } = req.body;
 
   if (!productId || !quantity || quantity <= 0) {
-    return res.status(400).json({ 
-      message: "Invalid product ID or quantity" });
+    return res.status(400).json({
+      message: "Invalid product ID or quantity",
+    });
   }
 
   let foundProduct;
 
   // Step 1: Check if product exists and has enough stock
-  Product.findById(productId)
+  Product.findById(productId).lean()
     .then(product => {
       if (!product) {
         return Promise.reject({ status: 404, message: "Product not found" });
       }
 
       if (product.stock_level < quantity) {
-        return Promise.reject({ status: 400, message: "Insufficient stock for this product" });
+        return Promise.reject({
+          status: 400,
+          message: `Insufficient stock for product ${product.name}. Available stock: ${product.stock_level}`,
+        });
       }
 
-      foundProduct = product; // Store for later update
+      foundProduct = product; // Store product info for later use
+
       return Cart.findOne({ userId: req.user.id });
     })
     .then(userCart => {
       if (!userCart) {
-        // New cart
+        // New cart for user
         const newCart = new Cart({
           userId: req.user.id,
           products: [{ productId, quantity }],
@@ -37,8 +42,11 @@ const addToCart = (req, res) => {
         return newCart.save();
       }
 
-      // Existing cart
-      const existingProduct = userCart.products.find(p => p.productId.toString() === productId);
+      // Update existing cart
+      const existingProduct = userCart.products.find(p =>
+        p.productId.toString() === String(productId)
+      );
+
       if (existingProduct) {
         existingProduct.quantity += quantity;
       } else {
@@ -47,11 +55,6 @@ const addToCart = (req, res) => {
 
       return userCart.save();
     })
-    // .then(savedOrUpdatedCart => {
-    //   // Step 2: Decrease stock_level
-    //   foundProduct.stock_level -= quantity;
-    //   return foundProduct.save().then(() => savedOrUpdatedCart);
-    // })
     .then(finalCart => {
       res.status(200).json({
         message: "Product added to cart successfully",
@@ -62,6 +65,7 @@ const addToCart = (req, res) => {
       if (err.status) {
         res.status(err.status).json({ message: err.message });
       } else {
+        console.error(err);
         res.status(500).json({
           message: "Server error",
           error: err.message || err,

@@ -7,7 +7,6 @@ import {
     decreaseQuantity
 } from "../../controllers/cartController.mjs";
 import { validateToken } from '../../middlewares/accessTokenHandler.js';
-import { validateRole } from '../../middlewares/roleAuth.js';
 
 const router = express.Router();
 
