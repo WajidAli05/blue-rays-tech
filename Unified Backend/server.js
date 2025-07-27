@@ -14,6 +14,7 @@ import adminRoutes from './routes/v1/adminRoutes.js';
 import announcementBarRoutes from './routes/v1/announcementBarRoutes.js'
 import cartRoutes from './routes/v1/cartRoutes.js';
 import shippingRoutes from './routes/v1/shippingRoutes.js';
+import trackDeviceRoutes from './routes/v1/trackDeviceRoutes.js';
 
 const app = express();
 config();
@@ -40,6 +41,7 @@ app.use('/api/v1', adminRoutes);
 app.use('/api/v1', announcementBarRoutes);
 app.use('/api/v1', cartRoutes);
 app.use('/api/v1', shippingRoutes);
+app.use('/api/v1', trackDeviceRoutes);
 
 // default port is 3000
 const port = process.env.PORT || 3000;
