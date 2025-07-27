@@ -14,6 +14,8 @@ const Dashboard = () => {
   const [totalCategories, setTotalCategories] = useState(0);
   const [averageRating, setAverageRating] = useState(0);
   const [websiteVisits, setWebsiteVisits] = useState(0);
+  const [mobileTraffic, setMobileTraffic] = useState(0);
+  const [desktopTraffic, setDesktopTraffic] = useState(0);
 
   //fetch total users
   useEffect(()=> {
@@ -79,20 +81,24 @@ useEffect(() => {
   }
 }, []);
 
-  //fetch total website visits
-  useEffect(()=>{
-    fetch('http://localhost:3001/api/v1/visit-count' , {
+  //fetch devices access stats
+  useEffect(() => {
+    fetch('http://localhost:3001/api/v1/trackDevice', {
       method: 'GET',
-      credentials: 'include',
     })
     .then((response) => response.json())
     .then((data) => {
-      setWebsiteVisits(data.data);
+      //set total website visits
+      setWebsiteVisits(data.data.totalAccesses || 0);
+      //set mobile traffic
+      setMobileTraffic(data.data.mobile.percentage || 0);
+      //set desktop traffic
+      setDesktopTraffic(data.data.desktop.percentage || 0);
     })
     .catch((error) => {
-      console.error('Error fetching total visits:', error);
+      console.error('Error fetching device access stats:', error);
     });
-  }, [])
+  }, []);
 
   return (
     <div>
@@ -186,15 +192,15 @@ useEffect(() => {
         <div className="mobile-vs-desktop">
           <StatisticCard
             title="Mobile Traffic"
-            value={70}
-            suffix="%"
+            value={mobileTraffic}
+            suffix=""
             prefix={<FaMobileAlt />}
             precision={0}
           />
           <StatisticCard
             title="Desktop Traffic"
-            value={30}
-            suffix="%"
+            value={desktopTraffic}
+            suffix=""
             prefix={<FaLaptop />}
             precision={0}
           />
