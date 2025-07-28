@@ -5,6 +5,7 @@ const addDeviceAccess = (req, res) => {
     if (!['mobile', 'desktop'].includes(deviceType)) {
         return res.status(400).json({ status: false, error: 'Invalid device type' });
     }
+    console.log(`Tracking device access: ${deviceType}`);
 
     const newDeviceAccess = new DeviceAccess({ deviceType });
     newDeviceAccess.save()
