@@ -8,7 +8,8 @@ const LoginPage = () => {
         <img src="/logo.png" alt="Logo" className="logo" />
       <LoginForm />
         <div className="animation-container">
-            <ShapeShiftBounce />
+          {/* TODO: */}
+            {/* <ShapeShiftBounce /> */}
         </div>
     </div>
   )

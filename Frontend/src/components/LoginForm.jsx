@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import { Modal } from "antd";
 
 export default function LoginForm() {
   const [formData, setFormData] = useState({
@@ -12,6 +13,9 @@ export default function LoginForm() {
     email: "",
     password: "",
   });
+
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const { setAdmin } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -45,6 +49,11 @@ export default function LoginForm() {
     return isValid;
   };
 
+  const showError = (message) => {
+    setErrorMessage(message);
+    setShowErrorModal(true);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -75,43 +84,78 @@ export default function LoginForm() {
       })
       .catch((error) => {
         console.error("Login error:", error);
-        alert(error.message || "Server error during login.");
+        showError(error.message || "Server error during login.");
       });
   };
 
   return (
-    <form onSubmit={handleSubmit} className="login-form">
-      <h2>Login</h2>
+    <>
+      <form onSubmit={handleSubmit} className="login-form">
+        <h2>Login</h2>
 
-      <div className="input-group">
-        <label htmlFor="email">Email</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          placeholder="Enter your email"
-        />
-        {errors.email && <p className="error">{errors.email}</p>}
-      </div>
+        <div className="input-group">
+          <label htmlFor="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="Enter your email"
+          />
+          {errors.email && <p className="error">{errors.email}</p>}
+        </div>
 
-      <div className="input-group">
-        <label htmlFor="password">Password</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          placeholder="Enter your password"
-        />
-        {errors.password && <p className="error">{errors.password}</p>}
-      </div>
+        <div className="input-group">
+          <label htmlFor="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            placeholder="Enter your password"
+          />
+          {errors.password && <p className="error">{errors.password}</p>}
+        </div>
 
-      <button type="submit" className="submit-btn">
-        Login
-      </button>
-    </form>
+        <button type="submit" className="submit-btn">
+          Login
+        </button>
+      </form>
+
+      {/* Error Modal */}
+      <Modal
+        title={
+          <span style={{ color: '#ff4d4f' }}>
+            ⚠️ Login Error
+          </span>
+        }
+        open={showErrorModal}
+        onOk={() => setShowErrorModal(false)}
+        onCancel={() => setShowErrorModal(false)}
+        centered
+        footer={[
+          <button
+            key="ok"
+            onClick={() => setShowErrorModal(false)}
+            style={{
+              backgroundColor: '#ff4d4f',
+              color: 'white',
+              border: 'none',
+              padding: '8px 16px',
+              borderRadius: '6px',
+              cursor: 'pointer'
+            }}
+          >
+            OK
+          </button>
+        ]}
+      >
+        <div style={{ color: '#ff4d4f', fontSize: '16px', marginTop: '10px' }}>
+          {errorMessage}
+        </div>
+      </Modal>
+    </>
   );
 }
