@@ -125,12 +125,6 @@ const onClickProductTypeSelect = e => {
 
             <div>
                 <div className='products-operation-div'>
-                 {/* select all products checkbox */}
-                 <div>
-                    <input type="checkbox" defaultChecked={false} className="checkbox checkbox-md" />
-                    <span>Select All</span>
-                </div>
-
                 <div>
                     <Space direction="vertical">
                         <Switch
@@ -144,7 +138,6 @@ const onClickProductTypeSelect = e => {
                     <Menu className='product-type-menu' onSelect={onClickProductTypeSelect} mode="vertical" items={items} />
                     <Button color="primary" variant="filled" onClick={()=> sortProducts(products , 'high')} ><ArrowUpOutlined /> High Price First </Button>
                     <Button color="primary" variant="filled" onClick={()=> sortProducts(products , 'low')}><ArrowDownOutlined /> Low Price First </Button>
-                    <Button color="danger" variant="solid" ><DeleteOutlined /> Delete Selected </Button>
                 </div>
                
                 </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Card, Rate, Divider } from 'antd';
+import { Card, Divider } from 'antd';
 const { Meta } = Card;
 
 const ProductCard = ({ product, onDelete }) => {
@@ -13,11 +13,6 @@ const ProductCard = ({ product, onDelete }) => {
                                            'placeholder.jpg' : 
                                            product.image_link[0]
       }`} />}
-      actions={[
-        <EditOutlined key="edit" />,
-        // Call onDelete when the delete icon is clicked
-        <DeleteOutlined key="delete" onClick={() => onDelete(product.product_id)} />
-      ]}
     >
     <Meta
       title={product.name}
@@ -67,47 +62,38 @@ const ProductCard = ({ product, onDelete }) => {
 
         <Divider type="vertical" style={{ height: '100%' }} />
 
-        {/* Click-through Rate */}
+        {/* Product Type */}
         <div>
-          <small>Click-through Rate</small>
+          <small>Product Type</small>
           <Divider type="horizontal" />
-          <p>{(product.click_through_rate * 100).toFixed(2)}%</p>
+          <p>{product.product_type}</p>
         </div>
 
         <Divider type="vertical" style={{ height: '100%' }} />
 
-        {/* Profit Margin */}
+        {/* sku */}
         <div>
-          <small>Profit Margin</small>
+          <small>SKU</small>
           <Divider type="horizontal" />
-          <p>{(product.profit_margin * 100).toFixed(0)}%</p>
+          <p>{product.sku}</p>
         </div>
 
         <Divider type="vertical" style={{ height: '100%' }} />
 
-        {/* Gross Profit */}
+        {/* Added at */}
         <div>
-          <small>Gross Profit</small>
+          <small>Added at</small>
           <Divider type="horizontal" />
-          <p>${product.gross_profit}</p>
+          <p>{new Date(product.createdAt).toLocaleDateString()}</p>
         </div>
 
         <Divider type="vertical" style={{ height: '100%' }} />
 
-        {/* Reviews Count */}
+        {/* Total units sold */}
         <div>
-          <small>Reviews Count</small>
+          <small>Total units sold</small>
           <Divider type="horizontal" />
-          <p>{product.reviews_count}</p>
-        </div>
-
-        <Divider type="vertical" style={{ height: '100%' }} />
-
-        {/* Total Sales Revenue */}
-        <div>
-          <small>Total Sales Revenue</small>
-          <Divider type="horizontal" />
-          <p>${product.total_sales_revenue}</p>
+          <p>{product.units_sold}</p>
         </div>
 
         {product.product_type === 'digital' && (

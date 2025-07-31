@@ -9,7 +9,6 @@ const UserList = ({ user, onEdit, onDelete, onViewDetails }) => {
     <ul className="user-list">
       <li key={user?._id}>
         <div className='checkbox-image-container'>
-          <input type="checkbox" defaultChecked={false} className="checkbox checkbox-xl" />
           <img 
             src={`http://localhost:3001/uploads/users/${user.image}`} 
             alt={`${user?.name}'s profile`} 
@@ -26,6 +25,11 @@ const UserList = ({ user, onEdit, onDelete, onViewDetails }) => {
         <div>
           <div>{`Since: ${user?.since.slice(0,10)}`}</div>
           <small>{user?.job}</small>
+        </div>
+
+        <div>
+          <div>{`Last Updated: ${new Date(user?.updatedAt).toLocaleDateString()}`}</div>
+          <small>{user?.role}</small>
         </div>
         <div className="actions-container">
           {/* View Details */}

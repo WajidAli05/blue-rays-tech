@@ -6,8 +6,8 @@ import CategoryWiseSaleChart from '../components/charts/CategoryWiseSaleChart'
 import OrderTrendsLineChart from '../components/charts/OrderTrendsLineChart'
 import ProductPerformancePieChart from '../components/charts/ProductPerformancePieChart'
 import StatisticCard from '../components/StatisticCard'
-import { FaDollarSign, FaShoppingCart, FaCashRegister, FaUsers, FaStar, FaList, FaBoxOpen, FaEye, FaClock, FaMobileAlt, FaLaptop} from 'react-icons/fa'; // Import icons from React Icons
-
+import { FaDollarSign, FaShoppingCart, FaCashRegister, FaUsers, FaStar, FaList, FaEye, FaClock, FaMobileAlt, FaLaptop} from 'react-icons/fa'; // Import icons from React Icons
+import { Spin } from 'antd';
 const Dashboard = () => {
   //states
   const [totalUsers, setTotalUsers] = useState(0);
@@ -16,6 +16,27 @@ const Dashboard = () => {
   const [websiteVisits, setWebsiteVisits] = useState(0);
   const [mobileTraffic, setMobileTraffic] = useState(0);
   const [desktopTraffic, setDesktopTraffic] = useState(0);
+  const [sessionData, setSessionData] = useState({
+    min: 0,
+    max: 0,
+    avg: 0,
+  });
+
+  //fetch session data from the server
+  useEffect(() => {
+    fetch('http://localhost:3001/api/v1/session-duration/stats', {
+      method: 'GET',
+      credentials: 'include',
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      setSessionData(data.data);
+    })
+    .catch((error) => {
+      console.error('Error fetching session data:', error);
+    });
+  }, [])
+
 
   //fetch total users
   useEffect(()=> {
@@ -100,6 +121,8 @@ useEffect(() => {
     });
   }, []);
 
+  if (!totalUsers || !totalCategories ) return <Spin tip="Loading dashboard..." />;
+
   return (
     <div>
       <NavBar />
@@ -153,14 +176,6 @@ useEffect(() => {
           precision={0}
         />
 
-        {/* Total Products Sold to Date */}
-        <StatisticCard
-          title="Total Products Sold"
-          value={80000}
-          prefix={<FaBoxOpen />}
-          precision={0}
-        />
-
         {/* Total Page Views */}
         <StatisticCard
           title="Total Website Visits"
@@ -171,20 +186,31 @@ useEffect(() => {
           precision={0}
         />
 
+        {/* Minimum session duration by users*/}
+        <StatisticCard
+          title="Min Session"
+          value={sessionData.min}
+          prefix={<FaClock />}
+          suffix="Sec"
+          precision={0}
+        />
+
         {/* Average Session Duration */}
         <StatisticCard
-          title="Average Session Duration"
-          value={5.2}
-          suffix="min"
+          title="Avg Session"
+          value={sessionData.avg}
+          suffix="Sec"
           prefix={<FaClock />}
           precision={1}
         />
 
-        {/* Best Selling Product */}
+        {/* Maximum Session Duration */}
         <StatisticCard
-          title="Best Selling Product"
-          value="Headphones"  
-          prefix={<FaBoxOpen />} 
+          title="Max Session"
+          value={sessionData.max}
+          prefix={<FaClock />}
+          suffix="Sec"
+          hoverable={true}
           precision={0}
         />
 

@@ -17,7 +17,8 @@ import {
     Switch,
     Breadcrumb,
     message,
-    Modal
+    Modal,
+    Spin
 } from 'antd';
 import ProductListItem from '../components/ProductListItem';
 import {Link} from 'react-router-dom';
@@ -472,26 +473,19 @@ const handleFormSubmit = (values) => {
 
             <div>
                 <div className='products-operation-div'>
-                 {/* select all products checkbox */}
-                 <div>
-                    <input type="checkbox" defaultChecked={false} className="checkbox checkbox-md" />
-                    <span>Select All</span>
-                </div>
-
-                <div>
-                    <Space direction="vertical">
-                        <Switch
-                        checkedChildren="List"
-                        unCheckedChildren="Card"
-                        defaultChecked={viewType === 'list'}
-                        onChange={changeViewType} 
-                        />
-                    </Space>
-                    <Button color="primary" variant="filled" onClick={()=> sortProducts(products , 'high')} > High Price First </Button>
-                    <Button color="primary" variant="filled" onClick={()=> sortProducts(products , 'low')}> Low Price First </Button>
-                    <Button color="danger" variant="solid" > Delete Selected </Button>
-                </div>
-               
+                    <div>
+                        <Space direction="vertical">
+                            <Switch
+                            checkedChildren="List"
+                            unCheckedChildren="Card"
+                            defaultChecked={viewType === 'list'}
+                            onChange={changeViewType} 
+                            />
+                        </Space>
+                        <Button color="primary" variant="filled" onClick={()=> sortProducts(products , 'high')} > High Price First </Button>
+                        <Button color="primary" variant="filled" onClick={()=> sortProducts(products , 'low')}> Low Price First </Button>
+                        {/* <Button color="danger" variant="solid" > Delete Selected </Button> */}
+                    </div>
                 </div>
                 {viewType === 'card' && (
                     <div className='product-card-container'>

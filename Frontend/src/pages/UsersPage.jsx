@@ -4,7 +4,7 @@ import NavBar from '../components/NavBar';
 import UserList from '../components/UserList';
 import SearchBox from '../components/SearchBox';
 import EditUserModal from '../components/EditUserModal';
-import { Button, Breadcrumb, Spin } from 'antd';
+import { Breadcrumb } from 'antd';
 
 const UsersPage = () => {
   const navigate = useNavigate();
@@ -82,7 +82,6 @@ const UsersPage = () => {
     }
   };
 
-  if (loading) return <Spin tip="Loading users..." fullscreen />;
 
   return (
     <div>
@@ -101,9 +100,6 @@ const UsersPage = () => {
       />
 
       <div className="search-comp-container">
-        <Button type="primary" danger>
-          Delete Selected
-        </Button>
         <SearchBox
           onSearch={handleSearch}
           placeholder="Search by name or email"

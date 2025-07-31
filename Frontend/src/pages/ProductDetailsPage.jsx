@@ -175,23 +175,24 @@ const handleDeleteConfirm = () => {
             </Paragraph>
             <Paragraph type="secondary">Category: {p.category}</Paragraph>
             <Paragraph type="secondary">Availability: {p.availability} ({p.stock_level} units available)</Paragraph>
-            <Rate disabled allowHalf defaultValue={p.average_rating || 0} />
-            <Paragraph>{p.reviews_count} reviews</Paragraph>
+            
+            {/* TODO:  */}
+            {/* <Rate disabled allowHalf defaultValue={p.average_rating || 0} />
+            <Paragraph>{p.reviews_count} reviews</Paragraph> */}
 
             <Divider />
             <Title level={4}>Product Specifications</Title>
             <Descriptions bordered column={1}>
               <Descriptions.Item label="Brand">{p.brand}</Descriptions.Item>
               <Descriptions.Item label="Product Type">{p.product_type}</Descriptions.Item>
+              <Descriptions.Item label="Availability">{p.availability}</Descriptions.Item>
               <Descriptions.Item label="SKU">{p.sku}</Descriptions.Item>
               <Descriptions.Item label="Units Sold">{p.units_sold ?? 0}</Descriptions.Item>
-              <Descriptions.Item label="Total Sales Revenue">${safeToFixed(p.total_sales_revenue)}</Descriptions.Item>
-              <Descriptions.Item label="Profit Margin">
-                {p.profit_margin !== undefined ? `${(p.profit_margin * 100).toFixed(2)}%` : 'N/A'}
-              </Descriptions.Item>
-              <Descriptions.Item label="Gross Profit">${safeToFixed(p.gross_profit)}</Descriptions.Item>
-              <Descriptions.Item label="Click-through Rate">
-                {p.click_through_rate !== undefined ? `${(p.click_through_rate * 100).toFixed(2)}%` : 'N/A'}
+              <Descriptions.Item label="Sub Category">{p.sub_category}</Descriptions.Item>
+              <Descriptions.Item label="Added On">{new Date(p.createdAt).toLocaleDateString()}</Descriptions.Item>
+              <Descriptions.Item label="Last Updated">{new Date(p.updatedAt).toLocaleDateString()}</Descriptions.Item>
+              <Descriptions.Item label="Discount Rate">
+                {p.discount !== undefined ? `${(p.discount * 100).toFixed(2)}%` : 'N/A'}
               </Descriptions.Item>
             </Descriptions>
 

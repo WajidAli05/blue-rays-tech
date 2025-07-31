@@ -205,16 +205,9 @@ const handleFormSubmit = (values) => {
         <Form.Item label="Brand" name="brand"><Input /></Form.Item>
         <Form.Item label="Price" name="price" rules={[{ required: true }]}><InputNumber style={{ width: '100%' }} /></Form.Item>
         <Form.Item label="Stock Level" name="stock_level"><InputNumber style={{ width: '100%' }} /></Form.Item>
-        <Form.Item label="Units Sold" name="units_sold"><InputNumber style={{ width: '100%' }} /></Form.Item>
-        <Form.Item label="Total Revenue" name="total_sales_revenue"><InputNumber style={{ width: '100%' }} /></Form.Item>
         <Form.Item label="Description" name="description"><Input.TextArea /></Form.Item>
         <Form.Item label="Availability" name="availability"><Input /></Form.Item>
         <Form.Item label="Discount" name="discount"><InputNumber style={{ width: '100%' }} /></Form.Item>
-        <Form.Item label="Profit Margin" name="profit_margin"><InputNumber style={{ width: '100%' }} /></Form.Item>
-        <Form.Item label="Gross Profit" name="gross_profit"><InputNumber style={{ width: '100%' }} /></Form.Item>
-        <Form.Item label="CTR" name="click_through_rate"><InputNumber style={{ width: '100%' }} /></Form.Item>
-        <Form.Item label="Reviews Count" name="reviews_count"><InputNumber style={{ width: '100%' }} /></Form.Item>
-        <Form.Item label="Rating" name="average_rating"><InputNumber style={{ width: '100%' }} max={5} min={0} step={0.1} /></Form.Item>
 
         {productType === 'digital' && (
           <>

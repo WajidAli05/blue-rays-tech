@@ -6,7 +6,7 @@ import { Spin } from "antd";
 const PrivateRoutes = () => {
   const { admin, authLoading } = useContext(AuthContext);
 
-  if (authLoading) return <div className="loading-div">Loading...</div>; // Optional loading state
+  if (authLoading) return <Spin tip="Loading..." fullscreen />;
 
   return admin ? <Outlet /> : <Navigate to="/ad-lg" />;
 };
