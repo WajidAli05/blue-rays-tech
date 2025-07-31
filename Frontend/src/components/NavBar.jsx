@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   DashboardOutlined,
   AppstoreAddOutlined,
@@ -9,12 +9,16 @@ import {
   SoundOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { Tooltip } from 'antd';
+import { Tooltip, Modal, Spin } from 'antd';
 
 const NavBar = () => {
   const navigate = useNavigate();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  const handleLogout = () => {
+  const performLogout = () => {
+    setIsLoggingOut(true);
+    
     fetch('http://localhost:3001/api/v1/admin-logout', {
       method: 'POST',
       credentials: 'include',
@@ -23,14 +27,23 @@ const NavBar = () => {
         if (!res.ok) throw new Error('Logout failed');
         return res.json();
       })
-      .then((data) => {
-        alert(data.message || 'Logout successful');
-        navigate('/ad-lg');
+      .then(() => {
+        // Show spinner for 2 seconds before redirecting
+        setTimeout(() => {
+          setShowLogoutModal(false);
+          setIsLoggingOut(false);
+          navigate('/ad-lg');
+        }, 2000);
       })
       .catch((err) => {
         console.error('Logout error:', err);
-        alert('Logout failed. Please try again.');
+        setShowLogoutModal(false);
+        setIsLoggingOut(false);
       });
+  };
+
+  const handleLogout = () => {
+    setShowLogoutModal(true);
   };
 
   const tooltipStyle = {
@@ -47,7 +60,7 @@ const NavBar = () => {
               color="white"
               title="Dashboard"
               placement="top"
-              overlayInnerStyle={tooltipStyle}
+              styles={{ body: tooltipStyle }}
             >
               <a href="/" className="nav-link">
                 <DashboardOutlined /> Dashboard
@@ -59,7 +72,7 @@ const NavBar = () => {
               color="white"
               title="Add Product"
               placement="top"
-              overlayInnerStyle={tooltipStyle}
+              styles={{ body: tooltipStyle }}
             >
               <a href="/add-product" className="nav-link">
                 <AppstoreAddOutlined /> Add Product
@@ -71,7 +84,7 @@ const NavBar = () => {
               color="white"
               title="Announcements"
               placement="top"
-              overlayInnerStyle={tooltipStyle}
+              styles={{ body: tooltipStyle }}
             >
               <a href="/announcements" className="nav-link">
                 <SoundOutlined /> Announcements
@@ -83,7 +96,7 @@ const NavBar = () => {
               color="white"
               title="Products"
               placement="top"
-              overlayInnerStyle={tooltipStyle}
+              styles={{ body: tooltipStyle }}
             >
               <a href="/products-listing" className="dropdown-link">
                 <ProductOutlined /> Products
@@ -95,7 +108,7 @@ const NavBar = () => {
               color="white"
               title="Users"
               placement="top"
-              overlayInnerStyle={tooltipStyle}
+              styles={{ body: tooltipStyle }}
             >
               <a href="/users" className="nav-link">
                 <UsergroupAddOutlined /> Users
@@ -107,7 +120,7 @@ const NavBar = () => {
               color="white"
               title="Orders"
               placement="top"
-              overlayInnerStyle={tooltipStyle}
+              styles={{ body: tooltipStyle }}
             >
               <a href="/orders" className="nav-link">
                 <ShoppingCartOutlined /> Orders
@@ -119,7 +132,7 @@ const NavBar = () => {
               color="white"
               title="Logout"
               placement="top"
-              overlayInnerStyle={tooltipStyle}
+              styles={{ body: tooltipStyle }}
             >
               <button onClick={handleLogout} className="logout-btn">
                 <LogoutOutlined /> Logout
@@ -128,6 +141,34 @@ const NavBar = () => {
           </li>
         </ul>
       </nav>
+
+      {/* Logout Confirmation Modal */}
+      <Modal
+        title="Confirm Logout"
+        open={showLogoutModal}
+        onOk={performLogout}
+        onCancel={() => setShowLogoutModal(false)}
+        okText="Yes"
+        cancelText="No"
+        centered
+        confirmLoading={isLoggingOut}
+        okButtonProps={{
+          style: {
+            backgroundColor: 'red',
+            borderColor: 'red',
+            color: 'white',
+          },
+        }}
+      >
+        {isLoggingOut ? (
+          <div style={{ textAlign: 'center', padding: '20px 0' }}>
+            <Spin size="large" />
+            <p style={{ marginTop: '16px', color: '#666' }}>Logging out...</p>
+          </div>
+        ) : (
+          'Are you sure you want to log out?'
+        )}
+      </Modal>
     </div>
   );
 };
