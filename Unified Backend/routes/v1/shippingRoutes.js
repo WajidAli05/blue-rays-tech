@@ -22,8 +22,8 @@ router.get('/shipping/stats', validateToken, validateRole(['admin', 'superadmin'
 router.get('/shipping/range', validateToken, validateRole(['admin', 'superadmin']), getShippingsByDateRange); // By date range
 
 // ----------- BASIC CRUD ---------------
-router.post('/shipping/', validateToken, createShipping); // Create new shipping
-router.get('/shipping/user/', validateToken, getShipping); // Get shipping by user
+router.post('/shipping', validateToken, createShipping); // Create new shipping
+router.get('/shipping/user', validateToken, getShipping); // Get shipping by user
 router.get('/shipping/:id', validateToken, getShippingById); // Get by ID
 router.patch('/shipping/:id', validateToken, updateShipping); // Update by ID
 router.delete('/shipping/:id', validateToken, deleteShipping); // Delete by ID
