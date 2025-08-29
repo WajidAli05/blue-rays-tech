@@ -1,47 +1,61 @@
-import express, { json } from 'express';
-import { config } from 'dotenv';
-import cors from 'cors';
-import cookieParser from 'cookie-parser';
-import helmet from 'helmet';
+import express, { json } from "express";
+import { config } from "dotenv";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import helmet from "helmet";
 
 // Load environment variables
 config();
 
 // DB connection
-import dbConnection from './config/dbConnection.js';
+import dbConnection from "./config/dbConnection.js";
 
 // Middlewares
-import { rateLimiter } from './middlewares/rateLimiter.js';
+import { rateLimiter } from "./middlewares/rateLimiter.js";
 
 // Routes
-import productRoutes from './routes/v1/productRoutes.js';
-import categoryRoutes from './routes/v1/categoryRoutes.js';
-import AffiliateProgramRoutes from './routes/v1/affiliateProgramRoutes.js';
-import fileTypeRoutes from './routes/v1/fileTypeRoutes.js';
-import userRoutes from './routes/v1/userRoutes.js';
-import adminRoutes from './routes/v1/adminRoutes.js';
-import announcementBarRoutes from './routes/v1/announcementBarRoutes.js';
-import cartRoutes from './routes/v1/cartRoutes.js';
-import shippingRoutes from './routes/v1/shippingRoutes.js';
-import trackDeviceRoutes from './routes/v1/trackDeviceRoutes.js';
-import sessionDurationRoutes from './routes/v1/sessionDurationRoutes.js';
+import productRoutes from "./routes/v1/productRoutes.js";
+import categoryRoutes from "./routes/v1/categoryRoutes.js";
+import AffiliateProgramRoutes from "./routes/v1/affiliateProgramRoutes.js";
+import fileTypeRoutes from "./routes/v1/fileTypeRoutes.js";
+import userRoutes from "./routes/v1/userRoutes.js";
+import adminRoutes from "./routes/v1/adminRoutes.js";
+import announcementBarRoutes from "./routes/v1/announcementBarRoutes.js";
+import cartRoutes from "./routes/v1/cartRoutes.js";
+import shippingRoutes from "./routes/v1/shippingRoutes.js";
+import trackDeviceRoutes from "./routes/v1/trackDeviceRoutes.js";
+import sessionDurationRoutes from "./routes/v1/sessionDurationRoutes.js";
+import stripeRoutes from "./routes/v1/stripeRoutes.js";
+
+// Stripe webhook controller
+import stripeController from "./controllers/stripeController.js";
 
 const app = express();
+
+/* 
+  Stripe webhook must come BEFORE json() middleware,
+  otherwise raw body parsing will break signature verification.
+*/
+app.post(
+  "/api/v1/webhook",
+  express.raw({ type: "application/json" }),
+  stripeController.handleWebhook
+);
 
 // Security Headers Middleware (Helmet)
 app.use(
   helmet({
-    contentSecurityPolicy: false,           // Disable CSP to avoid frontend issues
-    crossOriginEmbedderPolicy: false,       // Allow 3rd-party embeds
-    frameguard: { action: 'deny' },         // Prevent clickjacking
-    hidePoweredBy: true,                    // Hide Express signature
+    contentSecurityPolicy: false, // Disable CSP to avoid frontend issues
+    crossOriginEmbedderPolicy: false, // Allow 3rd-party embeds
+    frameguard: { action: "deny" }, // Prevent clickjacking
+    hidePoweredBy: true, // Hide Express signature
     hsts: {
-      maxAge: 31536000,                     // 1 year
+      maxAge: 31536000, // 1 year
       includeSubDomains: true,
       preload: true,
     },
-    noSniff: true,                          // Prevent MIME sniffing
-    xssFilter: true,                        // XSS protection
+    noSniff: true, // Prevent MIME sniffing
+    xssFilter: true, // XSS protection
   })
 );
 
@@ -49,12 +63,14 @@ app.use(
 app.use(rateLimiter);
 
 // Enable CORS
-app.use(cors({
-  origin: process.env.CLIENT_URL || '',
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || "",
+    credentials: true,
+  })
+);
 
-// Parsing Middlewares
+// Parsing middlewares (must come AFTER webhook raw)
 app.use(json());
 app.use(cookieParser());
 
@@ -62,20 +78,21 @@ app.use(cookieParser());
 dbConnection();
 
 // Static files
-app.use('/uploads', express.static('uploads'));
+app.use("/uploads", express.static("uploads"));
 
 // API Routes
-app.use('/api/v1', productRoutes);
-app.use('/api/v1', categoryRoutes);
-app.use('/api/v1', AffiliateProgramRoutes);
-app.use('/api/v1', fileTypeRoutes);
-app.use('/api/v1', userRoutes);
-app.use('/api/v1', adminRoutes);
-app.use('/api/v1', announcementBarRoutes);
-app.use('/api/v1', cartRoutes);
-app.use('/api/v1', shippingRoutes);
-app.use('/api/v1', trackDeviceRoutes);
-app.use('/api/v1', sessionDurationRoutes);
+app.use("/api/v1", productRoutes);
+app.use("/api/v1", categoryRoutes);
+app.use("/api/v1", AffiliateProgramRoutes);
+app.use("/api/v1", fileTypeRoutes);
+app.use("/api/v1", userRoutes);
+app.use("/api/v1", adminRoutes);
+app.use("/api/v1", announcementBarRoutes);
+app.use("/api/v1", cartRoutes);
+app.use("/api/v1", shippingRoutes);
+app.use("/api/v1", trackDeviceRoutes);
+app.use("/api/v1", sessionDurationRoutes);
+app.use("/api/v1", stripeRoutes);
 
 // Start Server
 const port = process.env.PORT || 3000;
