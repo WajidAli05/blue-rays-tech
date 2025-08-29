@@ -28,41 +28,40 @@ import sessionDurationRoutes from "./routes/v1/sessionDurationRoutes.js";
 import stripeRoutes from "./routes/v1/stripeRoutes.js";
 
 // Stripe webhook controller
-import stripeController from "./controllers/stripeController.js";
+import { handleWebhook } from "./controllers/stripeController.js";
 
 const app = express();
 
 /* 
-  Stripe webhook must come BEFORE json() middleware,
-  otherwise raw body parsing will break signature verification.
+  Stripe webhook must come BEFORE any body parsing
 */
 app.post(
   "/api/v1/webhook",
   express.raw({ type: "application/json" }),
-  stripeController.handleWebhook
+  handleWebhook
 );
 
-// Security Headers Middleware (Helmet)
+/* 
+  Global middlewares
+*/
 app.use(
   helmet({
-    contentSecurityPolicy: false, // Disable CSP to avoid frontend issues
-    crossOriginEmbedderPolicy: false, // Allow 3rd-party embeds
-    frameguard: { action: "deny" }, // Prevent clickjacking
-    hidePoweredBy: true, // Hide Express signature
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+    frameguard: { action: "deny" },
+    hidePoweredBy: true,
     hsts: {
-      maxAge: 31536000, // 1 year
+      maxAge: 31536000,
       includeSubDomains: true,
       preload: true,
     },
-    noSniff: true, // Prevent MIME sniffing
-    xssFilter: true, // XSS protection
+    noSniff: true,
+    xssFilter: true,
   })
 );
 
-// Rate Limiting (Prevent abuse)
 app.use(rateLimiter);
 
-// Enable CORS
 app.use(
   cors({
     origin: process.env.CLIENT_URL || "",
@@ -70,17 +69,17 @@ app.use(
   })
 );
 
-// Parsing middlewares (must come AFTER webhook raw)
-app.use(json());
+app.use("/api/v1", stripeRoutes);
+
+/* 
+  Normal parsers (AFTER webhook!)
+*/
 app.use(cookieParser());
+app.use(json());
 
-// 🔌 Connect to MongoDB
-dbConnection();
-
-// Static files
-app.use("/uploads", express.static("uploads"));
-
-// API Routes
+/* 
+  Routes
+*/
 app.use("/api/v1", productRoutes);
 app.use("/api/v1", categoryRoutes);
 app.use("/api/v1", AffiliateProgramRoutes);
@@ -92,9 +91,18 @@ app.use("/api/v1", cartRoutes);
 app.use("/api/v1", shippingRoutes);
 app.use("/api/v1", trackDeviceRoutes);
 app.use("/api/v1", sessionDurationRoutes);
-app.use("/api/v1", stripeRoutes);
 
-// Start Server
+// Static
+app.use("/uploads", express.static("uploads"));
+
+/* 
+  DB connection
+*/
+dbConnection();
+
+/* 
+  Start server
+*/
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
