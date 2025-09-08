@@ -26,6 +26,7 @@ import shippingRoutes from "./routes/v1/shippingRoutes.js";
 import trackDeviceRoutes from "./routes/v1/trackDeviceRoutes.js";
 import sessionDurationRoutes from "./routes/v1/sessionDurationRoutes.js";
 import stripeRoutes from "./routes/v1/stripeRoutes.js";
+import queryRoutes from "./routes/v1/queryRoutes.js";
 
 // Stripe webhook controller
 import { handleWebhook } from "./controllers/stripeController.js";
@@ -91,6 +92,7 @@ app.use("/api/v1", cartRoutes);
 app.use("/api/v1", shippingRoutes);
 app.use("/api/v1", trackDeviceRoutes);
 app.use("/api/v1", sessionDurationRoutes);
+app.use("/api/v1", queryRoutes);
 
 // Static
 app.use("/uploads", express.static("uploads"));
