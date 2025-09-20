@@ -38,7 +38,7 @@ const validateRole = (allowedRoles = []) => {
 
           req.user = admin;
           req.user.role = admin.role;
-          return next(); // ✅ Early return, stops execution here
+          return next(); 
         }
 
         // Only proceed to User check if not found in Admins
