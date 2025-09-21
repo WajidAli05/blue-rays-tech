@@ -490,7 +490,7 @@ const getProductsByCategoryName = (req, res) => {
     Product.find({ category: { $regex: category, $options: "i" } })
         .then(products => {
             if (!products.length) {
-                return Products.findOne({})
+                return Product.findOne({})
                     .then(sample => {
                         res.status(404).json({
                             status: false,
