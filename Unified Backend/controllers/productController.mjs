@@ -1,4 +1,4 @@
-import Products from "../models/productModel.js";
+import Product from "../models/productModel.js";
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -83,7 +83,7 @@ const addProduct = (req, res) => {
     // For affiliate, no file upload validation needed
 
     // Check if product already exists by SKU
-    Products.findOne({ sku })
+    Product.findOne({ sku })
         .then(productExists => {
             if (productExists) {
                 return res.status(400).json({ status: false, message: "Product already exists" });
@@ -91,7 +91,7 @@ const addProduct = (req, res) => {
             
             category = category.toLowerCase();
             sub_category = sub_category.toLowerCase()
-            const newProduct = new Products({
+            const newProduct = new Product({
                 name,
                 category,
                 sub_category,
@@ -126,7 +126,7 @@ const addProduct = (req, res) => {
 
 //get all products
 const getProducts = async (req, res) => {
-    await Products.find()
+    await Product.find()
     .then((products) => {
         return res.status(200).json({ status: true, message: "Products fetched successfully", data: products });
     })
@@ -142,7 +142,7 @@ const getProductBySKU = async (req, res) => {
         return res.status(400).json({ status: false, message: "SKU is required to get product" });
     }
 
-    await Products.findOne({ sku })
+    await Product.findOne({ sku })
     .then((product) => {
         if (!product) {
             return res.status(404).json({ status: false, message: "Product not found with the given SKU" });
@@ -180,7 +180,7 @@ const updateProduct = (req, res) => {
         // For affiliate, no validation needed
     }
 
-    Products.findOne({ sku })
+    Product.findOne({ sku })
         .then(product => {
             if (!product) {
                 return res.status(404).json({ status: false, message: "Product not found with the given SKU" });
@@ -210,7 +210,7 @@ const updateProduct = (req, res) => {
             if (commission !== undefined) updateFields.commission = commission;
             if (affiliate_program !== undefined) updateFields.affiliate_program = affiliate_program;
 
-            return Products.findOneAndUpdate(
+            return Product.findOneAndUpdate(
                 { sku },
                 { $set: updateFields },
                 { new: true, runValidators: true }
@@ -292,7 +292,7 @@ const deleteProductBySku = async (req, res) => {
     return res.status(400).json({ status: false, message: "SKU is required to delete product" });
   }
 
-  Products.findOneAndDelete({ sku })
+  Product.findOneAndDelete({ sku })
     .then((product) => {
       if (!product) {
         return res.status(404).json({ status: false, message: "Product not found with the given SKU" });
@@ -365,7 +365,7 @@ const getAverageRating = async (req, res) => {
     //     });
     // }
     
-    const products = await Products.find();
+    const products = await Product.find();
     const totalRating = products.reduce((acc, product) => acc + product.average_rating, 0);
     const averageRating = totalRating / products.length;
 
@@ -374,7 +374,7 @@ const getAverageRating = async (req, res) => {
 
 //get stock level of each category
 const getStockLevelByCategory = async (req, res) => {
-    Products.aggregate([
+    Product.aggregate([
         {
             $group: {
                 _id: '$category',
@@ -487,7 +487,7 @@ const getProductsByCategoryName = (req, res) => {
 
     category = decodeURIComponent(category).toLowerCase();
 
-    Products.find({ category: { $regex: category, $options: "i" } })
+    Product.find({ category: { $regex: category, $options: "i" } })
         .then(products => {
             if (!products.length) {
                 return Products.findOne({})
@@ -532,7 +532,7 @@ const getProductBySubCategoryName = (req, res) => {
   const normalizedSubcategory = decodeURIComponent(subcategory).toLowerCase();  
 
   //find products
-  Products.find({
+  Product.find({
     sub_category: { $regex: new RegExp(normalizedSubcategory, 'i') }
   })
   .then((products)=> {
@@ -556,8 +556,54 @@ const getProductBySubCategoryName = (req, res) => {
   
 };
 
+// Get number of products per product_type in percentage
+const getProductPercentagePerProductType = (req, res) => {
+  Product.aggregate([
+    {
+      $group: {
+        _id: "$product_type",
+        count: { $sum: 1 },
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        total: { $sum: "$count" },
+        breakdown: { $push: { type: "$_id", count: "$count" } },
+      },
+    },
+    { $unwind: "$breakdown" },
+    {
+      $project: {
+        _id: 0,
+        product_type: "$breakdown.type",
+        count: "$breakdown.count",
+        percentage: {
+          $round: [
+            {
+              $multiply: [
+                { $divide: ["$breakdown.count", "$total"] },
+                100,
+              ],
+            },
+            2, // round to 2 decimal places
+          ],
+        },
+      },
+    },
+  ])
+    .then(result => {
+      res.json(result);
+    })
+    .catch(err => {
+      console.error("Error fetching product percentages:", err.message);
+      res.status(500).json({ error: "Server error" });
+    });
+};
 
-export { addProduct, 
+
+export { 
+    addProduct, 
     getProducts, 
     updateProduct, 
     deleteProductBySku, 
@@ -566,5 +612,6 @@ export { addProduct,
     getAverageRating,
     getStockLevelByCategory,
     getProductsByCategoryName,
-    getProductBySubCategoryName
+    getProductBySubCategoryName,
+    getProductPercentagePerProductType
 };
