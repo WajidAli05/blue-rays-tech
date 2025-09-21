@@ -88,9 +88,44 @@ const totalAmountOfOrdersTillDate = (req, res) => {
     });
 };
 
+const getOrderTrends = (req, res) => {
+  const { interval } = req.query; // "day" or "week"
+
+  let groupFormat;
+  if (interval === "week") {
+    groupFormat = { $dateToString: { format: "%Y-%U", date: "$createdAt" } }; // Year-WeekNumber
+  } else {
+    groupFormat = { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }; // Default = daily
+  }
+
+  Order.aggregate([
+    { $match: { status: "paid" } },
+    {
+      $group: {
+        _id: groupFormat,
+        orders: { $sum: 1 },
+      },
+    },
+    { $sort: { _id: 1 } },
+  ])
+    .then((result) => {
+      const formatted = result.map((item) => ({
+        name: item._id, // e.g. "2025-09-20" or "2025-38"
+        orders: item.orders,
+      }));
+
+      res.json(formatted);
+    })
+    .catch((err) => {
+      console.error("Error getting order trends:", err.message);
+      res.status(500).json({ error: "Server error" });
+    });
+};
+
 export {
     getOrders,
     getOrderByUserId,
     deleteOrderById,
-    totalAmountOfOrdersTillDate
+    totalAmountOfOrdersTillDate,
+    getOrderTrends
 }
