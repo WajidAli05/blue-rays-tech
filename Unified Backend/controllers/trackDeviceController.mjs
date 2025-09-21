@@ -80,4 +80,54 @@ const getDeviceAccess = (req, res) => {
     });
 }
 
-export { addDeviceAccess, getDeviceAccess };
+// Device access trend over time
+const getDeviceAccessOverTime = (req, res) => {
+  const { interval = "day" } = req.query; // default daily, can extend later
+
+  let dateFormat;
+  if (interval === "day") dateFormat = "%Y-%m-%d";
+  else if (interval === "month") dateFormat = "%Y-%m";
+  else dateFormat = "%Y-%m-%d"; // fallback
+
+  DeviceAccess.aggregate([
+    {
+      $group: {
+        _id: {
+          date: { $dateToString: { format: dateFormat, date: "$accessedAt" } },
+          deviceType: "$deviceType"
+        },
+        count: { $sum: 1 }
+      }
+    },
+    {
+      $group: {
+        _id: "$_id.date",
+        devices: {
+          $push: {
+            deviceType: "$_id.deviceType",
+            count: "$count"
+          }
+        }
+      }
+    },
+    { $sort: { _id: 1 } }
+  ])
+    .then(results => {
+      // Transform data into recharts-friendly format
+      const formatted = results.map(item => {
+        const row = { name: item._id, mobile: 0, desktop: 0 };
+        item.devices.forEach(d => {
+          row[d.deviceType] = d.count;
+        });
+        return row;
+      });
+
+      res.json({ status: true, data: formatted });
+    })
+    .catch(err => {
+      console.error("Error retrieving device access over time:", err);
+      res.status(500).json({ status: false, error: "Server error" });
+    });
+};
+
+export { addDeviceAccess, getDeviceAccess, getDeviceAccessOverTime };

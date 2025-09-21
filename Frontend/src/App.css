@@ -224,23 +224,22 @@
 /* ===================dashboard css starts here==================== */
 .charts-container {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
   flex-wrap: wrap;
-  background-color: rgb(255, 255, 255); 
+  justify-content: space-between;
+  align-items: flex-start;
+  background-color: #fff;
   padding: 50px 10px;
-  row-gap: 100px;
+  row-gap: 50px;   /* adjust spacing between rows */
   border-radius: 10px;
-
-  /* Apply the frosty effect */
-  backdrop-filter: blur(10px); 
+  backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-
-  /* Add a subtle shadow for better frosty effect */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+.charts-container > * {
+  flex: 0 0 48%;    /* each chart takes ~half of row */
+  max-width: 48%;   /* ensures it won’t stretch too much */
+}
 
 .chart-heading{
   text-align: center;

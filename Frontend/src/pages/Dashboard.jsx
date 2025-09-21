@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import NavBar from '../components/NavBar'
 import CategoryWiseInventoryBarChart from '../components/charts/CategoryWiseInventoryBarChart'
-import CateggoryWiseProductStrength from '../components/charts/CategoryWiseProductStrength'
-import CategoryWiseSaleChart from '../components/charts/CategoryWiseSaleChart'
+import CateggoryWiseProductStrength from '../components/charts/DeviceAccessOverTimeBarChart'
+import DeviceAccessChart from '../components/charts/DeviceAccessOverTimeBarChart'
 import OrderTrendsLineChart from '../components/charts/OrderTrendsLineChart'
 import ProductPerformancePieChart from '../components/charts/ProductPerformancePieChart'
 import StatisticCard from '../components/StatisticCard'
@@ -260,9 +260,8 @@ useEffect(() => {
       </div>
       <div className='charts-container'>
         <CategoryWiseInventoryBarChart />
-        <CateggoryWiseProductStrength />
+        <DeviceAccessChart />
         <OrderTrendsLineChart />
-        <CategoryWiseSaleChart />
         <ProductPerformancePieChart />
       </div>
     </div>
