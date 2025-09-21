@@ -27,8 +27,31 @@ const getOrders = (req, res) => {
 }
 
 const getOrderByUserId = (req, res) => {
+  const userId = req.params.userId;
 
-}
+  Order.find({ customerId: userId }) // assuming you save userId in the order model
+    .then((orders) => {
+      if (!orders || orders.length === 0) {
+        return res.status(404).json({
+          status: false,
+          message: "No purchase history for this user",
+          data: [],
+        });
+      }
+
+      res.status(200).json({
+        status: true,
+        message: "Orders fetched successfully",
+        data: orders,
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        status: false,
+        message: err.message,
+      });
+    });
+};
 
 const deleteOrderById = (req, res) => {
   const orderId = req.params.orderId;
@@ -122,10 +145,38 @@ const getOrderTrends = (req, res) => {
     });
 };
 
+const getOrderByUserEmail = (req, res) => {
+  const { email } = req.params;
+
+  Order.find({ customerEmail: email, status: "paid" })
+    .then((orders) => {
+      if (!orders || orders.length === 0) {
+        return res.status(404).json({
+          status: false,
+          message: "No purchase history found for this user",
+          data: [],
+        });
+      }
+
+      res.status(200).json({
+        status: true,
+        message: "Purchase history fetched successfully",
+        data: orders,
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        status: false,
+        message: err.message,
+      });
+    });
+};
+
 export {
     getOrders,
     getOrderByUserId,
     deleteOrderById,
     totalAmountOfOrdersTillDate,
-    getOrderTrends
+    getOrderTrends,
+    getOrderByUserEmail
 }
