@@ -56,8 +56,41 @@ const deleteOrderById = (req, res) => {
     });
 };
 
+const totalAmountOfOrdersTillDate = (req, res) => {
+  Order.aggregate([
+    { $match: { status: "paid" } },
+    {
+      $group: {
+        _id: null,
+        totalAmount: { $sum: "$amount" },
+        count: { $sum: 1 }, // number of paid orders
+      },
+    },
+  ])
+    .then(result => {
+      if (result.length === 0) {
+        return res.json({ totalAmount: 0, count: 0, averageOrderValue: 0 });
+      }
+
+      const totalAmount = result[0].totalAmount;
+      const count = result[0].count;
+      const averageOrderValue = count > 0 ? totalAmount / count : 0;
+
+      res.json({
+        totalAmount,
+        count,
+        averageOrderValue,
+      });
+    })
+    .catch(err => {
+      console.error("Error calculating total amount of orders:", err.message);
+      res.status(500).json({ error: "Server error" });
+    });
+};
+
 export {
     getOrders,
     getOrderByUserId,
-    deleteOrderById
+    deleteOrderById,
+    totalAmountOfOrdersTillDate
 }
