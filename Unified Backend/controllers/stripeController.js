@@ -1,5 +1,7 @@
 import Stripe from "stripe";
 import Order from "../models/orderModel.js";
+import Cart from "../models/cartModel.js";
+import User from "../models/userModel.js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -109,6 +111,69 @@ const createCheckoutSession = async (req, res) => {
 };
 
 // Stripe Webhook
+// const handleWebhook = async (req, res) => {
+//   const sig = req.headers["stripe-signature"];
+//   let event;
+
+//   try {
+//     event = stripe.webhooks.constructEvent(
+//       req.body,
+//       sig,
+//       process.env.STRIPE_WEBHOOK_SECRET
+//     );
+//   } catch (err) {
+//     console.error("Webhook signature verification failed:", err.message);
+//     return res.status(400).send(`Webhook Error: ${err.message}`);
+//   }
+
+//   const sessionId = event.data?.object?.id;
+//   let update = {};
+
+//   switch (event.type) {
+//     case "payment_intent.succeeded":
+//     case "checkout.session.completed":
+//     case "checkout.session.async_payment_succeeded":
+//       update = { status: "paid" };
+//       console.log(`Payment succeeded: ${sessionId}`);
+      
+//       break;
+
+//     case "payment_intent.canceled":
+//       update = { status: "canceled" };
+//       console.log(`Payment canceled: ${sessionId}`);
+//       break;
+
+//     case "checkout.session.async_payment_failed":
+//       update = { status: "failed" };
+//       console.log(`Async payment failed: ${sessionId}`);
+//       break;
+
+//     case "checkout.session.expired":
+//       update = { status: "expired" };
+//       console.log(`Checkout session expired: ${sessionId}`);
+//       break;
+
+//     default:
+//       console.log(`Unhandled event type: ${event.type}`);
+//   }
+
+//   // Update the order in DB if we have a status change
+//   if (Object.keys(update).length > 0) {
+//     try {
+//       const order = await Order.findOneAndUpdate(
+//         { stripeSessionId: sessionId },
+//         update,
+//         { new: true }
+//       );
+//       console.log("Order updated:", order?._id || "Not found");
+//     } catch (err) {
+//       console.error("Order update failed:", err.message);
+//     }
+//   }
+
+//   res.json({ received: true });
+// };
+
 const handleWebhook = async (req, res) => {
   const sig = req.headers["stripe-signature"];
   let event;
@@ -132,37 +197,60 @@ const handleWebhook = async (req, res) => {
     case "checkout.session.completed":
     case "checkout.session.async_payment_succeeded":
       update = { status: "paid" };
-      console.log(`Payment succeeded: ${sessionId}`);
+      console.log(`✅ Payment succeeded: ${sessionId}`);
+
+      try {
+        // Update the order first
+        const order = await Order.findOneAndUpdate(
+          { stripeSessionId: sessionId },
+          update,
+          { new: true }
+        );
+
+        if (order) {
+          // Find the user by email in the order
+          const user = await User.findOne({ email: order.customerEmail });
+          if (user) {
+            // Clear their cart
+            await Cart.findOneAndUpdate(
+              { userId: user._id },
+              { products: [] }
+            );
+            console.log(`🛒 Cart cleared for user: ${user.email}`);
+          } else {
+            console.warn(`⚠️ No user found for email: ${order.customerEmail}`);
+          }
+        } else {
+          console.warn(`⚠️ No order found for session: ${sessionId}`);
+        }
+      } catch (err) {
+        console.error("❌ Error updating order/clearing cart:", err.message);
+      }
       break;
 
     case "payment_intent.canceled":
       update = { status: "canceled" };
-      console.log(`Payment canceled: ${sessionId}`);
+      console.log(`⚠️ Payment canceled: ${sessionId}`);
       break;
 
     case "checkout.session.async_payment_failed":
       update = { status: "failed" };
-      console.log(`Async payment failed: ${sessionId}`);
+      console.log(`❌ Async payment failed: ${sessionId}`);
       break;
 
     case "checkout.session.expired":
       update = { status: "expired" };
-      console.log(`Checkout session expired: ${sessionId}`);
+      console.log(`⌛ Checkout session expired: ${sessionId}`);
       break;
 
     default:
-      console.log(`Unhandled event type: ${event.type}`);
+      console.log(`ℹ️ Unhandled event type: ${event.type}`);
   }
 
-  // Update the order in DB if we have a status change
-  if (Object.keys(update).length > 0) {
+  // Fallback: update order status if not already handled
+  if (Object.keys(update).length > 0 && update.status !== "paid") {
     try {
-      const order = await Order.findOneAndUpdate(
-        { stripeSessionId: sessionId },
-        update,
-        { new: true }
-      );
-      console.log("Order updated:", order?._id || "Not found");
+      await Order.findOneAndUpdate({ stripeSessionId: sessionId }, update);
     } catch (err) {
       console.error("Order update failed:", err.message);
     }

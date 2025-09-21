@@ -266,6 +266,7 @@ const decreaseQuantity = (req, res) => {
     });
 };
 
+
 export {
     addToCart,
     getCart,

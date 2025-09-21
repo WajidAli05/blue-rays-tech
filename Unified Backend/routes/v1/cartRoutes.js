@@ -4,7 +4,7 @@ import {
     getCart,
     removeFromCart,
     increaseQuantity,
-    decreaseQuantity
+    decreaseQuantity,
 } from "../../controllers/cartController.mjs";
 import { validateToken } from '../../middlewares/accessTokenHandler.js';
 
