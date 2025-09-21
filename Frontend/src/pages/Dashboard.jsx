@@ -21,6 +21,9 @@ const Dashboard = () => {
     max: 0,
     avg: 0,
   });
+  const [totalAmountOfOrders, setTotalAmountOfOrders] = useState(0);
+  const [totalOrderCount, setTotalOrderCount] = useState(0);
+  const [averageOrderValue, setAverageOrderValue] = useState(0);
 
   //fetch session data from the server
   useEffect(() => {
@@ -121,6 +124,29 @@ useEffect(() => {
     });
   }, []);
 
+
+  //fetch total amount of orders and total number of orders with paid status only
+    useEffect(() => {
+    fetch("http://localhost:3001/api/v1/total-amount-of-orders", {
+      method: "GET",
+      credentials: "include"
+    })
+      .then(res => {
+        if (!res.ok) {
+          throw new Error("Failed to fetch total orders");
+        }
+        return res.json();
+      })
+      .then(data => {
+        setTotalAmountOfOrders(data.totalAmount || 0);
+        setTotalOrderCount(data.count || 0);
+        setAverageOrderValue(data.averageOrderValue || 0);
+      })
+      .catch(err => {
+        console.error("Error fetching total orders:", err.message);
+      });
+  }, []);
+
   if (!totalUsers || !totalCategories ) return <Spin tip="Loading dashboard..." />;
 
   return (
@@ -130,7 +156,7 @@ useEffect(() => {
          {/* Total Sales */}
          <StatisticCard
           title="Total Sales"
-          value={500000}
+          value={totalAmountOfOrders}
           prefix={<FaDollarSign />}
           precision={0}
           hoverable={true}
@@ -139,7 +165,7 @@ useEffect(() => {
         {/* Total Orders */}
         <StatisticCard
           title="Total Orders"
-          value={4500}
+          value={totalOrderCount}
           prefix={<FaShoppingCart />}
           precision={0}
         />
@@ -147,7 +173,7 @@ useEffect(() => {
         {/* Average Order Value (AOV) */}
         <StatisticCard
           title="Average Order Value"
-          value={35.4}
+          value={averageOrderValue}
           prefix={<FaCashRegister />}
           precision={2}
         />
