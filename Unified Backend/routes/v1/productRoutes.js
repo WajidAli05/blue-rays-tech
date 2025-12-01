@@ -1,10 +1,59 @@
+// import express from 'express';
+// import multer from 'multer';
+// import { 
+//   addProduct, 
+//   getProducts, 
+//   updateProduct, 
+//   deleteProductBySku, 
+//   getProductBySKU,
+//   deleteProductImages,
+//   getAverageRating,
+//   getStockLevelByCategory,
+//   getProductsByCategoryName,
+//   getProductBySubCategoryName,
+//   getProductPercentagePerProductType
+// } from '../../controllers/productController.mjs';
+// import { validateToken } from '../../middlewares/accessTokenHandler.js';
+// import { validateRole } from '../../middlewares/roleAuth.js';
+
+// const router = express.Router();
+
+// // Multer storage with custom filenames
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, 'uploads/');  // Your upload folder
+//   },
+//   filename: (req, file, cb) => {
+//     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+//     cb(null, uniqueSuffix + '-' + file.originalname);
+//   }
+// });
+
+// const upload = multer({ storage });
+
+// // Routes
+// router.post('/product', validateToken, validateRole(['admin', 'superadmin']), upload.array('image_link', 10), addProduct);
+// router.get('/products', getProducts);
+// router.put('/product', validateToken, validateRole(['admin', 'superadmin']), upload.array('image_link', 10), updateProduct);
+// router.delete('/product/image', validateToken, validateRole(['admin', 'superadmin']), deleteProductImages);
+// router.get('/average-rating', validateToken, validateRole(['admin', 'superadmin']), getAverageRating);
+// router.get('/category-wise-stock', validateToken, validateRole(), getStockLevelByCategory)
+// router.get('/products-percentage-per-product-type', validateToken, validateRole(['superadmin', 'admin']), getProductPercentagePerProductType)
+// router.delete('/product/:sku', validateToken, validateRole(['admin', 'superadmin']), upload.none(), deleteProductBySku);
+// router.get('/product/:sku', getProductBySKU);
+// router.get('/product/category/:category', getProductsByCategoryName);
+// router.get('/product/sub-category/:subcategory', getProductBySubCategoryName);
+
+
+// export default router;
+
 import express from 'express';
 import multer from 'multer';
-import { 
-  addProduct, 
-  getProducts, 
-  updateProduct, 
-  deleteProductBySku, 
+import {
+  addProduct,
+  getProducts,
+  updateProduct,
+  deleteProductBySku,
   getProductBySKU,
   deleteProductImages,
   getAverageRating,
@@ -18,31 +67,73 @@ import { validateRole } from '../../middlewares/roleAuth.js';
 
 const router = express.Router();
 
-// Multer storage with custom filenames
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');  // Your upload folder
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + '-' + file.originalname);
+// Multer memory storage - files stored in memory as Buffer
+const storage = multer.memoryStorage();
+
+const upload = multer({ 
+  storage,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit per file
   }
 });
 
-const upload = multer({ storage });
-
 // Routes
-router.post('/product', validateToken, validateRole(['admin', 'superadmin']), upload.array('image_link', 10), addProduct);
+router.post(
+  '/product',
+  validateToken,
+  validateRole(['admin', 'superadmin']),
+  upload.array('image_link', 10),
+  addProduct
+);
+
 router.get('/products', getProducts);
-router.put('/product', validateToken, validateRole(['admin', 'superadmin']), upload.array('image_link', 10), updateProduct);
-router.delete('/product/image', validateToken, validateRole(['admin', 'superadmin']), deleteProductImages);
-router.get('/average-rating', validateToken, validateRole(['admin', 'superadmin']), getAverageRating);
-router.get('/category-wise-stock', validateToken, validateRole(), getStockLevelByCategory)
-router.get('/products-percentage-per-product-type', validateToken, validateRole(['superadmin', 'admin']), getProductPercentagePerProductType)
-router.delete('/product/:sku', validateToken, validateRole(['admin', 'superadmin']), upload.none(), deleteProductBySku);
+
+router.put(
+  '/product',
+  validateToken,
+  validateRole(['admin', 'superadmin']),
+  upload.array('image_link', 10),
+  updateProduct
+);
+
+router.delete(
+  '/product/image',
+  validateToken,
+  validateRole(['admin', 'superadmin']),
+  deleteProductImages
+);
+
+router.get(
+  '/average-rating',
+  validateToken,
+  validateRole(['admin', 'superadmin']),
+  getAverageRating
+);
+
+router.get(
+  '/category-wise-stock',
+  validateToken,
+  validateRole(),
+  getStockLevelByCategory
+);
+
+router.get(
+  '/products-percentage-per-product-type',
+  validateToken,
+  validateRole(['superadmin', 'admin']),
+  getProductPercentagePerProductType
+);
+
+router.delete(
+  '/product/:sku',
+  validateToken,
+  validateRole(['admin', 'superadmin']),
+  upload.none(),
+  deleteProductBySku
+);
+
 router.get('/product/:sku', getProductBySKU);
 router.get('/product/category/:category', getProductsByCategoryName);
 router.get('/product/sub-category/:subcategory', getProductBySubCategoryName);
-
 
 export default router;
