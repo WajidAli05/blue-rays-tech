@@ -217,9 +217,9 @@ const handleFormSubmit = (values) => {
   formData.append('reviews_count', values.reviews_count || '');
   formData.append('average_rating', values.average_rating || '');
 
-  if (values.link) formData.append('link', values.link);
+  if (values.link) formData.append('affiliate_link', values.link);
   if (values.file_type) formData.append('file_type', values.file_type);
-  if (values.commission) formData.append('commission', values.commission);
+  if (values.commission) formData.append('commission_rate', values.commission);
   if (values.affiliate_program) formData.append('affiliate_program', values.affiliate_program);
 
   if (values.upload && Array.isArray(values.upload)) {
@@ -424,7 +424,7 @@ const handleFormSubmit = (values) => {
                         >
                             <Select placeholder="Select an Affiliate Program" allowClear>
                                 {affiliatePrograms.map((ap) => (
-                                    <Select.Option key={ap.key} value={ap.key}>
+                                    <Select.Option key={ap._id} value={ap._id}>
                                         {ap.label}
                                     </Select.Option>
                                 ))}
