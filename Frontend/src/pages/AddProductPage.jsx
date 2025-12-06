@@ -22,6 +22,7 @@ import {
 } from 'antd';
 import ProductListItem from '../components/ProductListItem';
 import {Link} from 'react-router-dom';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const { Title } = Typography;
 
@@ -57,7 +58,7 @@ const AddProductPage = () => {
 
     //fetch categories from the API
     useEffect(() => {
-        fetch('http://localhost:3001/api/v1/category', {
+        fetch(`${API_BASE_URL}/category`, {
             method: 'GET',
             credentials: 'include',
         })
@@ -73,7 +74,7 @@ const AddProductPage = () => {
 
     //fetch products from the API
     useEffect(() => {
-        fetch('http://localhost:3001/api/v1/products', {
+        fetch(`${API_BASE_URL}/products`, {
             method: 'GET',
             credentials: 'include',
         })
@@ -90,7 +91,7 @@ const AddProductPage = () => {
 
     //fetch affiliate programs from the API
     useEffect(() => {
-        fetch('http://localhost:3001/api/v1/affiliate-program',
+        fetch(`${API_BASE_URL}/affiliate-program`,
             {
                 method: 'GET',
                 credentials: 'include',
@@ -108,7 +109,7 @@ const AddProductPage = () => {
 
     //fetch file types from the API
     useEffect(() => {
-        fetch('http://localhost:3001/api/v1/file-types',{
+        fetch(`${API_BASE_URL}/file-types`,{
             method: 'GET',
             credentials: 'include',
         })
@@ -164,7 +165,7 @@ const fetchSubcategories = (categoryId) => {
     return;
   }
 
-  fetch(`http://localhost:3001/api/v1/categories/${categoryId}/subcategories`, {
+  fetch(`${API_BASE_URL}/categories/${categoryId}/subcategories`, {
     method: 'GET',
     credentials: 'include'
   })
@@ -229,7 +230,7 @@ const handleFormSubmit = (values) => {
     });
   }
 
-  fetch('http://localhost:3001/api/v1/product', {
+  fetch(`${API_BASE_URL}/product`, {
     method: 'POST',
     body: formData,
     credentials: 'include'

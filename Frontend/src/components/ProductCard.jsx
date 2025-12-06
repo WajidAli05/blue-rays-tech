@@ -8,11 +8,10 @@ const ProductCard = ({ product, onDelete }) => {
     <Card
       className="product-card"
       hoverable
-      cover={<img alt={product.name} src={`http://localhost:3001/${
-                                           !product.image_link ? 
-                                           'placeholder.jpg' : 
+      cover={<img alt={product.name} src={!product.image_link || product.image_link.length === 0 ? 
+                                           'http://localhost:3001/placeholder.jpg' : 
                                            product.image_link[0]
-      }`} />}
+      } />}
     >
     <Meta
       title={product.name}

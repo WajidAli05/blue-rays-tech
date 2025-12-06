@@ -9,11 +9,10 @@ const ProductListItem = ({ product }) => {
       <li key={product._id}>
         <div className='checkbox-image-container'>
           <img
-            src={`http://localhost:3001/${
-                                           !product.image_link?.[0] ? 
-                                           'placeholder.jpg' : 
-                                           product.image_link[0]
-             }`}
+              src={!product.image_link || product.image_link.length === 0 ? 
+                                                        'http://localhost:3001/placeholder.jpg' : 
+                                                        product.image_link[0]
+                    }
             alt={`${product.name ?? 'Product'} image`}
           />
         </div>

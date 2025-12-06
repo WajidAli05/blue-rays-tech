@@ -8,6 +8,7 @@ import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import NavBar from '../components/NavBar';
 import EditProductModal from '../components/EditProductModal';
 import DeleteProductConfirmModal from '../components/DeleteProductConfirmModal';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const { Title, Paragraph } = Typography;
 
@@ -31,7 +32,7 @@ const ProductDetailsPage = () => {
       return;
     }
 
-    fetch(`http://localhost:3001/api/v1/product/${sku}`)
+    fetch(`${API_BASE_URL}/product/${sku}`)
       .then((res) => res.json())
       .then((data) => {
         if (data?.data) {
@@ -42,7 +43,7 @@ const ProductDetailsPage = () => {
             const firstImage = product.image_link[0];
             const imageURL = firstImage.startsWith('http')
               ? firstImage
-              : `http://localhost:3001/${firstImage.replace(/\\/g, '/')}`;
+              : `https://backend.blueraystechnologies.com/${firstImage.replace(/\\/g, '/')}`;
             setSelectedImage(imageURL);
           }
         } else {
@@ -82,7 +83,7 @@ const ProductDetailsPage = () => {
 const handleDeleteConfirm = () => {
   setDeleteLoading(true);
 
-  fetch(`http://localhost:3001/api/v1/product/${sku}`, {
+  fetch(`${API_BASE_URL}/product/${sku}`, {
     method: 'DELETE',
     credentials: 'include',
     headers: {
@@ -91,7 +92,6 @@ const handleDeleteConfirm = () => {
   })
     .then(res => res.json())
     .then(result => {
-      console.log('Delete result:', result);
       if (result.status) {
         message.success('Product deleted successfully');
         navigate('/products-listing');
@@ -144,7 +144,7 @@ const handleDeleteConfirm = () => {
             {p.image_link?.map((imagePath, index) => {
               const imageURL = imagePath.startsWith('http')
                 ? imagePath
-                : `http://localhost:3001/${imagePath.replace(/\\/g, '/')}`;
+                : `http://31.97.100.169:3001/${imagePath.replace(/\\/g, '/')}`;
               return (
                 <Col key={index}>
                   <Image

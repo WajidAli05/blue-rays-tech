@@ -9,12 +9,13 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const DeviceAccessChart = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:3001/api/v1/trackDeviceOverTime", {
+    fetch(`${API_BASE_URL}/trackDeviceOverTime`, {
       credentials: "include",
     })
       .then(res => res.json())

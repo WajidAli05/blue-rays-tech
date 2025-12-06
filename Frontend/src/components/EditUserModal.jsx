@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, Form, Input, message } from 'antd';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const EditUserModal = ({ visible, user, onCancel, onSuccess }) => {
   const [form] = Form.useForm();
@@ -18,7 +19,7 @@ const EditUserModal = ({ visible, user, onCancel, onSuccess }) => {
   const handleFinish = (values) => {
     setLoading(true);
 
-    fetch(`http://localhost:3001/api/v1/user/${user._id}`, {
+    fetch(`${API_BASE_URL}/user/${user._id}`, {
       method: 'PUT',
       credentials: 'include',
       headers: {

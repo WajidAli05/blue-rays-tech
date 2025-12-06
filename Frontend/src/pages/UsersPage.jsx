@@ -5,6 +5,7 @@ import UserList from '../components/UserList';
 import SearchBox from '../components/SearchBox';
 import EditUserModal from '../components/EditUserModal';
 import { Breadcrumb } from 'antd';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const UsersPage = () => {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ const UsersPage = () => {
   // Fetch users
   useEffect(() => {
     setLoading(true);
-    fetch('http://localhost:3001/api/v1/users', {
+    fetch(`${API_BASE_URL}/users`, {
       credentials: 'include'
     })
       .then((res) => {
@@ -46,7 +47,7 @@ const UsersPage = () => {
   const handleDelete = (userId) => {
     if (!userId) return console.error("User ID is required");
 
-    fetch(`http://localhost:3001/api/v1/user/${userId}`, {
+    fetch(`${API_BASE_URL}/user/${userId}`, {
       method: 'DELETE',
       credentials: 'include',
     })

@@ -22,6 +22,7 @@ import {
   ProductOutlined, 
   FileOutlined, 
   LinkOutlined } from '@ant-design/icons';
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const { Title } = Typography;
 
@@ -49,7 +50,7 @@ const ProductsListingPage = () => {
 
     //fetch products from the API
     useEffect(() => {
-        fetch('http://localhost:3001/api/v1/products')
+        fetch(`${API_BASE_URL}/products`)
             .then((data)=> data.json())
             .then((data) => {
                 setOriginalProducts(data.data);

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { PieChart, Pie, Sector, ResponsiveContainer } from "recharts";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const renderActiveShape = (props) => {
   const RADIAN = Math.PI / 180;
@@ -82,7 +83,7 @@ const ProductPerformancePieChart = () => {
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
-    fetch("http://localhost:3001/api/v1/products-percentage-per-product-type", {
+    fetch(`${API_BASE_URL}/products-percentage-per-product-type`, {
       method: "GET",
       credentials: "include", // required if using cookie auth
     })

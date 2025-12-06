@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, InputNumber, Segmented, Select, Upload, Button, message, Modal } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const EditProductModal = ({ open, setOpen, confirmLoading, setConfirmLoading, p, setP, handleOk, handleCancel }) => {
   const [productType, setProductType] = useState(p.product_type);
@@ -21,7 +22,7 @@ const EditProductModal = ({ open, setOpen, confirmLoading, setConfirmLoading, p,
         name: url.split('/').pop(),
         status: 'done',
         url,
-        thumbUrl: `http://localhost:3001/${url}`,
+        thumbUrl: `http://31.97.100.169:3001/${url}`,
       }));
       setExistingImages(formattedImages);
     }
@@ -31,7 +32,7 @@ const EditProductModal = ({ open, setOpen, confirmLoading, setConfirmLoading, p,
 
   //fetch categories
   useEffect(() => {
-    fetch('http://localhost:3001/api/v1/category', {
+    fetch(`${API_BASE_URL}/category`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -46,7 +47,7 @@ const EditProductModal = ({ open, setOpen, confirmLoading, setConfirmLoading, p,
   }, []);
 
   useEffect(() => {
-    fetch('http://localhost:3001/api/v1/affiliate-program', {
+    fetch(`${API_BASE_URL}/affiliate-program`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -59,7 +60,7 @@ const EditProductModal = ({ open, setOpen, confirmLoading, setConfirmLoading, p,
   }, []);
 
   useEffect(() => {
-    fetch('http://localhost:3001/api/v1/file-types', {
+    fetch(`${API_BASE_URL}/file-types`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -93,7 +94,7 @@ const handleFormSubmit = (values) => {
 
   const retainedImagePaths = currentFileList
     .filter(file => file.url) // existing images
-    .map(file => file.url.replace('http://localhost:3001/', ''));
+    .map(file => file.url.replace('http://31.97.100.169:3001/', ''));
 
   retainedImagePaths.forEach(path => {
     formData.append('retained_images[]', path);
@@ -105,7 +106,7 @@ const handleFormSubmit = (values) => {
       formData.append('image_link', file.originFileObj);
     });
 
-  fetch('http://localhost:3001/api/v1/product', {
+  fetch(`${API_BASE_URL}/product`, {
     method: 'PUT',
     body: formData,
     credentials: 'include',
@@ -127,7 +128,7 @@ const handleFormSubmit = (values) => {
       setOpen(false);
 
       if (deletedImages.length > 0) {
-        return fetch('http://localhost:3001/api/v1/product/image', {
+        return fetch(`${API_BASE_URL}/product/image`, {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ images: deletedImages }),
@@ -157,7 +158,7 @@ const handleFormSubmit = (values) => {
 
   const handleRemove = (file) => {
   if (file?.url) {
-    const relativePath = file.url.replace('http://localhost:3001/', '');
+    const relativePath = file.url.replace('http://31.97.100.169:3001/', '');
     setDeletedImages(prev => [...prev, relativePath]);
   }
 };

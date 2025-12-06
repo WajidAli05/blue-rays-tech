@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // Colors for each bar
 const colors = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
@@ -9,7 +10,7 @@ const CategoryWiseInventoryBarChart = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(()=> {
-    fetch('http://localhost:3001/api/v1/category-wise-stock', {
+    fetch(`${API_BASE_URL}/category-wise-stock`, {
       method: 'GET',
       credentials: 'include',
     })

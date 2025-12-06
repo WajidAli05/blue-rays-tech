@@ -2,6 +2,7 @@ import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { Modal } from "antd";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function LoginForm() {
   const [formData, setFormData] = useState({
@@ -58,9 +59,7 @@ export default function LoginForm() {
     e.preventDefault();
     if (!validateForm()) return;
 
-    console.log("Submitting login:", formData);
-
-    fetch("http://localhost:3001/api/v1/admin-login", {
+    fetch(`${API_BASE_URL}/admin-login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -69,7 +68,6 @@ export default function LoginForm() {
       body: JSON.stringify(formData),
     })
       .then((response) => {
-        console.log("Response status:", response.status);
         return response.json().then((data) => {
           if (!response.ok) {
             throw new Error(data.message || "Login failed");
@@ -78,7 +76,6 @@ export default function LoginForm() {
         });
       })
       .then((data) => {
-        console.log("Login successful. Admin data:", data.data.admin);
         setAdmin(data.data.admin);
         navigate("/");
       })

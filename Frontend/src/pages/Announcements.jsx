@@ -20,6 +20,7 @@ import {
   PlusOutlined,
 } from '@ant-design/icons';
 import NavBar from '../components/NavBar';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const { Title } = Typography;
 
@@ -34,7 +35,7 @@ const Announcements = () => {
   const [itemToDelete, setItemToDelete] = useState(null);
 
   const fetchAnnouncements = () => {
-    fetch('http://localhost:3001/api/v1/announcement', {
+    fetch(`${API_BASE_URL}/announcement`, {
       method: 'GET',
       credentials: 'include',
     })
@@ -54,7 +55,7 @@ const Announcements = () => {
   const handleAdd = () => {
     if (!newText.trim()) return message.warning('Message cannot be empty');
 
-    fetch('http://localhost:3001/api/v1/announcement', {
+    fetch(`${API_BASE_URL}/announcement`, {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -85,7 +86,7 @@ const Announcements = () => {
   const confirmDelete = () => {
     if (!itemToDelete) return;
     
-    fetch(`http://localhost:3001/api/v1/announcement/${itemToDelete}`, {
+    fetch(`${API_BASE_URL}/announcement/${itemToDelete}`, {
       method: 'DELETE',
       credentials: 'include',
     })
@@ -116,7 +117,7 @@ const Announcements = () => {
   };
 
   const handleDeactivate = (id) => {
-    fetch(`http://localhost:3001/api/v1/announcement/deactivate/${id}`, {
+    fetch(`${API_BASE_URL}/announcement/deactivate/${id}`, {
       method: 'PATCH',
       credentials: 'include',
     })
@@ -133,7 +134,7 @@ const Announcements = () => {
   };
 
   const handleActivate = (id) => {
-    fetch(`http://localhost:3001/api/v1/announcement/activate/${id}`, {
+    fetch(`${API_BASE_URL}/announcement/activate/${id}`, {
       method: 'PATCH',
       credentials: 'include',
     })
@@ -152,7 +153,7 @@ const Announcements = () => {
   const handleUpdate = (messageId) => {
     if (!editingText.trim()) return message.warning('Message cannot be empty');
 
-    fetch(`http://localhost:3001/api/v1/announcement/${messageId}`, {
+    fetch(`${API_BASE_URL}/announcement/${messageId}`, {
       method: 'PUT',
       credentials: 'include',
       headers: {

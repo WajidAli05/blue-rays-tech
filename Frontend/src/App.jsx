@@ -11,6 +11,7 @@ import UserNotFoundPage from './pages/UserNotFoundPage';
 import ProductDetailsPage from './pages/ProductDetailsPage';
 import PrivateRoutes from '../routes/PrivateRoutes';
 import Announcements from "./pages/Announcements";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function App() {
   return (

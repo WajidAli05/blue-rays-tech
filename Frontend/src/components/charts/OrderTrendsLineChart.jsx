@@ -9,13 +9,14 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const OrderTrendsLineChart = () => {
   const [data, setData] = useState([]);
   const [interval, setInterval] = useState("week"); // default view
 
   useEffect(() => {
-    fetch(`http://localhost:3001/api/v1/order-trends?interval=${interval}`, {
+    fetch(`${API_BASE_URL}/order-trends?interval=${interval}`, {
       method: "GET",
       credentials: "include", // because you're using cookies
     })

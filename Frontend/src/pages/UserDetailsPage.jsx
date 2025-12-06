@@ -27,6 +27,7 @@ import {
   ShoppingCartOutlined,
 } from '@ant-design/icons';
 import { Link, useParams, useNavigate } from 'react-router-dom';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const { Title, Text } = Typography;
 
@@ -50,7 +51,7 @@ const UserDetailsPage = () => {
       return;
     }
 
-    fetch(`http://localhost:3001/api/v1/user/${userId}`, {
+    fetch(`${API_BASE_URL}/user/${userId}`, {
       method: 'GET',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
@@ -77,7 +78,7 @@ const UserDetailsPage = () => {
       // Fetch purchase history using email
       if (user.email) {
         setLoadingOrders(true);
-        fetch(`http://localhost:3001/api/v1/user/${user.email}/orders`, {
+        fetch(`${API_BASE_URL}/user/${user.email}/orders`, {
           method: 'GET',
           credentials: 'include',
         })
@@ -106,7 +107,7 @@ const UserDetailsPage = () => {
 
 // Handle delete
 const handleDelete = (orderId) => {
-  fetch(`http://localhost:3001/api/v1/${orderId}`, {
+  fetch(`${API_BASE_URL}/${orderId}`, {
     method: 'DELETE',
     credentials: 'include',
     headers: {
@@ -141,7 +142,7 @@ const handleDelete = (orderId) => {
   const handleEditUser = () => {
     if (isEditingUser) {
       // Save updates to backend
-      fetch(`http://localhost:3001/api/v1/user/${userDetails._id}`, {
+      fetch(`${API_BASE_URL}/user/${userDetails._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -198,7 +199,7 @@ const handleDelete = (orderId) => {
               <Avatar
                 className="user-avatar"
                 size={150}
-                src={`http://localhost:3001/uploads/users/${userDetails?.image}`}
+                src={`http://31.97.100.169:3001/uploads/users/${userDetails?.image}`}
               />
             }
           >

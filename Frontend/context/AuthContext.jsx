@@ -1,5 +1,6 @@
 // context/AuthContext.jsx
 import { createContext, useEffect, useState } from "react";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const AuthContext = createContext();
 
@@ -8,7 +9,7 @@ export const AuthProvider = ({ children }) => {
   const [admin, setAdmin] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:3001/api/v1/admin-auth", {
+    fetch(`${API_BASE_URL}/admin-auth`, {
       method: "GET",
       credentials: "include",
     })

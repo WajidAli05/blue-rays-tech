@@ -10,6 +10,7 @@ import {
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { Tooltip, Modal, Spin } from 'antd';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const NavBar = () => {
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ const NavBar = () => {
   const performLogout = () => {
     setIsLoggingOut(true);
     
-    fetch('http://localhost:3001/api/v1/admin-logout', {
+    fetch(`${API_BASE_URL}/admin-logout`, {
       method: 'POST',
       credentials: 'include',
     })

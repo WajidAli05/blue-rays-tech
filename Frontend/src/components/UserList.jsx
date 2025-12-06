@@ -10,7 +10,7 @@ const UserList = ({ user, onEdit, onDelete, onViewDetails }) => {
       <li key={user?._id}>
         <div className='checkbox-image-container'>
           <img 
-            src={`http://localhost:3001/uploads/users/${user.image}`} 
+            src={`https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?semt=ais_hybrid&w=740&q=80`} 
             alt={`${user?.name}'s profile`} 
           />
         </div>

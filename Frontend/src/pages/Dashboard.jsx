@@ -8,6 +8,8 @@ import ProductPerformancePieChart from '../components/charts/ProductPerformanceP
 import StatisticCard from '../components/StatisticCard'
 import { FaDollarSign, FaShoppingCart, FaCashRegister, FaUsers, FaStar, FaList, FaEye, FaClock, FaMobileAlt, FaLaptop} from 'react-icons/fa'; // Import icons from React Icons
 import { Spin } from 'antd';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 const Dashboard = () => {
   //states
   const [totalUsers, setTotalUsers] = useState(0);
@@ -27,7 +29,7 @@ const Dashboard = () => {
 
   //fetch session data from the server
   useEffect(() => {
-    fetch('http://localhost:3001/api/v1/session-duration/stats', {
+    fetch(`${API_BASE_URL}/session-duration/stats`, {
       method: 'GET',
       credentials: 'include',
     })
@@ -43,7 +45,7 @@ const Dashboard = () => {
 
   //fetch total users
   useEffect(()=> {
-    fetch('http://localhost:3001/api/v1/total-users', {
+    fetch(`${API_BASE_URL}/total-users`, {
       method: 'GET',
       credentials: 'include',
     })
@@ -58,7 +60,7 @@ const Dashboard = () => {
 
   //fetch total categories
   useEffect(()=> {
-    fetch('http://localhost:3001/api/v1/total-categories',
+    fetch(`${API_BASE_URL}/total-categories`,
       {
         method: 'GET',
         credentials: 'include',
@@ -75,7 +77,7 @@ const Dashboard = () => {
 
   //fetch total average rating for all the products in the database
   useEffect(()=> {
-    fetch('http://localhost:3001/api/v1/average-rating',
+    fetch(`${API_BASE_URL}/average-rating`,
       {
         method: 'GET',
         credentials: 'include',
@@ -93,7 +95,7 @@ const Dashboard = () => {
   //count website visits
 useEffect(() => {
   if (!sessionStorage.getItem('visited')) {
-    fetch('http://localhost:3001/api/v1/visit-count', {
+    fetch(`${API_BASE_URL}/visit-count`, {
       method: 'POST',
     })
     .then(() => {
@@ -107,7 +109,7 @@ useEffect(() => {
 
   //fetch devices access stats
   useEffect(() => {
-    fetch('http://localhost:3001/api/v1/trackDevice', {
+    fetch(`${API_BASE_URL}/trackDevice`, {
       method: 'GET',
     })
     .then((response) => response.json())
@@ -127,7 +129,7 @@ useEffect(() => {
 
   //fetch total amount of orders and total number of orders with paid status only
     useEffect(() => {
-    fetch("http://localhost:3001/api/v1/total-amount-of-orders", {
+    fetch(`${API_BASE_URL}/total-amount-of-orders`, {
       method: "GET",
       credentials: "include"
     })

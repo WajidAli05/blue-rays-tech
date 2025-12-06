@@ -17,6 +17,7 @@ import {
 } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import NavBar from "../components/NavBar";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -39,7 +40,7 @@ const OrdersPage = () => {
   // Fetch orders
   useEffect(() => {
     setLoading(true);
-    fetch("http://localhost:3001/api/v1/all-orders", {
+    fetch(`${API_BASE_URL}/all-orders`, {
       method: "GET",
       credentials: "include", // token in cookie
       headers: {
@@ -64,7 +65,7 @@ const OrdersPage = () => {
 
   // Delete order handler
   const handleDelete = (orderId) => {
-    fetch(`http://localhost:3001/api/v1/${orderId}`, {
+    fetch(`${API_BASE_URL}/${orderId}`, {
       method: "DELETE",
       credentials: "include",
       headers: {
