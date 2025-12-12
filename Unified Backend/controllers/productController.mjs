@@ -31,7 +31,7 @@ const addProduct = async (req, res) => {
       reviews_count,
       average_rating,
 
-      // 🔥 Correct affiliate fields
+      // Affiliate fields
       affiliate_link,
       commission_rate,
       affiliate_program,
@@ -42,16 +42,33 @@ const addProduct = async (req, res) => {
 
     const files = req.files || [];
 
-    // Validate common required fields
-    if (!name || !category || !sub_category || !product_type || !description || !sku || !price || !stock_level || files.length === 0) {
+    // Validate common required fields for ALL product types
+    if (!name || !product_type || !description || !sku) {
       return res.status(400).json({
         status: false,
-        message: "Please fill all required fields"
+        message: "Please fill all required fields (name, product_type, description, sku)"
       });
     }
 
-    // 🔍 Validate by product type
+    // Check for duplicate SKU
+    const productExists = await Product.findOne({ sku });
+    if (productExists) {
+      return res.status(400).json({
+        status: false,
+        message: "Product with this SKU already exists"
+      });
+    }
+
+    // Validate by product type
     if (product_type === "physical") {
+      // Physical products require category, sub_category, price, stock_level, and images
+      if (!category || !sub_category || !price || !stock_level || files.length === 0) {
+        return res.status(400).json({
+          status: false,
+          message: "Physical products require category, sub_category, price, stock_level, and at least one image"
+        });
+      }
+      
       if (!allImages(files)) {
         return res.status(400).json({
           status: false,
@@ -61,19 +78,21 @@ const addProduct = async (req, res) => {
     }
 
     if (product_type === "digital") {
-      if (!file_type) {
+      // Digital products require category, sub_category, price, stock_level, file_type, and files
+      if (!category || !sub_category || !price || !stock_level || !file_type || files.length === 0) {
         return res.status(400).json({
           status: false,
-          message: "Digital products must include a file type"
+          message: "Digital products require category, sub_category, price, stock_level, file_type, and at least one file"
         });
       }
     }
 
     if (product_type === "affiliate") {
-      if (!affiliate_link || !commission_rate || !affiliate_program) {
+      // Affiliate products only require affiliate_link (affiliate_program and upload are optional)
+      if (!affiliate_link) {
         return res.status(400).json({
           status: false,
-          message: "Affiliate products must include affiliate_link, commission_rate, and affiliate_program"
+          message: "Affiliate products must include affiliate_link"
         });
       }
     }
@@ -87,59 +106,64 @@ const addProduct = async (req, res) => {
     average_rating = average_rating || 0;
     commission_rate = commission_rate || 0;
 
-    // Check for duplicate SKU
-    const productExists = await Product.findOne({ sku });
-    if (productExists) {
-      return res.status(400).json({
-        status: false,
-        message: "Product already exists"
+    // Upload files to Cloudinary (if any)
+    let image_link = [];
+    if (files.length > 0) {
+      const uploadPromises = files.map(file => {
+        const resourceType = getResourceType(file.mimetype);
+        return uploadToCloudinary(file.buffer, 'products', resourceType);
       });
+
+      const uploadResults = await Promise.all(uploadPromises);
+      image_link = uploadResults.map(result => result.secure_url);
     }
 
-    // Upload files to Cloudinary
-    const uploadPromises = files.map(file => {
-      const resourceType = getResourceType(file.mimetype);
-      return uploadToCloudinary(file.buffer, 'products', resourceType);
-    });
-
-    const uploadResults = await Promise.all(uploadPromises);
-    const image_link = uploadResults.map(result => result.secure_url);
-
-    // Normalize categories
-    category = category.toLowerCase();
-    sub_category = sub_category.toLowerCase();
+    // Normalize categories (only for non-affiliate products)
+    if (product_type !== 'affiliate' && category && sub_category) {
+      category = category.toLowerCase();
+      sub_category = sub_category.toLowerCase();
+    }
 
     // Build product object
-    const newProduct = new Product({
+    const productData = {
       name,
-      category,
-      sub_category,
       product_type,
-      sku,
-      brand,
-      price,
-      stock_level,
-      units_sold,
-      total_sales_revenue,
       description,
-      availability,
-      discount,
-      profit_margin,
-      gross_profit,
-      click_through_rate,
-      reviews_count,
-      average_rating,
+      sku,
       image_link,
+    };
 
-      // 🔥 Correct fields
-      affiliate_link,
-      commission_rate,
-      affiliate_program,
+    // Add fields only for non-affiliate products
+    if (product_type !== 'affiliate') {
+      productData.category = category;
+      productData.sub_category = sub_category;
+      productData.brand = brand;
+      productData.price = price;
+      productData.stock_level = stock_level;
+      productData.units_sold = units_sold;
+      productData.total_sales_revenue = total_sales_revenue;
+      productData.availability = availability;
+      productData.discount = discount;
+      productData.profit_margin = profit_margin;
+      productData.gross_profit = gross_profit;
+      productData.click_through_rate = click_through_rate;
+      productData.reviews_count = reviews_count;
+      productData.average_rating = average_rating;
+    }
 
-      // Digital file type
-      file_type
-    });
+    // Add affiliate-specific fields
+    if (product_type === 'affiliate') {
+      productData.affiliate_link = affiliate_link;
+      productData.commission_rate = commission_rate;
+      productData.affiliate_program = affiliate_program;
+    }
 
+    // Add digital-specific field
+    if (product_type === 'digital') {
+      productData.file_type = file_type;
+    }
+
+    const newProduct = new Product(productData);
     await newProduct.save();
 
     return res.status(201).json({
@@ -148,7 +172,7 @@ const addProduct = async (req, res) => {
     });
 
   } catch (error) {
-    console.log(error.message)
+    console.log(error.message);
     return res.status(500).json({
       status: false,
       message: "Error adding product",
