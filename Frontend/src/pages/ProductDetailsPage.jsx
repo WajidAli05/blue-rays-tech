@@ -165,15 +165,17 @@ const handleDeleteConfirm = () => {
         <Col xs={24} sm={12} lg={14}>
           <Card bordered={false}>
             <Title level={2}>{p.name}</Title>
-            <Paragraph strong style={{ fontSize: 24 }}>
-              ${(p.price * (1 - p.discount / 100)).toFixed(2)}
-              {p.discount > 0 && (
-                <span style={{ textDecoration: 'line-through', marginLeft: '10px', fontSize: 18, color: '#ff4d4f' }}>
-                  ${p.price.toFixed(2)}
-                </span>
-              )}
-            </Paragraph>
-            <Paragraph type="secondary">Category: {p.category}</Paragraph>
+            {p.product_type != "affiliate" && 
+              <Paragraph strong style={{ fontSize: 24 }}>
+                ${(p.price * (1 - p.discount / 100)).toFixed(2)}
+                {p.discount > 0 && (
+                  <span style={{ textDecoration: 'line-through', marginLeft: '10px', fontSize: 18, color: '#ff4d4f' }}>
+                    ${p.price.toFixed(2)}
+                  </span>
+                )}
+              </Paragraph>
+            }
+            {/* <Paragraph type="secondary">Category: {p.category}</Paragraph> */}
             <Paragraph type="secondary">Availability: {p.availability} ({p.stock_level} units available)</Paragraph>
             
             {/* TODO:  */}

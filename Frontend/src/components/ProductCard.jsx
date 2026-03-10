@@ -26,20 +26,22 @@ const ProductCard = ({ product, onDelete }) => {
 
       <div className="product-detailed-info" style={{ marginTop: '16px' }}>
         {/* Display all props that haven't been shown yet */}
-        <div>
+        {/* <div>
           <small>Category</small>
           <Divider type="horizontal" />
           <p>{product.category}</p>
         </div>
 
-        <Divider type="vertical" style={{ height: '100%' }} />
+        <Divider type="vertical" style={{ height: '100%' }} /> */}
 
         {/* Brand */}
-        <div>
-          <small>Brand</small>
-          <Divider type="horizontal" />
-          <p>{product.brand}</p>
-        </div>
+        {product.product_type != "affiliate" && 
+          <div>
+            <small>Brand</small>
+            <Divider type="horizontal" />
+            <p>{product.brand}</p>
+          </div>
+        }
 
         <Divider type="vertical" style={{ height: '100%' }} />
 
@@ -92,7 +94,7 @@ const ProductCard = ({ product, onDelete }) => {
         <div>
           <small>Total units sold</small>
           <Divider type="horizontal" />
-          <p>{product.units_sold}</p>
+          <p>{product.units_sold > 0 ? product.units_sold : 0}</p>
         </div>
 
         {product.product_type === 'digital' && (
@@ -116,13 +118,13 @@ const ProductCard = ({ product, onDelete }) => {
                     <p>{product.commission_percentage}%</p>
                 </div>
         )}
-        {product.product_type === 'affiliate' && (
+        {/* {product.product_type === 'affiliate' && (
                   <div>
                     <small>Program</small>
                     <Divider type="horizontal" />
                     <p>${product.affiliate_program}</p>
                 </div>
-        )}
+        )} */}
 
         <Divider type="vertical" style={{ height: '100%' }} />
       </div>
