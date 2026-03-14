@@ -1,6 +1,4 @@
 import React from 'react';
-// import { CiEdit } from "react-icons/ci";
-// import { MdDeleteOutline } from "react-icons/md";
 
 const ProductListItem = ({ product }) => {
   return (

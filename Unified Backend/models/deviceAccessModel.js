@@ -1,4 +1,3 @@
-// models/DeviceAccess.js
 import mongoose from 'mongoose';
 
 const DeviceAccessSchema = new mongoose.Schema({

@@ -1,4 +1,3 @@
-// components/DeleteProductConfirmModal.jsx
 import React from 'react';
 import { Modal } from 'antd';
 

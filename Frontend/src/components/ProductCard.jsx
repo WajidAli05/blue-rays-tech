@@ -118,14 +118,6 @@ const ProductCard = ({ product, onDelete }) => {
                     <p>{product.commission_percentage}%</p>
                 </div>
         )}
-        {/* {product.product_type === 'affiliate' && (
-                  <div>
-                    <small>Program</small>
-                    <Divider type="horizontal" />
-                    <p>${product.affiliate_program}</p>
-                </div>
-        )} */}
-
         <Divider type="vertical" style={{ height: '100%' }} />
       </div>
     </Card>

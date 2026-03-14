@@ -97,7 +97,7 @@ const loginAdmin = (req, res) => {
 const logoutAdmin = (req, res)=>{
   res.clearCookie('token', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+    secure: process.env.NODE_ENV === 'production', 
     sameSite: 'Strict', // Prevent CSRF attacks
   })
 

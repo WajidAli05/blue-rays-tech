@@ -456,60 +456,6 @@ const getTotalUsers = (req, res) => {
 }
 
 //signup with google
-// const signupWithGoogle = (req, res) => {
-//   const { googleToken } = req.body;
-//   if (!googleToken) {
-//     return res.status(400).json({
-//       status: false,
-//       message: "Could not be signed up with Google.",
-//     });
-//   }
-
-//   //decode the token
-//   const decoded= jwt.decode(googleToken, {complete: true})
-//   if(!decoded){
-//     res.status(400).json({
-//       status: false,
-//       message: "Invalid Google token",
-//     });
-//   }
-
-//   //check if user already exists
-//   User.findOne({ email: decoded.payload.email })
-//     .then(existingUser => {
-//       if (existingUser && existingUser.googleId) {
-//         return res.status(200).json({
-//           status: true,
-//           message: "Already registered. Signing in instead.",
-//         });
-//       }
-
-//       return new User({
-//           name: `${decoded.payload.given_name} ${decoded.payload.family_name}`,
-//           email: decoded.payload.email,
-//           password,
-//           phone,
-//           image: decoded.payload.picture,
-//           country,
-//           job,
-//           role: "customer"
-//         })
-//     })
-//   .then((newUser)=>{
-//     res.status(200).json({
-//     status: true,
-//     message: "Google token decoded successfully",
-//     data: newUser,
-//   });
-//   })
-//   .catch((error)=>{
-//     res.status(500).json({
-//       status: false,
-//       message: "Error decoding Google token",
-//       error,
-//     });
-//   })
-// };
 const signupWithGoogle = (req, res) => {
   const { googleToken } = req.body;
 

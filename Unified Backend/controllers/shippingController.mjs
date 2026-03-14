@@ -75,11 +75,9 @@ const getShipping = (req, res) => {
 }
 
 //update a shipping record for a logged in user
-//TODO: will implement if required after the application is fully functional
 const updateShipping = (req, res) => {
 }
 
-//TODO: only if required. Does not see it required for now
 const deleteShipping = (req, res) => { /* Delete shipping record by ID */ }
 
 // Get single shipping record by ID for a logged in user
@@ -197,10 +195,8 @@ const getAllShippings = (req, res) => {
     })
 }
 
-//TODO: Implement stats like total, status counts, etc.
 const getShippingStats = (req, res) => { /* Admin: Stats like total, status counts */ }
 
-//TODO: only if required otherwise won't be used
 const getShippingsByDateRange = (req, res) => {
   const { start, end } = req.query;
 
