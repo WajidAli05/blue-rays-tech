@@ -9,15 +9,11 @@ const productSchema = new mongoose.Schema({
     // Fields NOT required for affiliate products
     category: { 
         type: String, 
-        required: function () {
-            return this.product_type !== 'affiliate';
-        }
+        required: true  // was: function() { return this.product_type !== 'affiliate'; }
     },
     sub_category: { 
         type: String, 
-        required: function () {
-            return this.product_type !== 'affiliate';
-        }
+        required: true  // was: function() { return this.product_type !== 'affiliate'; }
     },
     brand: { 
         type: String,

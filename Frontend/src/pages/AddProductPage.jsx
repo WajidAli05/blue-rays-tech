@@ -181,80 +181,143 @@ const AddProductPage = () => {
         fetchSubcategories(value);
     };
 
-    const handleFormSubmit = (values) => {
-        setSubmitting(true);
-        const formData = new FormData();
+    const handleProductTypeChange = (value) => {
+        setProductType(value);
+        form.setFieldValue('product_type', value);
+    };
 
-        formData.append('name', values.name);
-        formData.append('product_type', values.product_type);
-        formData.append('description', values.description);
-        formData.append('sku', values.sku);
+    // ─── Manual submit: bypasses onFinish entirely ───
+    const handleManualSubmit = async () => {
+        // Step 1: Determine which fields to validate based on current product type
+        const currentType = productType;
+        const fieldsToValidate = ['name', 'sku', 'category', 'sub_category', 'description', 'product_type'];
 
-        // Category and subcategory for all product types including affiliate
-        formData.append('category', values.category);
-        formData.append('sub_category', values.sub_category);
-
-        // Only append these extra inventory/pricing fields for non-affiliate products
-        if (values.product_type !== 'affiliate') {
-            formData.append('brand', values.brand || '');
-            formData.append('price', values.price);
-            formData.append('stock_level', values.stock_level);
-            formData.append('units_sold', values.units_sold || '');
-            formData.append('total_sales_revenue', values.total_sales_revenue || '');
-            formData.append('availability', values.availability || '');
-            formData.append('discount', values.discount || '');
-            formData.append('profit_margin', values.profit_margin || '');
-            formData.append('gross_profit', values.gross_profit || '');
-            formData.append('click_through_rate', values.click_through_rate || '');
-            formData.append('reviews_count', values.reviews_count || '');
-            formData.append('average_rating', values.average_rating || '');
+        if (currentType !== 'affiliate') {
+            fieldsToValidate.push('brand', 'price', 'stock_level', 'availability');
+        }
+        if (currentType === 'digital' || currentType === 'affiliate') {
+            fieldsToValidate.push('link');
+        }
+        if (currentType === 'digital') {
+            fieldsToValidate.push('file_type');
+        }
+        if (currentType !== 'affiliate') {
+            fieldsToValidate.push('upload');
         }
 
-        if (values.link) formData.append('affiliate_link', values.link);
-        if (values.file_type) formData.append('file_type', values.file_type);
-        if (values.commission) formData.append('commission_rate', values.commission);
-        if (values.affiliate_program) formData.append('affiliate_program', values.affiliate_program);
+        // Step 2: Validate only the relevant fields
+        try {
+            await form.validateFields(fieldsToValidate);
+        } catch (errorInfo) {
+            console.log('Validation failed:', errorInfo);
+            message.error('Please fix the highlighted errors before submitting.');
+            return;
+        }
 
-        if (values.upload && Array.isArray(values.upload)) {
-            values.upload.forEach((file) => {
+        // Step 3: Read ALL values from the form store
+        const allValues = form.getFieldsValue(true);
+
+        console.log('All form values:', allValues);
+
+        setSubmitting(true);
+
+        // Step 4: Build FormData
+        const formData = new FormData();
+
+        formData.append('name', allValues.name || '');
+        formData.append('product_type', currentType);
+        formData.append('description', allValues.description || '');
+        formData.append('sku', allValues.sku || '');
+
+        // Map category _id back to label
+        const selectedCategory = categories.find((cat) => cat._id === allValues.category);
+        const categoryLabel = selectedCategory ? selectedCategory.label : (allValues.category || '');
+        formData.append('category', categoryLabel);
+        formData.append('sub_category', allValues.sub_category || '');
+
+        // Non-affiliate fields
+        if (currentType !== 'affiliate') {
+            formData.append('brand', allValues.brand || '');
+            formData.append('price', allValues.price ?? '');
+            formData.append('stock_level', allValues.stock_level ?? '');
+            formData.append('units_sold', allValues.units_sold || '');
+            formData.append('total_sales_revenue', allValues.total_sales_revenue || '');
+            formData.append('availability', allValues.availability || '');
+            formData.append('discount', allValues.discount || '');
+            formData.append('profit_margin', allValues.profit_margin || '');
+            formData.append('gross_profit', allValues.gross_profit || '');
+            formData.append('click_through_rate', allValues.click_through_rate || '');
+            formData.append('reviews_count', allValues.reviews_count || '');
+            formData.append('average_rating', allValues.average_rating || '');
+        }
+
+        // Affiliate-specific
+        if (allValues.link) formData.append('affiliate_link', allValues.link);
+        if (allValues.commission != null) formData.append('commission_rate', allValues.commission);
+        if (allValues.affiliate_program) formData.append('affiliate_program', allValues.affiliate_program);
+
+        // Digital-specific
+        if (allValues.file_type) formData.append('file_type', allValues.file_type);
+
+        // File uploads
+        if (allValues.upload && Array.isArray(allValues.upload)) {
+            allValues.upload.forEach((file) => {
                 if (file.originFileObj) {
                     formData.append('image_link', file.originFileObj);
                 }
             });
         }
 
-        fetch(`${API_BASE_URL}/product`, {
-            method: 'POST',
-            body: formData,
-            credentials: 'include',
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                if (!data.status) {
-                    Modal.error({
-                        title: 'Submission Failed',
-                        content: data.message || 'Product submission failed.',
-                    });
-                } else {
-                    Modal.success({
-                        title: 'Success',
-                        content: data.message || 'Product added successfully!',
-                    });
-                    form.resetFields();
-                    setProductType('physical');
-                    setSubcategories([]);
-                }
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-                Modal.error({
-                    title: 'Server Error',
-                    content: 'Something went wrong. Please try again later.',
-                });
-            })
-            .finally(() => {
-                setSubmitting(false);
+        // Debug: log what we're actually sending
+        console.log('FormData being sent:', [...formData.entries()]);
+
+        // Step 5: Send to backend
+        try {
+            const response = await fetch(`${API_BASE_URL}/product`, {
+                method: 'POST',
+                body: formData,
+                credentials: 'include',
             });
+
+            const data = await response.json();
+
+            console.log('Backend response:', data);
+
+            if (!data.status) {
+                Modal.error({
+                    title: 'Submission Failed',
+                    content: data.message || 'Product submission failed.',
+                });
+            } else {
+                Modal.success({
+                    title: 'Success',
+                    content: data.message || 'Product added successfully!',
+                });
+                form.resetFields();
+                setProductType('physical');
+                setSubcategories([]);
+
+                // Refresh product list
+                try {
+                    const prodRes = await fetch(`${API_BASE_URL}/products`, {
+                        method: 'GET',
+                        credentials: 'include',
+                    });
+                    const prodData = await prodRes.json();
+                    if (prodData.data) setProducts(prodData.data);
+                } catch (e) {
+                    console.error('Error refreshing products:', e);
+                }
+            }
+        } catch (error) {
+            console.error('Fetch error:', error);
+            Modal.error({
+                title: 'Server Error',
+                content: 'Something went wrong. Please try again later.',
+            });
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     return (
@@ -279,14 +342,19 @@ const AddProductPage = () => {
                 <Title style={{ color: 'white' }}>Add a New Product</Title>
             </Divider>
 
+            {/*
+                NOTE: No onFinish handler. We use a manual submit button with onClick.
+                This avoids ALL Ant Design onFinish/preserve issues entirely.
+                All fields stay mounted (using display:none) so values are never lost.
+            */}
             <Form
                 {...formItemLayout}
                 form={form}
                 variant="outlined"
                 className="add-product-form"
                 initialValues={{ product_type: 'physical' }}
-                onFinish={handleFormSubmit}
             >
+                {/* ─── Product Type ─── */}
                 <Form.Item
                     className="form-item"
                     label="Product Type"
@@ -300,13 +368,11 @@ const AddProductPage = () => {
                             { label: 'Affiliate', value: 'affiliate' },
                         ]}
                         value={productType}
-                        onChange={(value) => {
-                            setProductType(value);
-                            form.setFieldValue('product_type', value);
-                        }}
+                        onChange={handleProductTypeChange}
                     />
                 </Form.Item>
 
+                {/* ─── Common Fields (all product types) ─── */}
                 <Form.Item
                     className="form-item"
                     label="Product Name"
@@ -325,7 +391,7 @@ const AddProductPage = () => {
                     <Input />
                 </Form.Item>
 
-                {/* Category - now visible for all product types */}
+                {/* ─── Category (all product types) ─── */}
                 <Form.Item
                     className="form-item"
                     label="Category"
@@ -341,7 +407,7 @@ const AddProductPage = () => {
                     </Select>
                 </Form.Item>
 
-                {/* Sub Category - now visible for all product types */}
+                {/* ─── Sub Category (all product types) ─── */}
                 <Form.Item
                     className="form-item"
                     label="Sub Category"
@@ -357,71 +423,75 @@ const AddProductPage = () => {
                     </Select>
                 </Form.Item>
 
-                {/* Non-affiliate only fields */}
-                {productType !== 'affiliate' && (
-                    <>
-                        <Form.Item
-                            className="form-item"
-                            label="Brand"
-                            name="brand"
-                            rules={[{ required: true, message: 'Brand is empty!' }]}
-                        >
-                            <Input />
-                        </Form.Item>
+                {/* ─── Non-affiliate only fields ─── */}
+                {/* Using display:none keeps fields in DOM so values are never lost */}
+                <div style={{ display: productType !== 'affiliate' ? 'block' : 'none' }}>
+                    <Form.Item
+                        className="form-item"
+                        label="Brand"
+                        name="brand"
+                        rules={[{ required: productType !== 'affiliate', message: 'Brand is empty!' }]}
+                    >
+                        <Input />
+                    </Form.Item>
 
-                        <Form.Item
-                            className="form-item"
-                            label="Price"
-                            name="price"
-                            rules={[{ required: true, message: 'Price is empty!' }]}
-                        >
-                            <InputNumber style={{ width: '100%' }} min={0} />
-                        </Form.Item>
+                    <Form.Item
+                        className="form-item"
+                        label="Price"
+                        name="price"
+                        rules={[{ required: productType !== 'affiliate', message: 'Price is empty!' }]}
+                    >
+                        <InputNumber style={{ width: '100%' }} min={0} />
+                    </Form.Item>
 
-                        <Form.Item
-                            className="form-item"
-                            label="Stock"
-                            name="stock_level"
-                            rules={[{ required: true, message: 'Stock is empty!' }]}
-                        >
-                            <InputNumber style={{ width: '100%' }} min={0} />
-                        </Form.Item>
+                    <Form.Item
+                        className="form-item"
+                        label="Stock"
+                        name="stock_level"
+                        rules={[{ required: productType !== 'affiliate', message: 'Stock is empty!' }]}
+                    >
+                        <InputNumber style={{ width: '100%' }} min={0} />
+                    </Form.Item>
 
-                        <Form.Item className="form-item" label="Discount %" name="discount">
-                            <InputNumber style={{ width: '100%' }} min={0} max={100} />
-                        </Form.Item>
+                    <Form.Item className="form-item" label="Discount %" name="discount">
+                        <InputNumber style={{ width: '100%' }} min={0} max={100} />
+                    </Form.Item>
 
-                        <Form.Item
-                            className="form-item"
-                            label="Availability"
-                            name="availability"
-                            rules={[{ required: true, message: 'Select an option!' }]}
-                        >
-                            <Radio.Group>
-                                <Radio value="In Stock">In Stock</Radio>
-                                <Radio value="Out of Stock">Out of Stock</Radio>
-                            </Radio.Group>
-                        </Form.Item>
-                    </>
-                )}
+                    <Form.Item
+                        className="form-item"
+                        label="Availability"
+                        name="availability"
+                        rules={[{ required: productType !== 'affiliate', message: 'Select an option!' }]}
+                    >
+                        <Radio.Group>
+                            <Radio value="In Stock">In Stock</Radio>
+                            <Radio value="Out of Stock">Out of Stock</Radio>
+                        </Radio.Group>
+                    </Form.Item>
+                </div>
 
-                {(productType === 'digital' || productType === 'affiliate') && (
+                {/* ─── Link field (digital + affiliate) ─── */}
+                <div style={{ display: (productType === 'digital' || productType === 'affiliate') ? 'block' : 'none' }}>
                     <Form.Item
                         className="form-item"
                         label="Link"
                         name="link"
-                        rules={[{ required: true, message: 'Link is required!' }]}
+                        rules={[{
+                            required: productType === 'digital' || productType === 'affiliate',
+                            message: 'Link is required!'
+                        }]}
                     >
                         <Input />
                     </Form.Item>
-                )}
+                </div>
 
-                {productType === 'digital' && (
+                {/* ─── Digital-only field ─── */}
+                <div style={{ display: productType === 'digital' ? 'block' : 'none' }}>
                     <Form.Item
                         className="form-item"
                         label="File Type"
                         name="file_type"
-                        rules={[{ required: true, message: 'No File Type selected!' }]}
+                        rules={[{ required: productType === 'digital', message: 'No File Type selected!' }]}
                     >
                         <Select placeholder="Select File Type" allowClear>
                             {fileTypes.map((fileType) => (
@@ -431,8 +501,34 @@ const AddProductPage = () => {
                             ))}
                         </Select>
                     </Form.Item>
-                )}
+                </div>
 
+                {/* ─── Affiliate-only fields ─── */}
+                <div style={{ display: productType === 'affiliate' ? 'block' : 'none' }}>
+                    <Form.Item
+                        className="form-item"
+                        label="Commission %"
+                        name="commission"
+                    >
+                        <InputNumber style={{ width: '100%' }} min={0} max={100} />
+                    </Form.Item>
+
+                    <Form.Item
+                        className="form-item"
+                        label="Affiliate Program"
+                        name="affiliate_program"
+                    >
+                        <Select placeholder="Select Affiliate Program" allowClear>
+                            {affiliatePrograms.map((program) => (
+                                <Select.Option key={program._id} value={program._id}>
+                                    {program.name || program.label}
+                                </Select.Option>
+                            ))}
+                        </Select>
+                    </Form.Item>
+                </div>
+
+                {/* ─── Description (all product types) ─── */}
                 <Form.Item
                     className="form-item"
                     label="Description"
@@ -442,6 +538,7 @@ const AddProductPage = () => {
                     <Input.TextArea rows={4} />
                 </Form.Item>
 
+                {/* ─── Upload (required for physical + digital, optional for affiliate) ─── */}
                 <Form.Item
                     className="form-item"
                     label="Upload"
@@ -450,7 +547,7 @@ const AddProductPage = () => {
                     getValueFromEvent={normFile}
                     rules={[
                         {
-                            required: productType === 'affiliate' ? false : true,
+                            required: productType !== 'affiliate',
                             message: 'Please upload at least one file!',
                         },
                     ]}
@@ -471,13 +568,15 @@ const AddProductPage = () => {
                     </Upload>
                 </Form.Item>
 
+                {/* ─── Submit (manual onClick, NOT htmlType="submit") ─── */}
                 <Form.Item className="form-item" wrapperCol={{ offset: 6, span: 16 }}>
-                    <Button type="primary" htmlType="submit" loading={submitting}>
+                    <Button type="primary" loading={submitting} onClick={handleManualSubmit}>
                         Add Product
                     </Button>
                 </Form.Item>
             </Form>
 
+            {/* ─── Product Listing ─── */}
             <Divider plain style={{ borderColor: 'white' }}>
                 <Title style={{ color: 'white' }}>Product Listing</Title>
             </Divider>

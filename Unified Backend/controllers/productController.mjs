@@ -88,13 +88,12 @@ const addProduct = async (req, res) => {
     }
 
     if (product_type === "affiliate") {
-      // Affiliate products only require affiliate_link (affiliate_program and upload are optional)
-      if (!affiliate_link) {
-        return res.status(400).json({
-          status: false,
-          message: "Affiliate products must include affiliate_link"
-        });
-      }
+        if (!affiliate_link || !category || !sub_category) {
+            return res.status(400).json({
+                status: false,
+                message: "Affiliate products must include affiliate_link, category, and sub_category"
+            });
+        }
     }
 
     // Default values
@@ -118,37 +117,36 @@ const addProduct = async (req, res) => {
       image_link = uploadResults.map(result => result.secure_url);
     }
 
-    // Normalize categories (only for non-affiliate products)
-    if (product_type !== 'affiliate' && category && sub_category) {
-      category = category.toLowerCase();
-      sub_category = sub_category.toLowerCase();
-    }
+    if (category) category = category.toLowerCase();
+    if (sub_category) sub_category = sub_category.toLowerCase();
 
     // Build product object
     const productData = {
-      name,
-      product_type,
-      description,
-      sku,
-      image_link,
+        name,
+        product_type,
+        description,
+        sku,
+        image_link,
+        category,       // ADD THIS
+        sub_category,   // ADD THIS
     };
 
     // Add fields only for non-affiliate products
     if (product_type !== 'affiliate') {
-      productData.category = category;
-      productData.sub_category = sub_category;
-      productData.brand = brand;
-      productData.price = price;
-      productData.stock_level = stock_level;
-      productData.units_sold = units_sold;
-      productData.total_sales_revenue = total_sales_revenue;
-      productData.availability = availability;
-      productData.discount = discount;
-      productData.profit_margin = profit_margin;
-      productData.gross_profit = gross_profit;
-      productData.click_through_rate = click_through_rate;
-      productData.reviews_count = reviews_count;
-      productData.average_rating = average_rating;
+        // productData.category = category;        // REMOVE (already above)
+        // productData.sub_category = sub_category; // REMOVE (already above)
+        productData.brand = brand;
+        productData.price = price;
+        productData.stock_level = stock_level;
+        productData.units_sold = units_sold;
+        productData.total_sales_revenue = total_sales_revenue;
+        productData.availability = availability;
+        productData.discount = discount;
+        productData.profit_margin = profit_margin;
+        productData.gross_profit = gross_profit;
+        productData.click_through_rate = click_through_rate;
+        productData.reviews_count = reviews_count;
+        productData.average_rating = average_rating;
     }
 
     // Add affiliate-specific fields
@@ -496,21 +494,16 @@ const getProductsByCategoryName = async (req, res) => {
       });
     }
 
-    category = decodeURIComponent(category).toLowerCase();
+    category = decodeURIComponent(category).toLowerCase().replace(/-/g, ' ');
 
     const products = await Product.find({
       category: { $regex: category, $options: "i" }
     });
 
     if (!products.length) {
-      const sample = await Product.findOne({});
       return res.status(404).json({
         status: false,
         message: "No products found for this category",
-        debug: {
-          searchedCategory: category,
-          sampleProductStructure: sample ? Object.keys(sample.toObject()) : "No products available"
-        }
       });
     }
 
@@ -532,44 +525,47 @@ const getProductsByCategoryName = async (req, res) => {
 
 // Get products by sub-category name
 const getProductBySubCategoryName = async (req, res) => {
-  try {
-    let { subcategory } = req.params;
+    try {
+        let { subcategory } = req.params;
 
-    if (!subcategory) {
-      return res.status(400).json({
-        status: false,
-        message: "Sub-category parameter is required"
-      });
+        if (!subcategory) {
+            return res.status(400).json({
+                status: false,
+                message: "Sub-category parameter is required"
+            });
+        }
+
+        // Decode and convert hyphens to spaces for matching
+        const normalizedSubcategory = decodeURIComponent(subcategory)
+            .toLowerCase()
+            .replace(/-/g, ' ');    // ADD THIS LINE
+
+        const products = await Product.find({
+            sub_category: { $regex: new RegExp(normalizedSubcategory, 'i') }
+        });
+
+        if (products?.length === 0) {
+            return res.status(404).json({
+                status: false,
+                message: `No products found for sub category ${normalizedSubcategory}`,
+                data: null
+            });
+        }
+
+        return res.status(200).json({
+            status: true,
+            message: `${products.length} products found for sub category ${normalizedSubcategory}`,
+            data: products
+        });
+
+    } catch (error) {
+        console.error("Error fetching products by subcategory:", error);
+        return res.status(500).json({
+            status: false,
+            message: "Error fetching products",
+            error: error.message
+        });
     }
-
-    const normalizedSubcategory = decodeURIComponent(subcategory).toLowerCase();
-
-    const products = await Product.find({
-      sub_category: { $regex: new RegExp(normalizedSubcategory, 'i') }
-    });
-
-    if (products?.length === 0) {
-      return res.status(404).json({
-        status: false,
-        message: `No products found for sub category ${normalizedSubcategory}`,
-        data: null
-      });
-    }
-
-    return res.status(200).json({
-      status: true,
-      message: `${products.length} products found for sub category ${normalizedSubcategory}`,
-      data: products
-    });
-
-  } catch (error) {
-    console.error("Error fetching products by subcategory:", error);
-    return res.status(500).json({
-      status: false,
-      message: "Error fetching products",
-      error: error.message
-    });
-  }
 };
 
 // Get number of products per product_type in percentage
