@@ -6,7 +6,8 @@ import {
   UsergroupAddOutlined,
   ShoppingCartOutlined,
   LogoutOutlined,
-  SoundOutlined
+  SoundOutlined,
+  FileTextOutlined // Added for Blogs
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { Tooltip, Modal, Spin } from 'antd';
@@ -29,7 +30,6 @@ const NavBar = () => {
         return res.json();
       })
       .then(() => {
-        // Show spinner for 2 seconds before redirecting
         setTimeout(() => {
           setShowLogoutModal(false);
           setIsLoggingOut(false);
@@ -104,6 +104,21 @@ const NavBar = () => {
               </a>
             </Tooltip>
           </li>
+
+          {/* --- Added Blogs Section --- */}
+          <li>
+            <Tooltip
+              color="white"
+              title="Blogs"
+              placement="top"
+              styles={{ body: tooltipStyle }}
+            >
+              <a href="/blogs" className="nav-link">
+                <FileTextOutlined /> Blogs
+              </a>
+            </Tooltip>
+          </li>
+
           <li>
             <Tooltip
               color="white"

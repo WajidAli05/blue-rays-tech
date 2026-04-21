@@ -11,12 +11,18 @@ import UserNotFoundPage from './pages/UserNotFoundPage';
 import ProductDetailsPage from './pages/ProductDetailsPage';
 import PrivateRoutes from '../routes/PrivateRoutes';
 import Announcements from "./pages/Announcements";
+
+// --- Blog Imports ---
+import BlogManagementPage from './pages/BlogManagementPage';
+import AddBlogPage from './pages/AddBlogPage';
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function App() {
   return (
     <Routes>
       <Route path="/ad-lg" element={<LoginPage />} />
+      
       <Route element={<PrivateRoutes />}>
         <Route path="/" element={<Dashboard />} />
         <Route path="/users" element={<UsersPage />} />
@@ -24,6 +30,12 @@ function App() {
         <Route path="/announcements" element={<Announcements />} />
         <Route path="/orders" element={<OrdersPage />} />
         <Route path="/products-listing" element={<ProductsListingPage />} />
+        
+        {/* --- Blog Routes --- */}
+        <Route path="/blogs" element={<BlogManagementPage />} />
+        <Route path="/add-blog" element={<AddBlogPage />} />
+        <Route path="/edit-blog/:id" element={<AddBlogPage />} /> 
+
         <Route path="/user-not-found" element={<UserNotFoundPage />} />
         <Route path="/:sku" element={<ProductDetailsPage />} />
         <Route path="/user/:userId" element={<UserDetailsPage />} />
