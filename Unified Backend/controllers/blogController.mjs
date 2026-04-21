@@ -5,6 +5,7 @@ import {
     extractPublicId,
     getResourceType
 } from "../utils/cloudinaryHelper.js";
+import mongoose from 'mongoose';
 
 // Helper to generate SEO friendly slugs
 const generateSlug = (text) => {
@@ -73,19 +74,35 @@ const getBlogPosts = async (req, res) => {
     }
 };
 
-// @desc    Get single blog post by slug
+// @desc    Get single blog post by slug OR id
 const getBlogPostBySlug = async (req, res) => {
     try {
         const { slug } = req.params;
-        const blog = await Blog.findOne({ slug });
+        let blog;
+
+        // Step 1: Check if 'slug' is actually a valid MongoDB ObjectId
+        if (mongoose.Types.ObjectId.isValid(slug)) {
+            blog = await Blog.findById(slug);
+        } else {
+            // Step 2: If not an ID, treat it as a traditional SEO slug
+            blog = await Blog.findOne({ slug });
+        }
 
         if (!blog) {
-            return res.status(404).json({ status: false, message: "Blog post not found" });
+            return res.status(404).json({ 
+                status: false, 
+                message: "Blog post not found" 
+            });
         }
 
         res.status(200).json({ status: true, data: blog });
     } catch (error) {
-        res.status(500).json({ status: false, message: "Error fetching blog post", error: error.message });
+        // This catches the 500 error and tells you exactly what went wrong
+        res.status(500).json({ 
+            status: false, 
+            message: "Server error while fetching blog post", 
+            error: error.message 
+        });
     }
 };
 
