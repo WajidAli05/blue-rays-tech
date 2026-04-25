@@ -64,10 +64,19 @@ const loginAdmin = (req, res) => {
             { expiresIn: '1h' }
           );
 
+          // res.cookie('token', token, {
+          //   httpOnly: true,
+          //   secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+          //   sameSite: 'Strict', // Prevent CSRF attacks
+          //   maxAge: 3600000, // 1 hour
+          // });
+
           res.cookie('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-            sameSite: 'Strict', // Prevent CSRF attacks
+            // Force secure to true if you are on HTTPS (which you are)
+            secure: true, 
+            // 'None' is REQUIRED for cross-subdomain/cross-site cookies
+            sameSite: 'None', 
             maxAge: 3600000, // 1 hour
           });
 
